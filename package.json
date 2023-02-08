@@ -1,0 +1,27 @@
+{
+    "scripts": {
+        "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+        "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    },
+    "dependencies": {
+        "@metaplex-foundation/js": "^0.18.3",
+        "@noble/ed25519": "^1.7.1",
+        "@project-serum/anchor": "^0.25.0",
+        "@saberhq/solana-contrib": "^1.14.9",
+        "@solana/spl-token": "^0.3.5",
+        "@solana/web3.js": "^1.73.3",
+        "sha1": "^1.1.1"
+    },
+    "devDependencies": {
+        "@metaplex-foundation/solita": "^0.18.0",
+        "@types/bn.js": "^5.1.0",
+        "@types/chai": "^4.3.0",
+        "@types/mocha": "^9.0.0",
+        "@types/sha1": "^1.1.3",
+        "chai": "^4.3.4",
+        "mocha": "^9.0.3",
+        "prettier": "^2.6.2",
+        "ts-mocha": "^10.0.0",
+        "typescript": "^4.3.5"
+    }
+}

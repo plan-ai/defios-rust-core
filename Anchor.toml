@@ -1,0 +1,25 @@
+[features]
+seeds = false
+skip-lint = false
+[programs.localnet]
+defios = "6wAiR6rasR2eQrjWTuVQLUQ7PKVofRDQr9qxeMcj1M9W"
+token_vesting = "vEsTJ2AkFvth5Cp8VvGAim1RFFTnyjPF3nxGZBm3Cbp"
+[programs.devnet]
+defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
+token_vesting = "vEsTJ2AkFvth5Cp8VvGAim1RFFTnyjPF3nxGZBm3Cbp"
+[programs.testnet]
+defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
+token_vesting = "vEsTJ2AkFvth5Cp8VvGAim1RFFTnyjPF3nxGZBm3Cbp"
+[programs.mainnet]
+defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
+token_vesting = "vEsTJ2AkFvth5Cp8VvGAim1RFFTnyjPF3nxGZBm3Cbp"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "/home/mayank/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/defios.ts"
