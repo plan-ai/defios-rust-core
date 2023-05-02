@@ -231,6 +231,7 @@ pub struct IssueStaked {
     pub issue_account: Pubkey,
     pub staked_amount: u64,
     pub rewards_mint: Pubkey,
+    pub issue_contribution_link: String
 }
 
 #[event]
