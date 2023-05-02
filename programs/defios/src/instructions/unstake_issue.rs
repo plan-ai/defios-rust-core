@@ -133,6 +133,7 @@ pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
         issue_staker_token_account: issue_staker_token_account.key(),
         rewards_mint: rewards_mint.key(),
         unstaked_amount: issue_staker_account.staked_amount,
+        issue_contribution_link: issue_account.uri
     });
 
     Ok(())
