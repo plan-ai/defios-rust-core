@@ -97,7 +97,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         staked_amount: transfer_amount,
         rewards_mint: rewards_mint.key(),
         issue_staker_token_account: issue_token_pool_account.key(),
-        issue_contribution_link: issue_account.uri 
+        issue_contribution_link: issue_account.uri.clone() 
     });
 
     Ok(())

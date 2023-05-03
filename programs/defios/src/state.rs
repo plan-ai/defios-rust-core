@@ -290,8 +290,8 @@ impl Vote {
 
 #[event]
 pub struct VoteCasted {
-    issue_pub_key: Pubkey,
-    voted_by: Pubkey
+    pub issue_pub_key: Pubkey,
+    pub voted_by: Pubkey
 }
 
 #[event]
