@@ -105,6 +105,7 @@ pub mod defios {
     ) -> Result<()> {
         add_objective_data::handler(ctx, objective_title,objective_start_unix,objective_end_unix,objective_description_link,objective_state,objective_deliverable)
     }
+    
     pub fn add_child_objective(
         ctx: Context<AddChildObjective>, 
         from_root:bool
@@ -112,5 +113,9 @@ pub mod defios {
         add_child_objective::handler(ctx,from_root)
     }
 
-
+    pub fn cast_vote(
+       ctx: Context<CastVote>
+    ) -> Result<()>{
+        cast_vote::handler(ctx)
+    }
 }
