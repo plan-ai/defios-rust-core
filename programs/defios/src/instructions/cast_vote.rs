@@ -3,10 +3,10 @@ use crate::state::{VoteCasted, Vote,Issue};
 
 #[derive(Accounts)]
 pub struct CastVote<'info> {
-    #[account]
+    #[account(mut)]
     pub voter: Signer<'info>,
-    #[account]
-    pub issue_account Account<'info,Issue>
+    #[account(mut)]
+    pub issue_account: Account<'info,Issue>,
     #[account(
         init,
         payer = voter,
@@ -18,11 +18,8 @@ pub struct CastVote<'info> {
         ],
         bump
     )]
-    pub vote_metadata_store Account<'info,Vote>
-    #[account]
+    pub vote_metadata_store: Account<'info,Vote>,
     pub system_program: Program<'info, System>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
-    pub token_program: Program<'info, Token>,
 }
 
 pub fn handler(ctx: Context<CastVote>) -> Result<()> {
