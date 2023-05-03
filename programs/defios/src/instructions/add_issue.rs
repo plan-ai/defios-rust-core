@@ -92,7 +92,6 @@ pub struct AddIssue<'info> {
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
-    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
@@ -126,7 +125,6 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
             associated_token: issue_token_pool_account.to_account_info(),
             authority: issue_account.to_account_info(),
             mint: ctx.accounts.rewards_mint.to_account_info(),
-            rent: ctx.accounts.rent.to_account_info(),
             system_program: ctx.accounts.system_program.to_account_info(),
             token_program: ctx.accounts.token_program.to_account_info(),
         },
