@@ -272,6 +272,28 @@ impl Objective {
     }
 }
 
+#[account]
+pub struct Vote {
+    pub bump: u8,
+    pub issue_pub_key: Pubkey,
+    pub voted_by: Pubkey
+}
+
+impl Vote {
+    pub fn size() -> usize {
+        8 + // discriminator
+        1 + //bump
+        32 + //issue_pub_key
+        32 //voted_by
+    }
+}
+
+#[event]
+pub struct VoteCasted{
+    issue_pub_key: Pubkey,
+    voted_by: Pubkey
+}
+
 #[event]
 pub struct AddChildObjectiveEvent {
     pub parent_account: Pubkey,
