@@ -39,14 +39,11 @@ pub struct Register<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
-
-    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn handler(ctx: Context<Register>, number_of_schedules: u64) -> Result<()> {
     let vesting_account = &mut ctx.accounts.vesting_account;
     let authority = &ctx.accounts.authority;
-    let rent = &ctx.accounts.rent;
 
     // Token accounts
     let token_mint = &ctx.accounts.token_mint;
@@ -66,7 +63,6 @@ pub fn handler(ctx: Context<Register>, number_of_schedules: u64) -> Result<()> {
                 associated_token: vesting_token_account.to_account_info(),
                 authority: vesting_account.to_account_info(),
                 mint: token_mint.to_account_info(),
-                rent: rent.to_account_info(),
                 system_program: system_program.to_account_info(),
                 token_program: token_program.to_account_info(),
             },
