@@ -33,4 +33,8 @@ pub enum DefiOSError {
     // 6007
     #[msg("Tokens Already Claimed")]
     AlreadyClaimed,
+
+    // 6008
+    #[msg("Cannot stake/unstake on a closed objective")]
+    ObjectiveClosedAlready
 }

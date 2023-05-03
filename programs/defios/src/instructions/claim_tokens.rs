@@ -5,7 +5,7 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},
-    token::{transfer, Mint, Token, TokenAccount, Transfer},
+    token::{Mint, Token, TokenAccount},
 };
 
 #[derive(Accounts)]
