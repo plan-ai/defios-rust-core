@@ -26,7 +26,7 @@ pub mod defios {
         msg: Vec<u8>,
         sig: [u8; 64],
     ) -> Result<()> {
-        add_verifed_user::handler(ctx, user_name, user_pubkey, msg, sig)
+        add_verified_user::handler(ctx, user_name, user_pubkey, msg, sig)
     }
 
     pub fn create_repository(
