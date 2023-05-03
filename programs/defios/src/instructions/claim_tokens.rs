@@ -81,7 +81,6 @@ pub struct ClaimUserTokens<'info> {
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn handler(ctx: Context<ClaimUserTokens>, _user_name: String) -> Result<()> {
@@ -109,7 +108,6 @@ pub fn handler(ctx: Context<ClaimUserTokens>, _user_name: String) -> Result<()> 
                 associated_token: user_reward_token_account.to_account_info(),
                 authority: user.to_account_info(),
                 mint: rewards_mint.to_account_info(),
-                rent: ctx.accounts.rent.to_account_info(),
                 system_program: ctx.accounts.system_program.to_account_info(),
                 token_program: ctx.accounts.token_program.to_account_info(),
             },

@@ -1,6 +1,6 @@
 pub mod add_commit;
 pub mod add_issue;
-pub mod add_verifed_user;
+pub mod add_verified_user;
 pub mod claim_reward;
 pub mod create_name_router;
 pub mod create_repository;
@@ -11,7 +11,7 @@ pub mod claim_tokens;
 
 pub use add_commit::*;
 pub use add_issue::*;
-pub use add_verifed_user::*;
+pub use add_verified_user::*;
 pub use claim_reward::*;
 pub use create_name_router::*;
 pub use create_repository::*;

@@ -128,7 +128,6 @@ pub struct ClaimReward<'info> {
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
-    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn hash(content: &String, creator_pubkey_str: Option<String>) -> Vec<u8> {
@@ -167,7 +166,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
                 associated_token: commit_creator_reward_token_account.to_account_info(),
                 authority: commit_creator.to_account_info(),
                 mint: rewards_mint.to_account_info(),
-                rent: ctx.accounts.rent.to_account_info(),
                 system_program: ctx.accounts.system_program.to_account_info(),
                 token_program: ctx.accounts.token_program.to_account_info(),
             },

@@ -428,7 +428,6 @@ describe('defios', () => {
             repositoryTokenPoolAccount: repositoryTokenPoolAccount,
             tokenProgram: TOKEN_PROGRAM_ID,
             systemProgram: web3.SystemProgram.programId,
-            rent: web3.SYSVAR_RENT_PUBKEY,
             verifiedUser: verifiedUserAccount,
             rewardsMint: mintKeypair.publicKey,
             associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -751,7 +750,6 @@ describe('defios', () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreatorKeypair.publicKey,
-        rent: web3.SYSVAR_RENT_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -1046,7 +1044,6 @@ describe('defios', () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreatorKeypair.publicKey,
-        rent: web3.SYSVAR_RENT_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -1396,7 +1393,6 @@ describe('defios', () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreatorKeypair.publicKey,
-        rent: web3.SYSVAR_RENT_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -1772,7 +1768,6 @@ describe('defios', () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreatorKeypair.publicKey,
-        rent: web3.SYSVAR_RENT_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -2218,7 +2213,6 @@ describe('defios', () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreatorKeypair.publicKey,
-        rent: web3.SYSVAR_RENT_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
