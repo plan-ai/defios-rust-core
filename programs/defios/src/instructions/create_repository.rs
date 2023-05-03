@@ -53,7 +53,7 @@ pub struct CreateRepository<'info> {
     )]
     pub repository_account: Account<'info, Repository>,
 
-    pub repository_token_pool_account: Box<Account<'info, TokenAccount>>,
+    pub repository_token_pool_account: Account<'info, TokenAccount>,
     pub rewards_mint: Account<'info, Mint>,
     pub system_program: Program<'info, System>,
 }

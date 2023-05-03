@@ -24,9 +24,6 @@ pub struct AddObjective<'info> {
     )]
     pub metadata_account: Account<'info, Objective>,
     pub system_program: Program<'info, System>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
-    pub token_program: Program<'info, Token>,
-    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn handler(
