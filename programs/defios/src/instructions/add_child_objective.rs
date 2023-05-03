@@ -17,10 +17,7 @@ pub struct AddChildObjective<'info> {
     pub objective_account: Account<'info, Objective>,
     #[account[mut]]
     pub parent_account: Account<'info, Objective>,
-    pub system_program: Program<'info, System>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
-    pub token_program: Program<'info, Token>,
-    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>
 }
 
 pub fn handler(ctx: Context<AddChildObjective>, from_root: bool) -> Result<()> {
