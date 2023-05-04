@@ -292,7 +292,8 @@ impl Vote {
 pub struct PullRequest {
     pub bump: u8,
     pub sent_by: Vec<Pubkey>,
-    pub commits: Vec<Pubkey>
+    pub commits: Vec<Pubkey>,
+    pub metadata_uri:String
 }
 
 impl PullRequest {
@@ -300,14 +301,16 @@ impl PullRequest {
         8 + // discriminator
         1 + //bump
         960 + //sent_by
-        960 //commits
+        960 + //commits
+        200 //metadata_uri
     }
 }
 
 #[event]
 pub struct PullRequestSent {
     pub sent_by: Vec<Pubkey>,
-    pub commits: Vec<Pubkey>
+    pub commits: Vec<Pubkey>,
+    pub metadata_uri: String
 }
 
 #[event]

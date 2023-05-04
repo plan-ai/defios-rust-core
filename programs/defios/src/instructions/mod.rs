@@ -13,6 +13,7 @@ pub mod add_roadmap_data;
 pub mod send_funds;
 pub mod add_child_objective;
 pub mod cast_vote;
+pub mod add_pr;
 
 pub use add_commit::*;
 pub use add_issue::*;
@@ -29,3 +30,4 @@ pub use add_roadmap_data::*;
 pub use send_funds::*;
 pub use add_child_objective::*;
 pub use cast_vote::*;
+pub use add_pr::*;
