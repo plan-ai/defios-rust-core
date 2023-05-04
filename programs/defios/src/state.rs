@@ -275,7 +275,7 @@ impl Objective {
 #[account]
 pub struct Vote {
     pub bump: u8,
-    pub issue_pub_key: Pubkey,
+    pub pr_pub_key: Pubkey,
     pub voted_by: Pubkey
 }
 
@@ -288,10 +288,41 @@ impl Vote {
     }
 }
 
+#[account]
+pub struct PullRequest {
+    pub bump: u8,
+    pub sent_by: Vec<Pubkey>,
+    pub commits: Vec<Pubkey>,
+    pub metadata_uri:String
+}
+
+impl PullRequest {
+    pub fn size() -> usize {
+        8 + // discriminator
+        1 + //bump
+        960 + //sent_by
+        960 + //commits
+        200 //metadata_uri
+    }
+}
+
+#[event]
+pub struct PullRequestSent {
+    pub sent_by: Vec<Pubkey>,
+    pub commits: Vec<Pubkey>,
+    pub metadata_uri: String
+}
+
 #[event]
 pub struct VoteCasted {
-    pub issue_pub_key: Pubkey,
+    pub pr_pub_key: Pubkey,
     pub voted_by: Pubkey
+}
+
+#[event]
+pub struct AddCommitToPR {
+    pub commit: Pubkey,
+    pub by: Pubkey
 }
 
 #[event]

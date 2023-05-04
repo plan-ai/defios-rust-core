@@ -118,4 +118,17 @@ pub mod defios {
     ) -> Result<()>{
         cast_vote::handler(ctx)
     }
+
+    pub fn add_pr(
+        ctx: Context<AddPullRequest>,
+        metadata_uri:String
+     ) -> Result<()>{
+         add_pr::handler(ctx,metadata_uri)
+     }
+
+     pub fn add_commit_to_pr(
+        ctx: Context<AddCommitToPullRequest>,
+     ) -> Result<()>{
+        add_commit_to_pr::handler(ctx)
+     }
 }
