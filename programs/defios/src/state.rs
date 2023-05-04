@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
 pub enum ObjectiveState {
-    Locked, 
+    Locked,
     InProgress,
     Closed,
     Deprecated,
@@ -13,20 +13,20 @@ pub enum ObjectiveState {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
 pub enum ObjectiveDeliverable {
-    Infrastructure, 
+    Infrastructure,
     Tooling,
     Publication,
     Product,
-    Other
+    Other,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
 pub enum RoadmapOutlook {
-    Next2, 
+    Next2,
     Next5,
     Plus5,
-    LongTerm
+    LongTerm,
 }
 
 #[account]
@@ -98,7 +98,7 @@ impl Repository {
             4 +
             100 + // description
             4 +
-            200  // uri
+            200 // uri
     }
 }
 
@@ -212,7 +212,7 @@ impl UserClaim {
 
 #[account]
 pub struct RoadMapMetaDataStore {
-    pub bump : u8,
+    pub bump: u8,
     pub roadmap_title: String,
     pub roadmap_creation_unix: u64,
     pub roadmap_creator_id: Pubkey,
@@ -220,7 +220,7 @@ pub struct RoadMapMetaDataStore {
     pub number_of_objectives: u64,
     pub root_objective_ids: Vec<Pubkey>,
     pub roadmap_creator: Pubkey,
-    pub roadmap_outlook: RoadmapOutlook
+    pub roadmap_outlook: RoadmapOutlook,
 }
 
 impl RoadMapMetaDataStore {
@@ -240,18 +240,18 @@ impl RoadMapMetaDataStore {
 
 #[account]
 pub struct Objective {
-    pub bump :u8,
-    pub objective_title : String,
+    pub bump: u8,
+    pub objective_title: String,
     pub objective_creation_unix: u64,
     pub objective_creator_gh_id: Pubkey,
-    pub objective_start_unix : u64,
-    pub objective_end_unix : u64,
+    pub objective_start_unix: u64,
+    pub objective_end_unix: u64,
     pub objective_description_link: String,
-    pub objective_state:ObjectiveState,
+    pub objective_state: ObjectiveState,
     pub children_objective_id: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_staker_ids: Vec<Pubkey>,
-    pub objective_staker_amts: Vec<u64>
+    pub objective_staker_amts: Vec<u64>,
 }
 
 impl Objective {
@@ -276,7 +276,7 @@ impl Objective {
 pub struct Vote {
     pub bump: u8,
     pub pr_pub_key: Pubkey,
-    pub voted_by: Pubkey
+    pub voted_by: Pubkey,
 }
 
 impl Vote {
@@ -293,7 +293,7 @@ pub struct PullRequest {
     pub bump: u8,
     pub sent_by: Vec<Pubkey>,
     pub commits: Vec<Pubkey>,
-    pub metadata_uri:String
+    pub metadata_uri: String,
 }
 
 impl PullRequest {
@@ -310,25 +310,25 @@ impl PullRequest {
 pub struct PullRequestSent {
     pub sent_by: Vec<Pubkey>,
     pub commits: Vec<Pubkey>,
-    pub metadata_uri: String
+    pub metadata_uri: String,
 }
 
 #[event]
 pub struct VoteCasted {
     pub pr_pub_key: Pubkey,
-    pub voted_by: Pubkey
+    pub voted_by: Pubkey,
 }
 
 #[event]
 pub struct AddCommitToPR {
     pub commit: Pubkey,
-    pub by: Pubkey
+    pub by: Pubkey,
 }
 
 #[event]
 pub struct AddChildObjectiveEvent {
     pub parent_account: Pubkey,
-    pub added_by: Pubkey
+    pub added_by: Pubkey,
 }
 
 #[event]
@@ -339,7 +339,7 @@ pub struct AddObjectiveDataEvent {
     pub objective_creation_unix: u64,
     pub objective_end_unix: u64,
     pub objective_deliverable: ObjectiveDeliverable,
-    pub objective_public_key: Pubkey
+    pub objective_public_key: Pubkey,
 }
 
 #[event]
@@ -347,13 +347,13 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_title: String,
     pub roadmap_description_link: String,
     pub roadmap_creation_unix: u64,
-    pub roadmap_creator: Pubkey
+    pub roadmap_creator: Pubkey,
 }
 
 #[event]
 pub struct StakeOnObjectiveEvent {
     pub objective_pub_key: Pubkey,
-    pub staked_by: Pubkey
+    pub staked_by: Pubkey,
 }
 
 #[event]
@@ -397,7 +397,7 @@ pub struct RepositoryCreated {
     pub name: String,
     pub description: String,
     pub gh_usernames: Vec<String>,
-    pub claim_amounts: Vec<u64>
+    pub claim_amounts: Vec<u64>,
 }
 
 #[event]
@@ -407,7 +407,7 @@ pub struct IssueStaked {
     pub issue_account: Pubkey,
     pub staked_amount: u64,
     pub rewards_mint: Pubkey,
-    pub issue_contribution_link: String
+    pub issue_contribution_link: String,
 }
 
 #[event]
@@ -417,5 +417,5 @@ pub struct IssueUnstaked {
     pub issue_account: Pubkey,
     pub unstaked_amount: u64,
     pub rewards_mint: Pubkey,
-    pub issue_contribution_link: String
+    pub issue_contribution_link: String,
 }

@@ -1,9 +1,9 @@
-import * as anchor from '@project-serum/anchor';
-import { Program } from '@project-serum/anchor';
-import { Defios } from '../target/types/defios';
+import * as anchor from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import { Defios } from "../target/types/defios";
 
-import * as ed from '@noble/ed25519';
-import { PublicKey } from '@saberhq/solana-contrib';
+import * as ed from "@noble/ed25519";
+import { PublicKey } from "@saberhq/solana-contrib";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccount,
@@ -13,12 +13,12 @@ import {
   getAssociatedTokenAddress,
   MintLayout,
   TOKEN_PROGRAM_ID,
-} from '@solana/spl-token';
+} from "@solana/spl-token";
 
-import sha1 from 'sha1';
-import { Keypair } from '@solana/web3.js';
+import sha1 from "sha1";
+import { Keypair } from "@solana/web3.js";
 
-describe('defios', () => {
+describe("defios", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
@@ -29,7 +29,7 @@ describe('defios', () => {
 
   const { web3 } = anchor;
 
-  it('Creates a name router!', async () => {
+  it("Creates a name router!", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     await connection.confirmTransaction(
@@ -40,11 +40,11 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -62,7 +62,7 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     const {
       routerCreator,
@@ -81,7 +81,7 @@ describe('defios', () => {
     );
   });
 
-  it('Adds a verified user', async () => {
+  it("Adds a verified user", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
 
@@ -93,11 +93,11 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -115,12 +115,12 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Signature test
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const userPubkey = new PublicKey(
-      '81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn'
+      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
     );
 
     const message = Uint8Array.from(
@@ -164,10 +164,10 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
   });
 
-  it('Creates a repository', async () => {
+  it("Creates a repository", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
 
@@ -184,7 +184,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -195,11 +195,11 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -217,9 +217,9 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -263,7 +263,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -291,10 +291,10 @@ describe('defios', () => {
       );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -323,17 +323,17 @@ describe('defios', () => {
       []
     );
 
-    program.addEventListener('RepositoryCreated', async (event) => {
-      console.log('Repository created', event);
+    program.addEventListener("RepositoryCreated", async (event) => {
+      console.log("Repository created", event);
       event.ghUsernames.forEach(async (username, i) => {
         try {
-          console.log('Adding user claim', username, event.claimAmounts[i]);
+          console.log("Adding user claim", username, event.claimAmounts[i]);
           const [userClaimAccount] = await web3.PublicKey.findProgramAddress(
             [
               Buffer.from("user_claim"),
               Buffer.from(username),
               repositoryAccount.toBuffer(),
-              nameRouterAccount.toBuffer()
+              nameRouterAccount.toBuffer(),
             ],
             program.programId
           );
@@ -345,14 +345,14 @@ describe('defios', () => {
               repositoryAccount,
               routerCreator: routerCreatorKeypair.publicKey,
               userClaimAccount,
-              systemProgram: web3.SystemProgram.programId
+              systemProgram: web3.SystemProgram.programId,
             })
             .signers([routerCreatorKeypair])
-            .rpc()
+            .rpc();
 
           console.log(await program.account.userClaim.fetch(userClaimAccount));
 
-          const newUser = Keypair.generate()
+          const newUser = Keypair.generate();
           console.log("user", newUser.publicKey.toString());
           await connection.confirmTransaction(
             {
@@ -362,13 +362,11 @@ describe('defios', () => {
               ),
               ...(await connection.getLatestBlockhash()),
             },
-            'singleGossip'
+            "singleGossip"
           );
 
           const message = Uint8Array.from(
-            Buffer.from(
-              `DefiOS(${username}, ${newUser.publicKey.toString()})`
-            )
+            Buffer.from(`DefiOS(${username}, ${newUser.publicKey.toString()})`)
           );
 
           const signature = await ed.sign(
@@ -376,11 +374,12 @@ describe('defios', () => {
             routerCreatorKeypair.secretKey.slice(0, 32)
           );
 
-          const createED25519Ix = web3.Ed25519Program.createInstructionWithPublicKey({
-            message: message,
-            publicKey: routerCreatorKeypair.publicKey.toBytes(),
-            signature,
-          });
+          const createED25519Ix =
+            web3.Ed25519Program.createInstructionWithPublicKey({
+              message: message,
+              publicKey: routerCreatorKeypair.publicKey.toBytes(),
+              signature,
+            });
 
           const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
             [
@@ -408,50 +407,53 @@ describe('defios', () => {
             })
             .signers([routerCreatorKeypair])
             .preInstructions([createED25519Ix])
-            .rpc({ commitment: 'singleGossip' });
+            .rpc({ commitment: "singleGossip" });
 
           const userRewardTokenAccount = await getAssociatedTokenAddress(
             mintKeypair.publicKey,
             newUser.publicKey
           );
-          console.log("userClaimAccount", userClaimAccount.toString())
-          console.log("repositoryAccount", repositoryAccount.toString())
-          console.log("nameRouter", nameRouterAccount.toString())
-          await program.methods.claimUserTokens(username).accounts({
-            user: newUser.publicKey,
-            userRewardTokenAccount: userRewardTokenAccount,
-            routerCreator: routerCreatorKeypair.publicKey,
-            nameRouterAccount: nameRouterAccount,
-            userClaimAccount: userClaimAccount,
-            repositoryAccount: repositoryAccount,
-            repositoryCreator: repositoryCreatorKeypair.publicKey,
-            repositoryTokenPoolAccount: repositoryTokenPoolAccount,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: web3.SystemProgram.programId,
-            verifiedUser: verifiedUserAccount,
-            rewardsMint: mintKeypair.publicKey,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-          })
+          console.log("userClaimAccount", userClaimAccount.toString());
+          console.log("repositoryAccount", repositoryAccount.toString());
+          console.log("nameRouter", nameRouterAccount.toString());
+          await program.methods
+            .claimUserTokens(username)
+            .accounts({
+              user: newUser.publicKey,
+              userRewardTokenAccount: userRewardTokenAccount,
+              routerCreator: routerCreatorKeypair.publicKey,
+              nameRouterAccount: nameRouterAccount,
+              userClaimAccount: userClaimAccount,
+              repositoryAccount: repositoryAccount,
+              repositoryCreator: repositoryCreatorKeypair.publicKey,
+              repositoryTokenPoolAccount: repositoryTokenPoolAccount,
+              tokenProgram: TOKEN_PROGRAM_ID,
+              systemProgram: web3.SystemProgram.programId,
+              verifiedUser: verifiedUserAccount,
+              rewardsMint: mintKeypair.publicKey,
+              associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            })
             .signers([newUser])
-            .rpc()
+            .rpc();
 
-          console.log("User balance", await connection.getTokenAccountBalance(userRewardTokenAccount));
+          console.log(
+            "User balance",
+            await connection.getTokenAccountBalance(userRewardTokenAccount)
+          );
           console.log(await program.account.userClaim.fetch(userClaimAccount));
-          console.log('User claim added', username, event.claimAmounts[i]);
-
-
+          console.log("User claim added", username, event.claimAmounts[i]);
         } catch (e) {
           console.log(e);
         }
       });
-    })
+    });
 
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios',
-        ['123456', '12345'],
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        ["123456", "12345"],
         [new anchor.BN(1000000000), new anchor.BN(1000000000)]
       )
       .accounts({
@@ -474,12 +476,12 @@ describe('defios', () => {
       .rpc();
 
     console.log(
-      'Repository data',
+      "Repository data",
       await program.account.repository.fetch(repositoryAccount)
     );
   });
 
-  it('Creates a issue', async () => {
+  it("Creates a issue", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
     const issueCreatorKeypair = web3.Keypair.generate();
@@ -498,7 +500,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -509,7 +511,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -520,11 +522,11 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -542,10 +544,10 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding repository creator user
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -589,7 +591,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -633,10 +635,10 @@ describe('defios', () => {
     );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -646,8 +648,8 @@ describe('defios', () => {
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios'
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
       )
       .accounts({
         nameRouterAccount,
@@ -672,7 +674,7 @@ describe('defios', () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = 'abhibasu';
+    const issueCreatorUserName: string = "abhibasu";
     const issueCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
@@ -717,13 +719,13 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issue'),
+        Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
         repositoryAccount.toBuffer(),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -756,10 +758,10 @@ describe('defios', () => {
       .signers([issueCreatorKeypair])
       .rpc();
 
-    console.log('Issue data', await program.account.issue.fetch(issueAccount));
+    console.log("Issue data", await program.account.issue.fetch(issueAccount));
   });
 
-  it('Stakes on a issue', async () => {
+  it("Stakes on a issue", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
     const issueCreatorKeypair = web3.Keypair.generate();
@@ -780,7 +782,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -791,7 +793,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -802,7 +804,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -813,12 +815,12 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     // Creating name router
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -836,10 +838,10 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding repository creator user
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -883,7 +885,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -927,10 +929,10 @@ describe('defios', () => {
     );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -940,8 +942,8 @@ describe('defios', () => {
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios'
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
       )
       .accounts({
         nameRouterAccount,
@@ -966,7 +968,7 @@ describe('defios', () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = 'abhibasu';
+    const issueCreatorUserName: string = "abhibasu";
     const issueCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
@@ -1011,13 +1013,13 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issue'),
+        Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
         repositoryAccount.toBuffer(),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1078,7 +1080,7 @@ describe('defios', () => {
 
     const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issuestaker'),
+        Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
         issueStakerKeypair.publicKey.toBuffer(),
       ],
@@ -1103,12 +1105,12 @@ describe('defios', () => {
       .rpc();
 
     console.log(
-      'Issue Staker data',
+      "Issue Staker data",
       await program.account.issueStaker.fetch(issueStakerAccount)
     );
   });
 
-  it('Unstakes on a issue', async () => {
+  it("Unstakes on a issue", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
     const issueCreatorKeypair = web3.Keypair.generate();
@@ -1129,7 +1131,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1140,7 +1142,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1151,7 +1153,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1162,12 +1164,12 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     // Creating name router
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -1185,10 +1187,10 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding repository creator user
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1232,7 +1234,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -1276,10 +1278,10 @@ describe('defios', () => {
     );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -1289,8 +1291,8 @@ describe('defios', () => {
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios'
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
       )
       .accounts({
         nameRouterAccount,
@@ -1315,7 +1317,7 @@ describe('defios', () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = 'abhibasu';
+    const issueCreatorUserName: string = "abhibasu";
     const issueCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
@@ -1360,13 +1362,13 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issue'),
+        Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
         repositoryAccount.toBuffer(),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1427,7 +1429,7 @@ describe('defios', () => {
 
     const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issuestaker'),
+        Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
         issueStakerKeypair.publicKey.toBuffer(),
       ],
@@ -1468,7 +1470,7 @@ describe('defios', () => {
       .rpc({ skipPreflight: true });
   });
 
-  it('Adds a commit to an issue', async () => {
+  it("Adds a commit to an issue", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
     const issueCreatorKeypair = web3.Keypair.generate();
@@ -1493,7 +1495,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1504,7 +1506,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1515,7 +1517,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1526,7 +1528,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1537,12 +1539,12 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     // Creating name router
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -1560,10 +1562,10 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding repository creator user
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1607,7 +1609,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -1651,10 +1653,10 @@ describe('defios', () => {
     );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -1664,8 +1666,8 @@ describe('defios', () => {
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios'
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
       )
       .accounts({
         nameRouterAccount,
@@ -1690,7 +1692,7 @@ describe('defios', () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = 'abhibasu';
+    const issueCreatorUserName: string = "abhibasu";
     const issueCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
@@ -1735,13 +1737,13 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issue'),
+        Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
         repositoryAccount.toBuffer(),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1802,7 +1804,7 @@ describe('defios', () => {
 
     const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issuestaker'),
+        Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
         issueStakerKeypair.publicKey.toBuffer(),
       ],
@@ -1827,7 +1829,7 @@ describe('defios', () => {
       .rpc();
 
     // Adding commit creator user
-    const commitCreatorUserName: string = 'priyeshdefi';
+    const commitCreatorUserName: string = "priyeshdefi";
     const commitCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${commitCreatorUserName}, ${commitCreatorKeypair.publicKey.toString()})`
@@ -1872,17 +1874,17 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxCommitCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding a commit
-    const treeHash = sha1('Tree hash 1').slice(0, 8);
-    const commitHash = sha1('Commit hash 1').slice(0, 8);
+    const treeHash = sha1("Tree hash 1").slice(0, 8);
+    const commitHash = sha1("Commit hash 1").slice(0, 8);
     const metadataURI =
-      'https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0';
+      "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
 
     const [commitAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('commit'),
+        Buffer.from("commit"),
         Buffer.from(commitHash),
         commitCreatorKeypair.publicKey.toBuffer(),
         issueAccount.toBuffer(),
@@ -1908,12 +1910,12 @@ describe('defios', () => {
       .rpc({ skipPreflight: true });
 
     console.log(
-      'Commit data',
+      "Commit data",
       await program.account.commit.fetch(commitAccount)
     );
   });
 
-  it('Claims the reward after completing an issue', async () => {
+  it("Claims the reward after completing an issue", async () => {
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
     const issueCreatorKeypair = web3.Keypair.generate();
@@ -1938,7 +1940,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1949,7 +1951,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1960,7 +1962,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1971,7 +1973,7 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     await connection.confirmTransaction(
@@ -1982,12 +1984,12 @@ describe('defios', () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      'singleGossip'
+      "singleGossip"
     );
 
     // Creating name router
     const signatureVersion = 1;
-    const signingName = 'defios.com';
+    const signingName = "defios.com";
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -2005,10 +2007,10 @@ describe('defios', () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding repository creator user
-    const userName: string = 'sunguru98';
+    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -2052,7 +2054,7 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -2096,10 +2098,10 @@ describe('defios', () => {
     );
 
     // Creating repository
-    const repositoryName = 'defios';
+    const repositoryName = "defios";
     const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('repository'),
+        Buffer.from("repository"),
         Buffer.from(repositoryName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
       ],
@@ -2109,8 +2111,8 @@ describe('defios', () => {
     await program.methods
       .createRepository(
         repositoryName,
-        'Open source revolution',
-        'https://github.com/sunguru98/defios'
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
       )
       .accounts({
         nameRouterAccount,
@@ -2135,7 +2137,7 @@ describe('defios', () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = 'abhibasu';
+    const issueCreatorUserName: string = "abhibasu";
     const issueCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
@@ -2180,13 +2182,13 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issue'),
+        Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
         repositoryAccount.toBuffer(),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -2247,7 +2249,7 @@ describe('defios', () => {
 
     const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
       [
-        Buffer.from('issuestaker'),
+        Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
         issueStakerKeypair.publicKey.toBuffer(),
       ],
@@ -2272,7 +2274,7 @@ describe('defios', () => {
       .rpc();
 
     // Adding commit creator user
-    const commitCreatorUserName: string = 'priyeshdefi';
+    const commitCreatorUserName: string = "priyeshdefi";
     const commitCreatorMessage = Uint8Array.from(
       Buffer.from(
         `DefiOS(${commitCreatorUserName}, ${commitCreatorKeypair.publicKey.toString()})`
@@ -2317,39 +2319,39 @@ describe('defios', () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxCommitCreator])
-      .rpc({ commitment: 'singleGossip' });
+      .rpc({ commitment: "singleGossip" });
 
     // Adding all commits
     const commits = [
       {
-        treeHash: sha1('Tree hash 1').slice(0, 8),
-        commitHash: sha1('Commit hash 1').slice(0, 8),
+        treeHash: sha1("Tree hash 1").slice(0, 8),
+        commitHash: sha1("Commit hash 1").slice(0, 8),
         metadataURI:
-          'https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0',
+          "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
         treeHash: sha1(
-          sha1('Tree hash 1').slice(0, 8) +
-          commitCreatorKeypair.publicKey.toString()
+          sha1("Tree hash 1").slice(0, 8) +
+            commitCreatorKeypair.publicKey.toString()
         ).slice(0, 8),
-        commitHash: sha1('Commit hash 2').slice(0, 8),
+        commitHash: sha1("Commit hash 2").slice(0, 8),
         metadataURI:
-          'https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0',
+          "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
         treeHash: sha1(
-          sha1('Tree hash 3').slice(0, 8) +
-          commitCreatorKeypair.publicKey.toString()
+          sha1("Tree hash 3").slice(0, 8) +
+            commitCreatorKeypair.publicKey.toString()
         ).slice(0, 8),
-        commitHash: sha1('Commit hash 3').slice(0, 8),
+        commitHash: sha1("Commit hash 3").slice(0, 8),
         metadataURI:
-          'https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0',
+          "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
-        treeHash: sha1(sha1('Tree hash 3').slice(0, 8)).slice(0, 8),
-        commitHash: sha1('Commit hash 4').slice(0, 8),
+        treeHash: sha1(sha1("Tree hash 3").slice(0, 8)).slice(0, 8),
+        commitHash: sha1("Commit hash 4").slice(0, 8),
         metadataURI:
-          'https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0',
+          "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
     ];
 
@@ -2358,7 +2360,7 @@ describe('defios', () => {
     for (const { commitHash, treeHash, metadataURI } of commits) {
       const [commitAccount] = await web3.PublicKey.findProgramAddress(
         [
-          Buffer.from('commit'),
+          Buffer.from("commit"),
           Buffer.from(commitHash),
           commitCreatorKeypair.publicKey.toBuffer(),
           issueAccount.toBuffer(),
@@ -2384,7 +2386,7 @@ describe('defios', () => {
         .rpc({ skipPreflight: true });
 
       console.log(
-        'Commit data',
+        "Commit data",
         await program.account.commit.fetch(commitAccount)
       );
 

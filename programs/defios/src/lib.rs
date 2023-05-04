@@ -1,6 +1,6 @@
+use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook};
 use anchor_lang::prelude::*;
 use instructions::*;
-use crate::state::{ObjectiveState, ObjectiveDeliverable, RoadmapOutlook};
 
 pub mod error;
 pub mod instructions;
@@ -77,57 +77,58 @@ pub mod defios {
     pub fn claim_reward(ctx: Context<ClaimReward>) -> Result<()> {
         claim_reward::handler(ctx)
     }
-    
+
     pub fn add_roadmap_data(
         ctx: Context<AddMetadata>,
         roadmap_title: String,
-        roadmap_description_link:String,
-        roadmap_outlook:RoadmapOutlook
+        roadmap_description_link: String,
+        roadmap_outlook: RoadmapOutlook,
     ) -> Result<()> {
-        add_roadmap_data::handler(ctx, roadmap_title, roadmap_description_link, roadmap_outlook)
+        add_roadmap_data::handler(
+            ctx,
+            roadmap_title,
+            roadmap_description_link,
+            roadmap_outlook,
+        )
     }
 
-    pub fn send_funds(
-        ctx: Context<StakeObjective>,
-        transfer_amount: u64
-    ) -> Result<()> {
+    pub fn send_funds(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()> {
         send_funds::handler(ctx, transfer_amount)
     }
 
     pub fn add_objective_data(
-        ctx: Context<AddObjective>, 
+        ctx: Context<AddObjective>,
         objective_title: String,
-        objective_start_unix:u64,
-        objective_end_unix:u64,
-        objective_description_link:String,
-        objective_state:ObjectiveState,
-        objective_deliverable:ObjectiveDeliverable,
+        objective_start_unix: u64,
+        objective_end_unix: u64,
+        objective_description_link: String,
+        objective_state: ObjectiveState,
+        objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {
-        add_objective_data::handler(ctx, objective_title,objective_start_unix,objective_end_unix,objective_description_link,objective_state,objective_deliverable)
+        add_objective_data::handler(
+            ctx,
+            objective_title,
+            objective_start_unix,
+            objective_end_unix,
+            objective_description_link,
+            objective_state,
+            objective_deliverable,
+        )
     }
-    
-    pub fn add_child_objective(
-        ctx: Context<AddChildObjective>, 
-    ) -> Result<()> {
+
+    pub fn add_child_objective(ctx: Context<AddChildObjective>) -> Result<()> {
         add_child_objective::handler(ctx)
     }
 
-    pub fn cast_vote(
-       ctx: Context<CastVote>
-    ) -> Result<()>{
+    pub fn cast_vote(ctx: Context<CastVote>) -> Result<()> {
         cast_vote::handler(ctx)
     }
 
-    pub fn add_pr(
-        ctx: Context<AddPullRequest>,
-        metadata_uri:String
-     ) -> Result<()>{
-         add_pr::handler(ctx,metadata_uri)
-     }
+    pub fn add_pr(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()> {
+        add_pr::handler(ctx, metadata_uri)
+    }
 
-     pub fn add_commit_to_pr(
-        ctx: Context<AddCommitToPullRequest>,
-     ) -> Result<()>{
+    pub fn add_commit_to_pr(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
         add_commit_to_pr::handler(ctx)
-     }
+    }
 }
