@@ -108,9 +108,8 @@ pub mod defios {
     
     pub fn add_child_objective(
         ctx: Context<AddChildObjective>, 
-        from_root:bool
     ) -> Result<()> {
-        add_child_objective::handler(ctx,from_root)
+        add_child_objective::handler(ctx)
     }
 
     pub fn cast_vote(
