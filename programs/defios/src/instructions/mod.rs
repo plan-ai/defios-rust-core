@@ -14,6 +14,7 @@ pub mod send_funds;
 pub mod add_child_objective;
 pub mod cast_vote;
 pub mod add_pr;
+pub mod add_commit_to_pr;
 
 pub use add_commit::*;
 pub use add_issue::*;
@@ -31,3 +32,4 @@ pub use send_funds::*;
 pub use add_child_objective::*;
 pub use cast_vote::*;
 pub use add_pr::*;
+pub use add_commit_to_pr::*;

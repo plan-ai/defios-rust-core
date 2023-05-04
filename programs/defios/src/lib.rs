@@ -125,4 +125,10 @@ pub mod defios {
      ) -> Result<()>{
          add_pr::handler(ctx,metadata_uri)
      }
+
+     pub fn add_commit_to_pr(
+        ctx: Context<AddCommitToPullRequest>,
+     ) -> Result<()>{
+        add_commit_to_pr::handler(ctx)
+     }
 }

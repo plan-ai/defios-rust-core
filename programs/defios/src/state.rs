@@ -320,6 +320,12 @@ pub struct VoteCasted {
 }
 
 #[event]
+pub struct AddCommitToPR {
+    pub commit: Pubkey,
+    pub by: Pubkey
+}
+
+#[event]
 pub struct AddChildObjectiveEvent {
     pub parent_account: Pubkey,
     pub added_by: Pubkey
