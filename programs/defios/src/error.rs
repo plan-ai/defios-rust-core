@@ -36,5 +36,5 @@ pub enum DefiOSError {
 
     // 6008
     #[msg("Cannot stake/unstake on a closed objective")]
-    ObjectiveClosedAlready
+    ObjectiveClosedAlready,
 }

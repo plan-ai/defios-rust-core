@@ -5,7 +5,7 @@ use anchor_spl::token::{
 
 use crate::{
     error::DefiOSError,
-    state::{Issue, IssueStaker, Repository, IssueUnstaked},
+    state::{Issue, IssueStaker, IssueUnstaked, Repository},
 };
 
 #[derive(Accounts)]

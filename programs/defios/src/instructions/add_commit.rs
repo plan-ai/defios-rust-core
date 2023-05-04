@@ -1,6 +1,6 @@
 use crate::{
     error::DefiOSError,
-    state::{Commit, Issue, NameRouter, Repository, VerifiedUser, CommitAdded},
+    state::{Commit, CommitAdded, Issue, NameRouter, Repository, VerifiedUser},
 };
 use anchor_lang::prelude::*;
 

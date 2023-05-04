@@ -1,7 +1,10 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{ transfer, Mint, Token, TokenAccount, Transfer };
+use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
 
-use crate::{ error::DefiOSError, state::{ Issue, IssueStaker, Repository, IssueStaked} };
+use crate::{
+    error::DefiOSError,
+    state::{Issue, IssueStaked, IssueStaker, Repository},
+};
 
 #[derive(Accounts)]
 #[instruction(transfer_amount: u64)]
@@ -67,7 +70,10 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     let rewards_mint = &ctx.accounts.rewards_mint;
     let staked_at = Clock::get()?.unix_timestamp;
 
-    require!(issue_account.closed_at.is_none(), DefiOSError::IssueClosedAlready);
+    require!(
+        issue_account.closed_at.is_none(),
+        DefiOSError::IssueClosedAlready
+    );
 
     msg!(
         "Staking {} including decimals of token {}",
@@ -76,12 +82,15 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     );
 
     transfer(
-        CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer {
-            from: issue_staker_token_account.to_account_info(),
-            to: issue_token_pool_account.to_account_info(),
-            authority: issue_staker.to_account_info(),
-        }),
-        transfer_amount
+        CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            Transfer {
+                from: issue_staker_token_account.to_account_info(),
+                to: issue_token_pool_account.to_account_info(),
+                authority: issue_staker.to_account_info(),
+            },
+        ),
+        transfer_amount,
     )?;
 
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
@@ -97,7 +106,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         staked_amount: transfer_amount,
         rewards_mint: rewards_mint.key(),
         issue_staker_token_account: issue_token_pool_account.key(),
-        issue_contribution_link: issue_account.uri.clone() 
+        issue_contribution_link: issue_account.uri.clone()
     });
 
     Ok(())
