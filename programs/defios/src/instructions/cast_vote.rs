@@ -1,12 +1,12 @@
 use anchor_lang::prelude::*;
-use crate::state::{VoteCasted, Vote,Issue};
+use crate::state::{VoteCasted, Vote,PullRequest};
 
 #[derive(Accounts)]
 pub struct CastVote<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
     #[account(mut)]
-    pub issue_account: Account<'info,Issue>,
+    pub pr_account: Account<'info,PullRequest>,
     #[account(
         init,
         payer = voter,
@@ -14,7 +14,7 @@ pub struct CastVote<'info> {
         seeds = [
             b"votecasted",
             voter.key().as_ref(),
-            issue_account.key().as_ref()
+            pr_account.key().as_ref()
         ],
         bump
     )]
@@ -25,20 +25,20 @@ pub struct CastVote<'info> {
 pub fn handler(ctx: Context<CastVote>) -> Result<()> {
     let voter =  &ctx.accounts.voter;
     let vote_metadata_store = &mut ctx.accounts.vote_metadata_store;
-    let issue_account = &ctx.accounts.issue_account;
+    let pr_account = &ctx.accounts.pr_account;
 
     msg!(
         "{} voted on {}",
         voter.key(),
-        issue_account.key()
+        pr_account.key()
     );
 
 
-    vote_metadata_store.issue_pub_key = issue_account.key();
+    vote_metadata_store.pr_pub_key = pr_account.key();
     vote_metadata_store.voted_by = voter.key();
     
     emit!(VoteCasted {
-            issue_pub_key: issue_account.key(),
+            pr_pub_key: pr_account.key(),
             voted_by: voter.key()
     });
     
