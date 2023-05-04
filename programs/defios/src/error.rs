@@ -37,4 +37,8 @@ pub enum DefiOSError {
     // 6008
     #[msg("Cannot stake/unstake on a closed objective")]
     ObjectiveClosedAlready,
+
+    // 6009
+    #[msg("Parent was not mentioned to which objective is to be added")]
+    NoParentEntered
 }

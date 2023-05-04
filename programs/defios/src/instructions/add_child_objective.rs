@@ -5,6 +5,7 @@ use anchor_spl::{
 };
 
 use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
+use crate::error::DefiOSError;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
@@ -55,7 +56,12 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
                     added_by: child_objective_adder.key()
                 });
             }
-            None => {}
+            None => {
+                require!(
+                    true.eq(&false),
+                    DefiOSError::NoParentEntered
+                );
+            }
         },
     }
 
