@@ -6,7 +6,7 @@ use anchor_spl::{
 use crate::helper::calculate_burn;
 
 #[derive(Accounts)]
-pub struct BurnToken<'info> {
+pub struct SellToken<'info> {
     /// CHECK: This is the token that we want to mint
     #[account(mut)]
     pub mint: Account<'info, Mint>,
@@ -18,7 +18,7 @@ pub struct BurnToken<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<BurnToken>) -> Result<()> {
+pub fn handler(ctx: Context<SellToken>) -> Result<()> {
     
     let amount = calculate_burn(1,1);
 

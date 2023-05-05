@@ -30,8 +30,8 @@ pub mod token_vesting {
         change_destination::handler(ctx)
     }
 
-    pub fn burn_tokens(ctx: Context<BurnToken>) -> Result<()> {
-        burn::handler(ctx)
+    pub fn sell_tokens(ctx: Context<SellToken>) -> Result<()> {
+        sell_tokens::handler(ctx)
     }
 
     pub fn mint_tokens(ctx: Context<ApproveToken>) -> Result<()> {
