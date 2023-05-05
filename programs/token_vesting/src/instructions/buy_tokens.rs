@@ -6,7 +6,7 @@ use anchor_spl::{
 use crate::helper::calculate_mint;
 
 #[derive(Accounts)]
-pub struct ApproveToken<'info> {
+pub struct BuyToken<'info> {
     ///CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub to: AccountInfo<'info>,
@@ -16,7 +16,7 @@ pub struct ApproveToken<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<ApproveToken>) -> Result<()> {
+pub fn handler(ctx: Context<BuyToken>) -> Result<()> {
     let amount = calculate_mint(1,1);
 
     let cpi_accounts = Approve {
