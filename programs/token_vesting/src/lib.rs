@@ -30,8 +30,8 @@ pub mod token_vesting {
         change_destination::handler(ctx)
     }
 
-    pub fn sell_tokens(ctx: Context<SellToken>) -> Result<()> {
-        sell_tokens::handler(ctx)
+    pub fn sell_tokens(ctx: Context<SellToken>,amount:u128) -> Result<()> {
+        sell_tokens::handler(ctx,amount)
     }
 
     pub fn buy_tokens(ctx: Context<BuyToken>) -> Result<()> {

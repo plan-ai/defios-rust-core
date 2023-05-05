@@ -1,12 +1,15 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
-    token::{Token,Burn,Mint},
+    token::{Token,Burn,Mint,Transfer,transfer},
 };
 use crate::helper::calculate_burn;
 
 #[derive(Accounts)]
 pub struct SellToken<'info> {
+    ///CHECK: Communal deposit account
+    #[account(mut)]
+    pub communal_account: AccountInfo<'info>,
     /// CHECK: This is the token that we want to mint
     #[account(mut)]
     pub mint: Account<'info, Mint>,
@@ -18,20 +21,40 @@ pub struct SellToken<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<SellToken>) -> Result<()> {
+pub fn handler(ctx: Context<SellToken>,amount:u128) -> Result<()> {
     
-    let amount = calculate_burn(1,1);
+    let mint = &ctx.accounts.mint;
+    let from = &ctx.accounts.from;
+    let authority = &ctx.accounts.authority;
+    let token_program = &ctx.accounts.token_program;
+    let communal_account = &ctx.accounts.communal_account;
 
+    let transfer_amount = calculate_burn(1,amount);
+    
     let cpi_accounts = Burn {
-        mint: ctx.accounts.mint.to_account_info(),
-        from: ctx.accounts.from.to_account_info(),
-        authority: ctx.accounts.authority.to_account_info(),
+        mint: mint.to_account_info(),
+        from: from.to_account_info(),
+        authority: authority.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
     // Create the CpiContext we need for the request
     let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
     // Execute anchor's helper function to burn tokens
-    token::burn(cpi_ctx, amount)?;
+    token::burn(cpi_ctx, amount.try_into().unwrap())?;
+
+    //execute function to send amount to users
+    transfer(
+        CpiContext::new(
+            token_program.to_account_info(),
+            Transfer {
+                from: communal_account.to_account_info(),
+                to: from.to_account_info(),
+                authority: authority.to_account_info(),
+            },
+        ),
+        transfer_amount,
+    )?;
+
     Ok(())
 }
