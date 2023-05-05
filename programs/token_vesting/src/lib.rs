@@ -33,4 +33,8 @@ pub mod token_vesting {
     pub fn burn_tokens(ctx: Context<BurnToken>) -> Result<()> {
         burn::handler(ctx)
     }
+
+    pub fn mint_tokens(ctx: Context<ApproveToken>) -> Result<()> {
+        mint::handler(ctx)
+    }
 }
