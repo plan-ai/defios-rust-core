@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
-    token::{Token,Burn,Mint,Transfer,transfer},
+    token::{Token,Burn,Mint,Transfer,transfer,TokenAccount},
 };
 use crate::helper::calculate_burn;
 
@@ -17,6 +17,11 @@ pub struct SellToken<'info> {
     /// CHECK: This is the token account that we want to burn tokens from
     #[account(mut)]
     pub from: AccountInfo<'info>,
+    #[account(
+        mut,
+        constraint = from_token_account.owner.eq(&from.key()),
+    )]
+    pub from_token_account: Account<'info, TokenAccount>,
     /// CHECK: the authority of the mint account
     pub authority: Signer<'info>,
 }
@@ -28,12 +33,13 @@ pub fn handler(ctx: Context<SellToken>,amount:u128) -> Result<()> {
     let authority = &ctx.accounts.authority;
     let token_program = &ctx.accounts.token_program;
     let communal_account = &ctx.accounts.communal_account;
-
+    let from_token_account = &ctx.accounts.from_token_account;
+    
     let transfer_amount = calculate_burn(1,amount);
     
     let cpi_accounts = Burn {
         mint: mint.to_account_info(),
-        from: from.to_account_info(),
+        from: from_token_account.to_account_info(),
         authority: authority.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
@@ -49,7 +55,7 @@ pub fn handler(ctx: Context<SellToken>,amount:u128) -> Result<()> {
             token_program.to_account_info(),
             Transfer {
                 from: communal_account.to_account_info(),
-                to: from.to_account_info(),
+                to: from_token_account.to_account_info(),
                 authority: authority.to_account_info(),
             },
         ),

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
-    token::{Token,Approve,Transfer,transfer},
+    token::{Token,Approve,Transfer,transfer,TokenAccount},
 };
 use crate::helper::calculate_mint;
 
@@ -13,6 +13,11 @@ pub struct BuyToken<'info> {
     ///CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub to: Signer<'info>,
+    #[account(
+        mut,
+        constraint = to_token_account.owner.eq(&to.key()),
+    )]
+    pub to_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
     ///CHECK: This is not dangerous because we don't read or write from this account
     pub delegate: AccountInfo<'info>,
@@ -26,12 +31,13 @@ pub fn handler(ctx: Context<BuyToken>,amount:u128) -> Result<()> {
     let communal_account = &ctx.accounts.communal_account;
     let delegate = &ctx.accounts.delegate;
     let authority = &ctx.accounts.authority;
+    let to_token_account = &ctx.accounts.to_token_account;
     //execute function to send amount to communal deposits
     transfer(
         CpiContext::new(
             token_program.to_account_info(),
             Transfer {
-                from: to.to_account_info(),
+                from: to_token_account.to_account_info(),
                 to: communal_account.to_account_info(),
                 authority: to.to_account_info()
             },
