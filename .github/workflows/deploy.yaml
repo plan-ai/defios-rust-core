@@ -27,7 +27,5 @@ jobs:
         run: solana config get
       - name: Install npm dependencies
         run: npm install
-      - name: Build
-        run: anchor build
-      - name: Run tests
+      - name: Test
         run: anchor test
