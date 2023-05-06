@@ -1,18 +1,25 @@
+use crate::helper::calculate_mint;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
-    token::{Token,Approve,Transfer,transfer,TokenAccount},
+    token::{transfer, Approve, Token, TokenAccount, Transfer},
 };
-use crate::helper::calculate_mint;
 
 #[derive(Accounts)]
 pub struct BuyToken<'info> {
-    ///CHECK: Communal deposit account
-    #[account(mut)]
-    pub communal_account: AccountInfo<'info>,
     ///CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub to: Signer<'info>,
+    ///CHECK: Communal deposit account
+    #[account(mut,
+        seeds = [
+            b"are_we_conscious",
+            b"is love life ?  ",
+            b"arewemadorinlove"
+        ],
+    bump
+    )]
+    pub communal_account: AccountInfo<'info>,
     #[account(
         mut,
         constraint = to_token_account.owner.eq(&to.key()),
@@ -24,8 +31,8 @@ pub struct BuyToken<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<BuyToken>,amount:u128) -> Result<()> {
-    let buy_amount = calculate_mint(1,amount);
+pub fn handler(ctx: Context<BuyToken>, amount: u128) -> Result<()> {
+    let buy_amount = calculate_mint(1, amount);
     let token_program = &ctx.accounts.token_program;
     let to = &ctx.accounts.to;
     let communal_account = &ctx.accounts.communal_account;
@@ -39,7 +46,7 @@ pub fn handler(ctx: Context<BuyToken>,amount:u128) -> Result<()> {
             Transfer {
                 from: to_token_account.to_account_info(),
                 to: communal_account.to_account_info(),
-                authority: to.to_account_info()
+                authority: to.to_account_info(),
             },
         ),
         buy_amount,
@@ -57,4 +64,4 @@ pub fn handler(ctx: Context<BuyToken>,amount:u128) -> Result<()> {
     // Execute anchor's helper function to approve tokens
     token::approve(cpi_ctx, amount.try_into().unwrap())?;
     Ok(())
-} 
+}

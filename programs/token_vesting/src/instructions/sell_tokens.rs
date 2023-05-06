@@ -1,14 +1,21 @@
+use crate::helper::calculate_burn;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
-    token::{Token,Burn,Mint,Transfer,transfer,TokenAccount},
+    token::{transfer, Burn, Mint, Token, TokenAccount, Transfer},
 };
-use crate::helper::calculate_burn;
 
 #[derive(Accounts)]
 pub struct SellToken<'info> {
     ///CHECK: Communal deposit account
-    #[account(mut)]
+    #[account(mut,
+        seeds = [
+            b"are_we_conscious",
+            b"is love life ?  ",
+            b"arewemadorinlove"
+        ],
+    bump
+    )]
     pub communal_account: AccountInfo<'info>,
     /// CHECK: This is the token that we want to mint
     #[account(mut)]
@@ -26,17 +33,16 @@ pub struct SellToken<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<SellToken>,amount:u128) -> Result<()> {
-    
+pub fn handler(ctx: Context<SellToken>, amount: u128) -> Result<()> {
     let mint = &ctx.accounts.mint;
     let from = &ctx.accounts.from;
     let authority = &ctx.accounts.authority;
     let token_program = &ctx.accounts.token_program;
     let communal_account = &ctx.accounts.communal_account;
     let from_token_account = &ctx.accounts.from_token_account;
-    
-    let transfer_amount = calculate_burn(1,amount);
-    
+
+    let transfer_amount = calculate_burn(1, amount);
+
     let cpi_accounts = Burn {
         mint: mint.to_account_info(),
         from: from_token_account.to_account_info(),

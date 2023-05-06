@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 pub mod error;
+pub mod helper;
 pub mod instructions;
 pub mod state;
-pub mod helper;
 
 use crate::instructions::*;
 use crate::state::*;
@@ -30,11 +30,15 @@ pub mod token_vesting {
         change_destination::handler(ctx)
     }
 
-    pub fn sell_tokens(ctx: Context<SellToken>,amount:u128) -> Result<()> {
-        sell_tokens::handler(ctx,amount)
+    pub fn sell_tokens(ctx: Context<SellToken>, amount: u128) -> Result<()> {
+        sell_tokens::handler(ctx, amount)
     }
 
-    pub fn buy_tokens(ctx: Context<BuyToken>,amount:u128) -> Result<()> {
-        buy_tokens::handler(ctx,amount)
+    pub fn buy_tokens(ctx: Context<BuyToken>, amount: u128) -> Result<()> {
+        buy_tokens::handler(ctx, amount)
+    }
+
+    pub fn create_communal_account(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
+        create_communal_account::handler(ctx)
     }
 }
