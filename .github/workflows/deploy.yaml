@@ -17,6 +17,8 @@ jobs:
         run: rustup toolchain list
       - name: Set default toolchain
         run: rustup default stable
+      - name: Update to latest rust tooling
+        run: solana-install update
       - name: List rustup toolchains
         run: rustup toolchain list
       - name: Generate new keygen
