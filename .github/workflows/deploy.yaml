@@ -25,8 +25,8 @@ jobs:
         run: solana config set --url http:localhost:8899
       - name: Check solana config
         run: solana config get
-      - name: Install yarn dependencies
-        run: yarn install
+      - name: Install npm dependencies
+        run: npm install
       - name: Build
         run: anchor build
       - name: Run tests
