@@ -59,7 +59,7 @@ describe("defios", () => {
     const signingName = "defios.com";
 
     //get public key of pda ideally generated using seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -106,7 +106,7 @@ describe("defios", () => {
     const signatureVersion = 1;
     const signingName = "defios.com";
     //gets pda from seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -150,7 +150,7 @@ describe("defios", () => {
     });
 
     //gets public key from seeds
-    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
+    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         userPubkey.toBuffer(),
@@ -194,7 +194,7 @@ describe("defios", () => {
     const signatureVersion = 1;
     const signingName = "defios.com";
     //gets public key from seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -232,7 +232,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
+    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -287,7 +287,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -323,7 +323,7 @@ describe("defios", () => {
       event.ghUsernames.forEach(async (username, i) => {
         try {
           console.log("Adding user claim", username, event.claimAmounts[i]);
-          const [userClaimAccount] = await web3.PublicKey.findProgramAddress(
+          const [userClaimAccount] = await web3.PublicKey.findProgramAddressSync(
             [
               Buffer.from("user_claim"),
               Buffer.from(username),
@@ -376,7 +376,7 @@ describe("defios", () => {
               signature,
             });
 
-          const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
+          const [verifiedUserAccount] = await web3.PublicKey.findProgramAddressSync(
             [
               Buffer.from(username),
               newUser.publicKey.toBuffer(),
@@ -489,7 +489,7 @@ describe("defios", () => {
 
     const signatureVersion = 1;
     const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -527,7 +527,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -598,7 +598,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -655,7 +655,7 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -685,7 +685,7 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
@@ -739,7 +739,7 @@ describe("defios", () => {
     // Creating name router
     const signatureVersion = 1;
     const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -777,7 +777,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -848,7 +848,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -905,7 +905,7 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -935,7 +935,7 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
@@ -996,7 +996,7 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueStakerAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
@@ -1044,7 +1044,7 @@ describe("defios", () => {
     // Creating name router
     const signatureVersion = 1;
     const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -1082,7 +1082,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -1153,7 +1153,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -1210,7 +1210,7 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1240,7 +1240,7 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
@@ -1301,7 +1301,7 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueStakerAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
@@ -1362,7 +1362,7 @@ describe("defios", () => {
     // Creating name router
     const signatureVersion = 1;
     const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -1400,7 +1400,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -1471,7 +1471,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -1528,7 +1528,7 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1558,7 +1558,7 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
@@ -1619,7 +1619,7 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueStakerAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
@@ -1665,7 +1665,7 @@ describe("defios", () => {
         signature: commitCreatorSignature,
       });
 
-    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         commitCreatorKeypair.publicKey.toBuffer(),
@@ -1699,7 +1699,7 @@ describe("defios", () => {
     const metadataURI =
       "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
 
-    const [commitAccount] = await web3.PublicKey.findProgramAddress(
+    const [commitAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("commit"),
         Buffer.from(commitHash),
@@ -1750,7 +1750,7 @@ describe("defios", () => {
     // Creating name router
     const signatureVersion = 1;
     const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
+    const [nameRouterAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(signingName),
         Buffer.from(signatureVersion.toString()),
@@ -1788,7 +1788,7 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         repositoryCreatorKeypair.publicKey.toBuffer(),
@@ -1859,7 +1859,7 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
+    const [repositoryAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("repository"),
         Buffer.from(repositoryName),
@@ -1916,7 +1916,7 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         issueCreatorKeypair.publicKey.toBuffer(),
@@ -1946,7 +1946,7 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issue"),
         Buffer.from(issueIndex.toString()),
@@ -2007,7 +2007,7 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
+    const [issueStakerAccount] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("issuestaker"),
         issueAccount.toBuffer(),
@@ -2053,7 +2053,7 @@ describe("defios", () => {
         signature: commitCreatorSignature,
       });
 
-    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddress(
+    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(userName),
         commitCreatorKeypair.publicKey.toBuffer(),
@@ -2118,7 +2118,7 @@ describe("defios", () => {
     const commitAccounts = [];
 
     for (const { commitHash, treeHash, metadataURI } of commits) {
-      const [commitAccount] = await web3.PublicKey.findProgramAddress(
+      const [commitAccount] = await web3.PublicKey.findProgramAddressSync(
         [
           Buffer.from("commit"),
           Buffer.from(commitHash),
