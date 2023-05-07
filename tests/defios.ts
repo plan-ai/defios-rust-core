@@ -33,6 +33,10 @@ describe("defios", () => {
   //global variables for tests
   const signatureVersion = 1;
   const signingName = "defios.com";
+  const userName: string = "sunguru98";
+  const userPubkey = new PublicKey(
+      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
+  );
 
   //helper functions
   async function create_keypair() {
@@ -125,10 +129,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Signature test
-    const userName: string = "sunguru98";
-    const userPubkey = new PublicKey(
-      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
-    );
     //Create byte array of message
     const message = Uint8Array.from(
       Buffer.from(`DefiOS(${userName}, ${userPubkey.toString()})`)
@@ -203,7 +203,6 @@ describe("defios", () => {
       .signers([routerCreatorKeypair])
       .rpc({ commitment: "confirmed" });
 
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -481,7 +480,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -713,7 +711,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -997,7 +994,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1294,7 +1290,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1655,7 +1650,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
