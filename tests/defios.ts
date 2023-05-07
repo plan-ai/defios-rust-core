@@ -22,6 +22,7 @@ describe("defios", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
+  //testing defios workspace here
   const program = anchor.workspace.Defios as Program<Defios>;
   const {
     provider: { connection },
@@ -29,9 +30,13 @@ describe("defios", () => {
 
   const { web3 } = anchor;
 
+  //creating a name router
   it("Creates a name router!", async () => {
+    //generating keypair
     const routerCreatorKeypair = web3.Keypair.generate();
+    //console log router creator key pair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
+    //request airdrop of 1 sol
     await connection.confirmTransaction(
       {
         signature: await connection.requestAirdrop(
@@ -40,11 +45,14 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
+    //set two constants for tests
     const signatureVersion = 1;
     const signingName = "defios.com";
+
+    //get public key of pda ideally generated using seeds
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -54,6 +62,7 @@ describe("defios", () => {
       program.programId
     );
 
+    //call create name router function
     await program.methods
       .createNameRouter(signingName, signatureVersion)
       .accounts({
@@ -62,8 +71,9 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
+    //get data related to name router pda
     const {
       routerCreator,
       signatureVersion: fSignatureVersion,
@@ -72,6 +82,7 @@ describe("defios", () => {
       totalVerifiedUsers,
     } = await program.account.nameRouter.fetch(nameRouterAccount);
 
+    //console log the data
     console.log(
       routerCreator.toString(),
       fSignatureVersion,
@@ -82,9 +93,11 @@ describe("defios", () => {
   });
 
   it("Adds a verified user", async () => {
+    //generates keypair
     const routerCreatorKeypair = web3.Keypair.generate();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
 
+    //request airdrops
     await connection.confirmTransaction(
       {
         signature: await connection.requestAirdrop(
@@ -93,7 +106,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     const signatureVersion = 1;
@@ -115,7 +128,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Signature test
     const userName: string = "sunguru98";
@@ -164,7 +177,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
   });
 
   it("Creates a repository", async () => {
@@ -184,7 +197,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -195,7 +208,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     const signatureVersion = 1;
@@ -217,7 +230,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     const userName: string = "sunguru98";
     const message = Uint8Array.from(
@@ -263,7 +276,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -362,7 +375,7 @@ describe("defios", () => {
               ),
               ...(await connection.getLatestBlockhash()),
             },
-            "singleGossip"
+            "confirmed"
           );
 
           const message = Uint8Array.from(
@@ -407,7 +420,7 @@ describe("defios", () => {
             })
             .signers([routerCreatorKeypair])
             .preInstructions([createED25519Ix])
-            .rpc({ commitment: "singleGossip" });
+            .rpc({ commitment: "confirmed" });
 
           const userRewardTokenAccount = await getAssociatedTokenAddress(
             mintKeypair.publicKey,
@@ -500,7 +513,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -511,7 +524,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -522,7 +535,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     const signatureVersion = 1;
@@ -544,7 +557,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
     const userName: string = "sunguru98";
@@ -591,7 +604,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -719,7 +732,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -782,7 +795,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -793,7 +806,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -804,7 +817,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -815,7 +828,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     // Creating name router
@@ -838,7 +851,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
     const userName: string = "sunguru98";
@@ -885,7 +898,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -1013,7 +1026,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -1131,7 +1144,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1142,7 +1155,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1153,7 +1166,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1164,7 +1177,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     // Creating name router
@@ -1187,7 +1200,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
     const userName: string = "sunguru98";
@@ -1234,7 +1247,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -1362,7 +1375,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -1495,7 +1508,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1506,7 +1519,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1517,7 +1530,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1528,7 +1541,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1539,7 +1552,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     // Creating name router
@@ -1562,7 +1575,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
     const userName: string = "sunguru98";
@@ -1609,7 +1622,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -1737,7 +1750,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -1874,7 +1887,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxCommitCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding a commit
     const treeHash = sha1("Tree hash 1").slice(0, 8);
@@ -1940,7 +1953,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1951,7 +1964,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1962,7 +1975,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1973,7 +1986,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     await connection.confirmTransaction(
@@ -1984,7 +1997,7 @@ describe("defios", () => {
         ),
         ...(await connection.getLatestBlockhash()),
       },
-      "singleGossip"
+      "confirmed"
     );
 
     // Creating name router
@@ -2007,7 +2020,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
     const userName: string = "sunguru98";
@@ -2054,7 +2067,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -2182,7 +2195,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -2319,7 +2332,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519IxCommitCreator])
-      .rpc({ commitment: "singleGossip" });
+      .rpc({ commitment: "confirmed" });
 
     // Adding all commits
     const commits = [
