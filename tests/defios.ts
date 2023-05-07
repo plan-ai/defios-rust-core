@@ -35,7 +35,7 @@ describe("defios", () => {
   const signingName = "defios.com";
   const userName: string = "sunguru98";
   const userPubkey = new PublicKey(
-      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
+    "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
   );
 
   //helper functions
@@ -326,18 +326,8 @@ describe("defios", () => {
 
           console.log(await program.account.userClaim.fetch(userClaimAccount));
 
-          const newUser = Keypair.generate();
+          const newUser = create_keypair();
           console.log("user", newUser.publicKey.toString());
-          await connection.confirmTransaction(
-            {
-              signature: await connection.requestAirdrop(
-                newUser.publicKey,
-                web3.LAMPORTS_PER_SOL
-              ),
-              ...(await connection.getLatestBlockhash()),
-            },
-            "confirmed"
-          );
 
           const message = Uint8Array.from(
             Buffer.from(`DefiOS(${username}, ${newUser.publicKey.toString()})`)
