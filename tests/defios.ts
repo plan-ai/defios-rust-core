@@ -30,23 +30,29 @@ describe("defios", () => {
 
   const { web3 } = anchor;
 
-  //creating a name router
-  it("Creates a name router!", async () => {
-    //generating keypair
-    const routerCreatorKeypair = web3.Keypair.generate();
-    //console log router creator key pair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    //request airdrop of 1 sol
+  //helper functions
+  async function create_keypair(){
+    const keypair = web3.Keypair.generate();
     await connection.confirmTransaction(
       {
         signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
+          keypair.publicKey,
           web3.LAMPORTS_PER_SOL
         ),
         ...(await connection.getLatestBlockhash()),
       },
       "confirmed"
     );
+    return keypair;
+  }
+
+  //main testsuite
+  //creating a name router
+  it("Creates a name router!", async () => {
+    //generating keypair and airdropping solana to it
+    const routerCreatorKeypair = await create_keypair();
+    //console log router creator key pair
+    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
 
     //set two constants for tests
     const signatureVersion = 1;
@@ -93,21 +99,9 @@ describe("defios", () => {
   });
 
   it("Adds a verified user", async () => {
-    //generates keypair
-    const routerCreatorKeypair = web3.Keypair.generate();
+    //generates keypair and airdrop solana
+    const routerCreatorKeypair = await create_keypair();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-
-    //request airdrops
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     const signatureVersion = 1;
     const signingName = "defios.com";
@@ -186,37 +180,14 @@ describe("defios", () => {
   });
 
   it("Creates a repository", async () => {
-    //generates key pair
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
+    //generates key pairs and airdrops solana to them
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
 
     //adds logs to keypair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-
-    //airdrops 1 solana to each created account
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
     );
 
     //initialises constants
@@ -506,48 +477,15 @@ describe("defios", () => {
   });
 
   it("Creates a issue", async () => {
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
-    const issueCreatorKeypair = web3.Keypair.generate();
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
+    const issueCreatorKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     const signatureVersion = 1;
     const signingName = "defios.com";
@@ -786,10 +724,10 @@ describe("defios", () => {
   });
 
   it("Stakes on a issue", async () => {
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
-    const issueCreatorKeypair = web3.Keypair.generate();
-    const issueStakerKeypair = web3.Keypair.generate();
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
+    const issueCreatorKeypair = await create_keypair();
+    const issueStakerKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -797,50 +735,6 @@ describe("defios", () => {
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueStakerKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     // Creating name router
     const signatureVersion = 1;
@@ -1135,10 +1029,10 @@ describe("defios", () => {
   });
 
   it("Unstakes on a issue", async () => {
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
-    const issueCreatorKeypair = web3.Keypair.generate();
-    const issueStakerKeypair = web3.Keypair.generate();
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
+    const issueCreatorKeypair = await create_keypair();
+    const issueStakerKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -1146,50 +1040,6 @@ describe("defios", () => {
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueStakerKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     // Creating name router
     const signatureVersion = 1;
@@ -1495,11 +1345,11 @@ describe("defios", () => {
   });
 
   it("Adds a commit to an issue", async () => {
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
-    const issueCreatorKeypair = web3.Keypair.generate();
-    const issueStakerKeypair = web3.Keypair.generate();
-    const commitCreatorKeypair = web3.Keypair.generate();
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
+    const issueCreatorKeypair = await create_keypair();
+    const issueStakerKeypair = await create_keypair();
+    const commitCreatorKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -1508,63 +1358,6 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
-
-    // Airdropping SOL to all addresses
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueStakerKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          commitCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     // Creating name router
     const signatureVersion = 1;
@@ -1940,11 +1733,11 @@ describe("defios", () => {
   });
 
   it("Claims the reward after completing an issue", async () => {
-    const routerCreatorKeypair = web3.Keypair.generate();
-    const repositoryCreatorKeypair = web3.Keypair.generate();
-    const issueCreatorKeypair = web3.Keypair.generate();
-    const issueStakerKeypair = web3.Keypair.generate();
-    const commitCreatorKeypair = web3.Keypair.generate();
+    const routerCreatorKeypair = await create_keypair();
+    const repositoryCreatorKeypair = await create_keypair();
+    const issueCreatorKeypair = await create_keypair();
+    const issueStakerKeypair = await create_keypair();
+    const commitCreatorKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -1953,63 +1746,6 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
-
-    // Airdropping SOL to all addresses
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          routerCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          repositoryCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          issueStakerKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          commitCreatorKeypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
 
     // Creating name router
     const signatureVersion = 1;
