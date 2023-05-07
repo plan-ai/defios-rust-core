@@ -30,6 +30,10 @@ describe("defios", () => {
 
   const { web3 } = anchor;
 
+  //global variables for tests
+  const signatureVersion = 1;
+  const signingName = "defios.com";
+
   //helper functions
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
@@ -60,10 +64,6 @@ describe("defios", () => {
     const routerCreatorKeypair = await create_keypair();
     //console log router creator key pair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-
-    //set two constants for tests
-    const signatureVersion = 1;
-    const signingName = "defios.com";
 
     //get public key of pda ideally generated using seeds
     const [nameRouterAccount] = await get_pda_from_seeds([
@@ -106,9 +106,6 @@ describe("defios", () => {
     //generates keypair and airdrop solana
     const routerCreatorKeypair = await create_keypair();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     //gets pda from seeds
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
@@ -188,9 +185,6 @@ describe("defios", () => {
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
 
-    //initialises constants
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     //gets public key from seeds
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
@@ -470,8 +464,6 @@ describe("defios", () => {
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
       Buffer.from(signatureVersion.toString()),
@@ -704,9 +696,6 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
       Buffer.from(signatureVersion.toString()),
@@ -991,9 +980,6 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
       Buffer.from(signatureVersion.toString()),
@@ -1291,9 +1277,6 @@ describe("defios", () => {
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
       Buffer.from(signatureVersion.toString()),
@@ -1655,9 +1638,6 @@ describe("defios", () => {
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     const [nameRouterAccount] = await get_pda_from_seeds([
       Buffer.from(signingName),
       Buffer.from(signatureVersion.toString()),
