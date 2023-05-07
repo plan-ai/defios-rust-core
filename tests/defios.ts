@@ -30,8 +30,16 @@ describe("defios", () => {
 
   const { web3 } = anchor;
 
+  //global variables for tests
+  const signatureVersion = 1;
+  const signingName = "defios.com";
+  const userName: string = "sunguru98";
+  const userPubkey = new PublicKey(
+      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
+  );
+
   //helper functions
-  async function create_keypair(){
+  async function create_keypair() {
     const keypair = web3.Keypair.generate();
     await connection.confirmTransaction(
       {
@@ -46,6 +54,13 @@ describe("defios", () => {
     return keypair;
   }
 
+  async function get_pda_from_seeds(seeds) {
+    return await web3.PublicKey.findProgramAddressSync(
+      seeds,
+      program.programId
+    );
+  }
+
   //main testsuite
   //creating a name router
   it("Creates a name router!", async () => {
@@ -54,19 +69,12 @@ describe("defios", () => {
     //console log router creator key pair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
 
-    //set two constants for tests
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-
     //get public key of pda ideally generated using seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     //call create name router function
     await program.methods
@@ -102,18 +110,12 @@ describe("defios", () => {
     //generates keypair and airdrop solana
     const routerCreatorKeypair = await create_keypair();
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     //gets pda from seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     //cals create name router function
     await program.methods
@@ -127,10 +129,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Signature test
-    const userName: string = "sunguru98";
-    const userPubkey = new PublicKey(
-      "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
-    );
     //Create byte array of message
     const message = Uint8Array.from(
       Buffer.from(`DefiOS(${userName}, ${userPubkey.toString()})`)
@@ -150,14 +148,11 @@ describe("defios", () => {
     });
 
     //gets public key from seeds
-    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        userPubkey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [verifiedUserAccount] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      userPubkey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     //calls add verified user method
     await program.methods
@@ -190,18 +185,12 @@ describe("defios", () => {
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
 
-    //initialises constants
-    const signatureVersion = 1;
-    const signingName = "defios.com";
     //gets public key from seeds
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     //creates name router
     await program.methods
@@ -214,7 +203,6 @@ describe("defios", () => {
       .signers([routerCreatorKeypair])
       .rpc({ commitment: "confirmed" });
 
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -232,14 +220,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [verifiedUserAccount] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -287,14 +272,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const repositoryTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -323,15 +305,12 @@ describe("defios", () => {
       event.ghUsernames.forEach(async (username, i) => {
         try {
           console.log("Adding user claim", username, event.claimAmounts[i]);
-          const [userClaimAccount] = await web3.PublicKey.findProgramAddress(
-            [
-              Buffer.from("user_claim"),
-              Buffer.from(username),
-              repositoryAccount.toBuffer(),
-              nameRouterAccount.toBuffer(),
-            ],
-            program.programId
-          );
+          const [userClaimAccount] = await get_pda_from_seeds([
+            Buffer.from("user_claim"),
+            Buffer.from(username),
+            repositoryAccount.toBuffer(),
+            nameRouterAccount.toBuffer(),
+          ]);
 
           await program.methods
             .addUserClaim(username, event.claimAmounts[i])
@@ -376,14 +355,11 @@ describe("defios", () => {
               signature,
             });
 
-          const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
-            [
-              Buffer.from(username),
-              newUser.publicKey.toBuffer(),
-              nameRouterAccount.toBuffer(),
-            ],
-            program.programId
-          );
+          const [verifiedUserAccount] = await get_pda_from_seeds([
+            Buffer.from(username),
+            newUser.publicKey.toBuffer(),
+            nameRouterAccount.toBuffer(),
+          ]);
 
           await program.methods
             .addVerifiedUser(
@@ -487,16 +463,11 @@ describe("defios", () => {
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createNameRouter(signingName, signatureVersion)
@@ -509,7 +480,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -527,14 +497,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -598,14 +565,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createRepository(
@@ -655,14 +619,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        issueCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      issueCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -685,15 +646,12 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issue"),
-        Buffer.from(issueIndex.toString()),
-        repositoryAccount.toBuffer(),
-        issueCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -736,17 +694,11 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createNameRouter(signingName, signatureVersion)
@@ -759,7 +711,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -777,14 +728,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -848,14 +796,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createRepository(
@@ -905,14 +850,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        issueCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      issueCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -935,15 +877,12 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issue"),
-        Buffer.from(issueIndex.toString()),
-        repositoryAccount.toBuffer(),
-        issueCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -996,14 +935,11 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issuestaker"),
-        issueAccount.toBuffer(),
-        issueStakerKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      issueStakerKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .stakeIssue(new anchor.BN(transferAmount))
@@ -1041,17 +977,11 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createNameRouter(signingName, signatureVersion)
@@ -1064,7 +994,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1082,14 +1011,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1153,14 +1079,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createRepository(
@@ -1210,14 +1133,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        issueCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      issueCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1240,15 +1160,12 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issue"),
-        Buffer.from(issueIndex.toString()),
-        repositoryAccount.toBuffer(),
-        issueCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -1301,14 +1218,11 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issuestaker"),
-        issueAccount.toBuffer(),
-        issueStakerKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      issueStakerKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .stakeIssue(new anchor.BN(transferAmount))
@@ -1359,17 +1273,11 @@ describe("defios", () => {
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createNameRouter(signingName, signatureVersion)
@@ -1382,7 +1290,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1400,14 +1307,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1471,14 +1375,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createRepository(
@@ -1528,14 +1429,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        issueCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      issueCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1558,15 +1456,12 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issue"),
-        Buffer.from(issueIndex.toString()),
-        repositoryAccount.toBuffer(),
-        issueCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -1619,14 +1514,11 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issuestaker"),
-        issueAccount.toBuffer(),
-        issueStakerKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      issueStakerKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .stakeIssue(new anchor.BN(transferAmount))
@@ -1665,14 +1557,11 @@ describe("defios", () => {
         signature: commitCreatorSignature,
       });
 
-    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        commitCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [commitVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      commitCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1699,15 +1588,12 @@ describe("defios", () => {
     const metadataURI =
       "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
 
-    const [commitAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("commit"),
-        Buffer.from(commitHash),
-        commitCreatorKeypair.publicKey.toBuffer(),
-        issueAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [commitAccount] = await get_pda_from_seeds([
+      Buffer.from("commit"),
+      Buffer.from(commitHash),
+      commitCreatorKeypair.publicKey.toBuffer(),
+      issueAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addCommit(commitHash, treeHash, metadataURI)
@@ -1747,17 +1633,11 @@ describe("defios", () => {
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
 
-    // Creating name router
-    const signatureVersion = 1;
-    const signingName = "defios.com";
-    const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(signingName),
-        Buffer.from(signatureVersion.toString()),
-        routerCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [nameRouterAccount] = await get_pda_from_seeds([
+      Buffer.from(signingName),
+      Buffer.from(signatureVersion.toString()),
+      routerCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createNameRouter(signingName, signatureVersion)
@@ -1770,7 +1650,6 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
 
     // Adding repository creator user
-    const userName: string = "sunguru98";
     const message = Uint8Array.from(
       Buffer.from(
         `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
@@ -1788,14 +1667,11 @@ describe("defios", () => {
       signature,
     });
 
-    const [repositoryVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1859,14 +1735,11 @@ describe("defios", () => {
 
     // Creating repository
     const repositoryName = "defios";
-    const [repositoryAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("repository"),
-        Buffer.from(repositoryName),
-        repositoryCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(repositoryName),
+      repositoryCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .createRepository(
@@ -1916,14 +1789,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-    const [issueVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        issueCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      issueCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -1946,15 +1816,12 @@ describe("defios", () => {
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
-    const [issueAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issue"),
-        Buffer.from(issueIndex.toString()),
-        repositoryAccount.toBuffer(),
-        issueCreatorKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -2007,14 +1874,11 @@ describe("defios", () => {
       []
     );
 
-    const [issueStakerAccount] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("issuestaker"),
-        issueAccount.toBuffer(),
-        issueStakerKeypair.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      issueStakerKeypair.publicKey.toBuffer(),
+    ]);
 
     await program.methods
       .stakeIssue(new anchor.BN(transferAmount))
@@ -2053,14 +1917,11 @@ describe("defios", () => {
         signature: commitCreatorSignature,
       });
 
-    const [commitVerifiedUser] = await web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from(userName),
-        commitCreatorKeypair.publicKey.toBuffer(),
-        nameRouterAccount.toBuffer(),
-      ],
-      program.programId
-    );
+    const [commitVerifiedUser] = await get_pda_from_seeds([
+      Buffer.from(userName),
+      commitCreatorKeypair.publicKey.toBuffer(),
+      nameRouterAccount.toBuffer(),
+    ]);
 
     await program.methods
       .addVerifiedUser(
@@ -2118,15 +1979,12 @@ describe("defios", () => {
     const commitAccounts = [];
 
     for (const { commitHash, treeHash, metadataURI } of commits) {
-      const [commitAccount] = await web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("commit"),
-          Buffer.from(commitHash),
-          commitCreatorKeypair.publicKey.toBuffer(),
-          issueAccount.toBuffer(),
-        ],
-        program.programId
-      );
+      const [commitAccount] = await get_pda_from_seeds([
+        Buffer.from("commit"),
+        Buffer.from(commitHash),
+        commitCreatorKeypair.publicKey.toBuffer(),
+        issueAccount.toBuffer(),
+      ]);
 
       await program.methods
         .addCommit(commitHash, treeHash, metadataURI)
