@@ -111,6 +111,7 @@ describe("defios", () => {
 
     const signatureVersion = 1;
     const signingName = "defios.com";
+    //gets pda from seeds
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -120,6 +121,7 @@ describe("defios", () => {
       program.programId
     );
 
+    //cals create name router function
     await program.methods
       .createNameRouter(signingName, signatureVersion)
       .accounts({
@@ -135,22 +137,25 @@ describe("defios", () => {
     const userPubkey = new PublicKey(
       "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
     );
-
+    //Create byte array of message
     const message = Uint8Array.from(
       Buffer.from(`DefiOS(${userName}, ${userPubkey.toString()})`)
     );
 
+    //create signature from message and secret key
     const signature = await ed.sign(
       message,
       routerCreatorKeypair.secretKey.slice(0, 32)
     );
 
+    //create instruction from message, public key, and signature of account
     const createED25519Ix = web3.Ed25519Program.createInstructionWithPublicKey({
       message: message,
       publicKey: routerCreatorKeypair.publicKey.toBytes(),
       signature,
     });
 
+    //gets public key from seeds
     const [verifiedUserAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(userName),
@@ -160,9 +165,9 @@ describe("defios", () => {
       program.programId
     );
 
+    //calls add verified user method
     await program.methods
       .addVerifiedUser(
-        //@ts-ignore
         userName,
         userPubkey,
         Buffer.from(message),
@@ -181,14 +186,17 @@ describe("defios", () => {
   });
 
   it("Creates a repository", async () => {
+    //generates key pair
     const routerCreatorKeypair = web3.Keypair.generate();
     const repositoryCreatorKeypair = web3.Keypair.generate();
 
+    //adds logs to keypair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
 
+    //airdrops 1 solana to each created account
     await connection.confirmTransaction(
       {
         signature: await connection.requestAirdrop(
@@ -211,8 +219,10 @@ describe("defios", () => {
       "confirmed"
     );
 
+    //initialises constants
     const signatureVersion = 1;
     const signingName = "defios.com";
+    //gets public key from seeds
     const [nameRouterAccount] = await web3.PublicKey.findProgramAddress(
       [
         Buffer.from(signingName),
@@ -222,6 +232,7 @@ describe("defios", () => {
       program.programId
     );
 
+    //creates name router
     await program.methods
       .createNameRouter(signingName, signatureVersion)
       .accounts({
