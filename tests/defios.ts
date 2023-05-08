@@ -139,58 +139,8 @@ describe("defios", () => {
       .rpc({ commitment: "confirmed" });
     return [verifiedUserAccount];
   }
-  //main testsuite
-  //creating a name router
-  it("Creates a name router!", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    //get data related to name router pda
-    const {
-      routerCreator,
-      signatureVersion: fSignatureVersion,
-      signingDomain,
-      bump,
-      totalVerifiedUsers,
-    } = await program.account.nameRouter.fetch(nameRouterAccount);
 
-    //console log the data
-    console.log(
-      routerCreator.toString(),
-      fSignatureVersion,
-      signingDomain,
-      bump,
-      totalVerifiedUsers.toNumber()
-    );
-  });
-
-  it("Adds a verified user", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      userPubkey
-    );
-  });
-
-  it("Creates a repository", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreatorKeypair = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreatorKeypair.publicKey
-    );
-
-    //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-
+  async function create_spl_token(repositoryCreatorKeypair) {
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
     const createAccountIx = web3.SystemProgram.createAccount({
@@ -245,6 +195,78 @@ describe("defios", () => {
       []
     );
 
+    const preInstructions = [
+      createAccountIx,
+      initMintIx,
+      createAssociatedTokenIx,
+      mintTokensIx,
+    ];
+
+    return [
+      repositoryAccount,
+      repositoryTokenPoolAccount,
+      mintKeypair,
+      preInstructions,
+    ];
+  }
+  //main testsuite
+  //creating a name router
+  it("Creates a name router!", async () => {
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    //get data related to name router pda
+    const {
+      routerCreator,
+      signatureVersion: fSignatureVersion,
+      signingDomain,
+      bump,
+      totalVerifiedUsers,
+    } = await program.account.nameRouter.fetch(nameRouterAccount);
+
+    //console log the data
+    console.log(
+      routerCreator.toString(),
+      fSignatureVersion,
+      signingDomain,
+      bump,
+      totalVerifiedUsers.toNumber()
+    );
+  });
+
+  it("Adds a verified user", async () => {
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      userPubkey
+    );
+  });
+
+  it("Creates a repository", async () => {
+    //generates key pairs and airdrops solana to them
+    const repositoryCreatorKeypair = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreatorKeypair.publicKey
+    );
+    const [
+      repositoryAccount,
+      repositoryTokenPoolAccount,
+      mintKeypair,
+      preInstructions,
+    ] = await create_spl_token(repositoryCreatorKeypair);
+
+    //adds logs to keypair
+    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
+    console.log(
+      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
+    );
+
     program.addEventListener("RepositoryCreated", async (event) => {
       console.log("Repository created", event);
       event.ghUsernames.forEach(async (username, i) => {
@@ -271,49 +293,14 @@ describe("defios", () => {
 
           console.log(await program.account.userClaim.fetch(userClaimAccount));
 
-          const newUser = create_keypair();
+          const newUser = await create_keypair();
           console.log("user", newUser.publicKey.toString());
 
-          const message = Uint8Array.from(
-            Buffer.from(`DefiOS(${username}, ${newUser.publicKey.toString()})`)
+          const [verifiedUserAccount] = await create_verified_user(
+            routerCreatorKeypair,
+            nameRouterAccount,
+            newUser.publicKey
           );
-
-          const signature = await ed.sign(
-            message,
-            routerCreatorKeypair.secretKey.slice(0, 32)
-          );
-
-          const createED25519Ix =
-            web3.Ed25519Program.createInstructionWithPublicKey({
-              message: message,
-              publicKey: routerCreatorKeypair.publicKey.toBytes(),
-              signature,
-            });
-
-          const [verifiedUserAccount] = await get_pda_from_seeds([
-            Buffer.from(username),
-            newUser.publicKey.toBuffer(),
-            nameRouterAccount.toBuffer(),
-          ]);
-
-          await program.methods
-            .addVerifiedUser(
-              //@ts-ignore
-              username,
-              newUser.publicKey,
-              Buffer.from(message),
-              Buffer.from(signature)
-            )
-            .accounts({
-              nameRouterAccount,
-              verifiedUserAccount,
-              routerCreator: routerCreatorKeypair.publicKey,
-              sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-              systemProgram: web3.SystemProgram.programId,
-            })
-            .signers([routerCreatorKeypair])
-            .preInstructions([createED25519Ix])
-            .rpc({ commitment: "confirmed" });
 
           const userRewardTokenAccount = await getAssociatedTokenAddress(
             mintKeypair.publicKey,
@@ -372,12 +359,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         repositoryTokenPoolAccount: repositoryTokenPoolAccount,
       })
-      .preInstructions([
-        createAccountIx,
-        initMintIx,
-        createAssociatedTokenIx,
-        mintTokensIx,
-      ])
+      .preInstructions(preInstructions)
       .signers([repositoryCreatorKeypair, mintKeypair])
       .rpc();
 
@@ -388,15 +370,45 @@ describe("defios", () => {
   });
 
   it("Creates a issue", async () => {
-    const repositoryCreatorKeypair = await create_keypair();
+    const  repositoryCreator  = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
-    await create_name_router();
+      await create_name_router();
     const [repositoryVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
-      repositoryCreatorKeypair.publicKey
+      repositoryCreator.publicKey
     );
-    const issueCreatorKeypair = await create_keypair();
+
+    const [
+      repositoryAccount,
+      repositoryTokenPoolAccount,
+      mintKeypair,
+      preInstructions,
+    ] = await create_spl_token(repositoryCreator);
+    
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        ["123456", "12345"],
+        [new anchor.BN(1000000000), new anchor.BN(1000000000)]
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: repositoryVerifiedUser,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        repositoryTokenPoolAccount: repositoryTokenPoolAccount
+      })
+      .preInstructions(preInstructions)
+      .signers([repositoryCreator, mintKeypair])
+      .rpc();
+
+      const issueCreatorKeypair = await create_keypair();
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -404,127 +416,17 @@ describe("defios", () => {
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
-    // Creating rewards mint
-    const mintKeypair = web3.Keypair.generate();
-    const createAccountIx = web3.SystemProgram.createAccount({
-      programId: TOKEN_PROGRAM_ID,
-      fromPubkey: repositoryCreatorKeypair.publicKey,
-      newAccountPubkey: mintKeypair.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        MintLayout.span
-      ),
-      space: MintLayout.span,
-    });
-
-    const initMintIx = createInitializeMintInstruction(
-      mintKeypair.publicKey,
-      9,
-      repositoryCreatorKeypair.publicKey,
-      repositoryCreatorKeypair.publicKey
-    );
-
-    const repositoryCreatorRewardsTokenAccount =
-      await getAssociatedTokenAddress(
-        mintKeypair.publicKey,
-        repositoryCreatorKeypair.publicKey
-      );
-
-    const createAssociatedTokenIx = createAssociatedTokenAccountInstruction(
-      repositoryCreatorKeypair.publicKey,
-      repositoryCreatorRewardsTokenAccount,
-      repositoryCreatorKeypair.publicKey,
-      mintKeypair.publicKey
-    );
-
-    const mintTokensIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      repositoryCreatorRewardsTokenAccount,
-      repositoryCreatorKeypair.publicKey,
-      100000 * 10 ** 9,
-      9,
-      []
-    );
-
-    // Creating repository
-    const [repositoryAccount] = await get_pda_from_seeds([
-      Buffer.from("repository"),
-      Buffer.from(repositoryName),
-      repositoryCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .createRepository(
-        repositoryName,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios"
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreator: repositoryCreatorKeypair.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair.publicKey,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .preInstructions([
-        createAccountIx,
-        initMintIx,
-        createAssociatedTokenIx,
-        mintTokensIx,
-      ])
-      .signers([repositoryCreatorKeypair, mintKeypair])
-      .rpc();
-
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = "abhibasu";
-    const issueCreatorMessage = Uint8Array.from(
-      Buffer.from(
-        `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
-      )
+
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
     );
-
-    const issueCreatorSignature = await ed.sign(
-      issueCreatorMessage,
-      routerCreatorKeypair.secretKey.slice(0, 32)
-    );
-
-    const createED25519IxIssueCreator =
-      web3.Ed25519Program.createInstructionWithPublicKey({
-        message: issueCreatorMessage,
-        publicKey: routerCreatorKeypair.publicKey.toBytes(),
-        signature: issueCreatorSignature,
-      });
-
-    const [issueVerifiedUser] = await get_pda_from_seeds([
-      Buffer.from(userName),
-      issueCreatorKeypair.publicKey.toBuffer(),
-      nameRouterAccount.toBuffer(),
-    ]);
-
-    await program.methods
-      .addVerifiedUser(
-        //@ts-ignore
-        userName,
-        issueCreatorKeypair.publicKey,
-        Buffer.from(issueCreatorMessage),
-        Buffer.from(issueCreatorSignature)
-      )
-      .accounts({
-        nameRouterAccount,
-        verifiedUserAccount: issueVerifiedUser,
-        routerCreator: routerCreatorKeypair.publicKey,
-        sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .preInstructions([createED25519IxIssueCreator])
-      .rpc({ commitment: "confirmed" });
-
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
@@ -552,7 +454,7 @@ describe("defios", () => {
         repositoryAccount,
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: repositoryCreatorKeypair.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -564,7 +466,7 @@ describe("defios", () => {
 
   it("Stakes on a issue", async () => {
     const [routerCreatorKeypair, nameRouterAccount] =
-    await create_name_router();
+      await create_name_router();
     const repositoryCreatorKeypair = await create_keypair();
     const issueCreatorKeypair = await create_keypair();
     const issueStakerKeypair = await create_keypair();
@@ -574,14 +476,12 @@ describe("defios", () => {
       repositoryCreatorKeypair.publicKey
     );
 
-
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
-
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
@@ -723,15 +623,15 @@ describe("defios", () => {
       .addIssue(issueURI)
       .accounts({
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
+        issueAccount:issueAccount,
         issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
+        issueTokenPoolAccount:issueTokenPoolAccount,
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: repositoryCreatorKeypair.publicKey,
+        repositoryCreatorKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
