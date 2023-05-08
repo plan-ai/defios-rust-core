@@ -16,7 +16,7 @@ import {
 } from "@solana/spl-token";
 
 import sha1 from "sha1";
-import { Keypair } from "@solana/web3.js";
+import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -38,6 +38,13 @@ describe("defios", () => {
     "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
   );
   const repositoryName = "defios";
+  const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+    units: 1000000,
+  });
+
+  const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+    microLamports: 1,
+  });
   //helper functions
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
@@ -288,6 +295,8 @@ describe("defios", () => {
               userClaimAccount,
               systemProgram: web3.SystemProgram.programId,
             })
+            .add(modifyComputeUnits)
+            .add(addPriorityFee)
             .signers([routerCreatorKeypair])
             .rpc();
 
@@ -528,7 +537,7 @@ describe("defios", () => {
     const [issueVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
-      issueCreatorKeypair
+      issueCreatorKeypair.publicKey
     );
 
     // Creating issue
@@ -545,6 +554,25 @@ describe("defios", () => {
       issueAccount,
       true
     );
+
+    await program.methods
+      .addIssue(issueURI)
+      .accounts({
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        issueTokenPoolAccount,
+        issueVerifiedUser,
+        nameRouterAccount,
+        repositoryAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([issueCreatorKeypair])
+      .rpc();
 
     await program.account.issue.fetch(issueAccount);
 
@@ -578,7 +606,6 @@ describe("defios", () => {
       issueStakerKeypair.publicKey.toBuffer(),
     ]);
 
-    console.log("Hi");
     await program.methods
       .stakeIssue(new anchor.BN(transferAmount))
       .accounts({
