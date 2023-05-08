@@ -61,9 +61,8 @@ describe("defios", () => {
     );
   }
 
-  //main testsuite
-  //creating a name router
-  it("Creates a name router!", async () => {
+  //main testsuite code
+  async function create_name_router() {
     //generating keypair and airdropping solana to it
     const routerCreatorKeypair = await create_keypair();
     //console log router creator key pair
@@ -86,48 +85,14 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .rpc({ commitment: "confirmed" });
+    return [routerCreatorKeypair, nameRouterAccount];
+  }
 
-    //get data related to name router pda
-    const {
-      routerCreator,
-      signatureVersion: fSignatureVersion,
-      signingDomain,
-      bump,
-      totalVerifiedUsers,
-    } = await program.account.nameRouter.fetch(nameRouterAccount);
-
-    //console log the data
-    console.log(
-      routerCreator.toString(),
-      fSignatureVersion,
-      signingDomain,
-      bump,
-      totalVerifiedUsers.toNumber()
-    );
-  });
-
-  it("Adds a verified user", async () => {
-    //generates keypair and airdrop solana
-    const routerCreatorKeypair = await create_keypair();
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    //gets pda from seeds
-    const [nameRouterAccount] = await get_pda_from_seeds([
-      Buffer.from(signingName),
-      Buffer.from(signatureVersion.toString()),
-      routerCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    //cals create name router function
-    await program.methods
-      .createNameRouter(signingName, signatureVersion)
-      .accounts({
-        nameRouterAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .rpc({ commitment: "confirmed" });
-
+  async function create_verified_user(
+    routerCreatorKeypair,
+    nameRouterAccount,
+    pubKey
+  ) {
     // Signature test
     //Create byte array of message
     const message = Uint8Array.from(
@@ -150,7 +115,7 @@ describe("defios", () => {
     //gets public key from seeds
     const [verifiedUserAccount] = await get_pda_from_seeds([
       Buffer.from(userName),
-      userPubkey.toBuffer(),
+      pubKey.toBuffer(),
       nameRouterAccount.toBuffer(),
     ]);
 
@@ -158,7 +123,7 @@ describe("defios", () => {
     await program.methods
       .addVerifiedUser(
         userName,
-        userPubkey,
+        pubKey,
         Buffer.from(message),
         Buffer.from(signature)
       )
@@ -172,78 +137,59 @@ describe("defios", () => {
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
       .rpc({ commitment: "confirmed" });
+    return [verifiedUserAccount];
+  }
+  //main testsuite
+  //creating a name router
+  it("Creates a name router!", async () => {
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    //get data related to name router pda
+    const {
+      routerCreator,
+      signatureVersion: fSignatureVersion,
+      signingDomain,
+      bump,
+      totalVerifiedUsers,
+    } = await program.account.nameRouter.fetch(nameRouterAccount);
+
+    //console log the data
+    console.log(
+      routerCreator.toString(),
+      fSignatureVersion,
+      signingDomain,
+      bump,
+      totalVerifiedUsers.toNumber()
+    );
+  });
+
+  it("Adds a verified user", async () => {
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      userPubkey
+    );
   });
 
   it("Creates a repository", async () => {
     //generates key pairs and airdrops solana to them
-    const routerCreatorKeypair = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
     const repositoryCreatorKeypair = await create_keypair();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreatorKeypair.publicKey
+    );
 
     //adds logs to keypair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
       `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
     );
-
-    //gets public key from seeds
-    const [nameRouterAccount] = await get_pda_from_seeds([
-      Buffer.from(signingName),
-      Buffer.from(signatureVersion.toString()),
-      routerCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    //creates name router
-    await program.methods
-      .createNameRouter(signingName, signatureVersion)
-      .accounts({
-        nameRouterAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .rpc({ commitment: "confirmed" });
-
-    const message = Uint8Array.from(
-      Buffer.from(
-        `DefiOS(${userName}, ${repositoryCreatorKeypair.publicKey.toString()})`
-      )
-    );
-
-    const signature = await ed.sign(
-      message,
-      routerCreatorKeypair.secretKey.slice(0, 32)
-    );
-
-    const createED25519Ix = web3.Ed25519Program.createInstructionWithPublicKey({
-      message: message,
-      publicKey: routerCreatorKeypair.publicKey.toBytes(),
-      signature,
-    });
-
-    const [verifiedUserAccount] = await get_pda_from_seeds([
-      Buffer.from(userName),
-      repositoryCreatorKeypair.publicKey.toBuffer(),
-      nameRouterAccount.toBuffer(),
-    ]);
-
-    await program.methods
-      .addVerifiedUser(
-        //@ts-ignore
-        userName,
-        repositoryCreatorKeypair.publicKey,
-        Buffer.from(message),
-        Buffer.from(signature)
-      )
-      .accounts({
-        nameRouterAccount,
-        verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .preInstructions([createED25519Ix])
-      .rpc({ commitment: "confirmed" });
 
     // Creating rewards mint
     const mintKeypair = web3.Keypair.generate();
