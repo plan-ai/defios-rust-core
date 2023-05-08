@@ -37,7 +37,7 @@ describe("defios", () => {
   const userPubkey = new PublicKey(
     "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
   );
-
+  const repositoryName = "defios";
   //helper functions
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
@@ -217,7 +217,6 @@ describe("defios", () => {
       );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
@@ -500,7 +499,6 @@ describe("defios", () => {
     );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
@@ -731,7 +729,6 @@ describe("defios", () => {
     );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
@@ -1014,7 +1011,6 @@ describe("defios", () => {
     );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
@@ -1310,7 +1306,6 @@ describe("defios", () => {
     );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
@@ -1670,7 +1665,6 @@ describe("defios", () => {
     );
 
     // Creating repository
-    const repositoryName = "defios";
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
       Buffer.from(repositoryName),
