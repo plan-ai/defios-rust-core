@@ -9,7 +9,6 @@ use crate::{
 };
 
 #[derive(Accounts)]
-#[instruction()]
 pub struct UnstakeIssue<'info> {
     #[account(mut)]
     pub issue_staker: Signer<'info>,
