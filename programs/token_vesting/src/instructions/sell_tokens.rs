@@ -35,7 +35,6 @@ pub struct SellToken<'info> {
 
 pub fn handler(ctx: Context<SellToken>, amount: u128) -> Result<()> {
     let mint = &ctx.accounts.mint;
-    let from = &ctx.accounts.from;
     let authority = &ctx.accounts.authority;
     let token_program = &ctx.accounts.token_program;
     let communal_account = &ctx.accounts.communal_account;
