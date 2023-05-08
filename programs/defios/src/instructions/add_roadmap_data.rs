@@ -7,7 +7,6 @@ use anchor_spl::{
 use crate::state::{AddRoadmapDataEvent, RoadMapMetaDataStore, RoadmapOutlook};
 
 #[derive(Accounts)]
-#[instruction(name: String)]
 pub struct AddMetadata<'info> {
     #[account(mut)]
     pub roadmap_data_adder: Signer<'info>,

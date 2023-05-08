@@ -7,7 +7,6 @@ use anchor_spl::{
 use crate::state::{AddObjectiveDataEvent, Objective, ObjectiveDeliverable, ObjectiveState};
 
 #[derive(Accounts)]
-#[instruction(name: String)]
 pub struct AddObjective<'info> {
     #[account(mut)]
     pub objective_data_addr: Signer<'info>,

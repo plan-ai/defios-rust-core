@@ -8,7 +8,6 @@ use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
 use crate::error::DefiOSError;
 
 #[derive(Accounts)]
-#[instruction(name: String)]
 pub struct AddChildObjective<'info> {
     #[account(mut)]
     pub child_objective_adder: Signer<'info>,
