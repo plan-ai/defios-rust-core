@@ -295,8 +295,6 @@ describe("defios", () => {
               userClaimAccount,
               systemProgram: web3.SystemProgram.programId,
             })
-            .add(modifyComputeUnits)
-            .add(addPriorityFee)
             .signers([routerCreatorKeypair])
             .rpc();
 
@@ -1180,7 +1178,7 @@ describe("defios", () => {
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
-        treeHash: sha1(sha1("Tree hash 3").slice(0, 8)).slice(0, 8),
+        treeHash: sha1(sha1("Tree hash 3").slice(0, 8)),
         commitHash: sha1("Commit hash 4").slice(0, 8),
         metadataURI:
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
@@ -1227,30 +1225,30 @@ describe("defios", () => {
       commitCreatorKeypair.publicKey
     );
 
-    // await program.methods
-    //   .claimReward()
-    //   .accounts({
-    //     commitCreatorRewardTokenAccount,
-    //     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    //     commitCreator: commitCreatorKeypair.publicKey,
-    //     commitVerifiedUser,
-    //     issueAccount,
-    //     rent: web3.SYSVAR_RENT_PUBKEY,
-    //     rewardsMint: mintKeypair.publicKey,
-    //     repositoryAccount,
-    //     repositoryCreator: repositoryCreator.publicKey,
-    //     systemProgram: web3.SystemProgram.programId,
-    //     routerCreator: routerCreatorKeypair.publicKey,
-    //     tokenProgram: TOKEN_PROGRAM_ID,
-    //     nameRouterAccount,
-    //     issueTokenPoolAccount,
-    //     issueCreator: issueCreatorKeypair.publicKey,
-    //     firstCommitAccount: commitAccounts[0],
-    //     secondCommitAccount: commitAccounts[1],
-    //     thirdCommitAccount: commitAccounts[2],
-    //     fourthCommitAccount: commitAccounts[3],
-    //   })
-    //   .signers([commitCreatorKeypair])
-    //   .rpc({ skipPreflight: true });
+    await program.methods
+       .claimReward()
+       .accounts({
+         commitCreatorRewardTokenAccount,
+         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+         commitCreator: commitCreatorKeypair.publicKey,
+         commitVerifiedUser,
+         issueAccount,
+         rent: web3.SYSVAR_RENT_PUBKEY,
+         rewardsMint: mintKeypair.publicKey,
+         repositoryAccount,
+         repositoryCreator: repositoryCreator.publicKey,
+         systemProgram: web3.SystemProgram.programId,
+         routerCreator: routerCreatorKeypair.publicKey,
+         tokenProgram: TOKEN_PROGRAM_ID,
+         nameRouterAccount,
+         issueTokenPoolAccount,
+         issueCreator: issueCreatorKeypair.publicKey,
+         firstCommitAccount: commitAccounts[0],
+        secondCommitAccount: commitAccounts[1],
+         thirdCommitAccount: commitAccounts[2],
+        fourthCommitAccount: commitAccounts[3],
+       })
+       .signers([commitCreatorKeypair])
+       .rpc({ skipPreflight: true });
   });
 });

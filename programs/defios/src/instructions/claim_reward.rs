@@ -187,27 +187,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         Some(commit_creator.key().to_string()),
     );
 
-    // msg!(
-    //     "First tree Hash: {} First SHA1 Hash: {:?}",
-    //     &first_commit_account.tree_hash,
-    //     &first_sha_hash
-    // );
-    // msg!(
-    //     "Second tree Hash: {} second SHA1 Hash: {:?}",
-    //     &second_commit_account.tree_hash,
-    //     &second_sha_hash
-    // );
-    // msg!(
-    //     "Third tree Hash: {} third SHA1 Hash: {:?}",
-    //     &third_commit_account.tree_hash,
-    //     &third_sha_hash
-    // );
-    // msg!(
-    //     "Fourth tree Hash: {} fourth SHA1 Hash: {:?}",
-    //     &fourth_commit_account.tree_hash,
-    //     &fourth_sha_hash
-    // );
-
     require!(
         first_sha_hash.eq(&second_sha_hash) && third_sha_hash.eq(&fourth_sha_hash),
         DefiOSError::HashesMismatch,
