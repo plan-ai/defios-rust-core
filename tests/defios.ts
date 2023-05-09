@@ -703,11 +703,11 @@ describe("defios", () => {
         signature: issueCreatorSignature,
       });
 
-      const [issueVerifiedUser] = await create_verified_user(
-        routerCreatorKeypair,
-        nameRouterAccount,
-        issueCreatorKeypair.publicKey
-      );
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
+    );
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -816,11 +816,11 @@ describe("defios", () => {
     const commitCreatorKeypair = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
       await create_name_router();
-   const [repositoryVerifiedUser] = await create_verified_user(
+    const [repositoryVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
       repositoryCreator.publicKey
-    )
+    );
 
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
@@ -829,7 +829,6 @@ describe("defios", () => {
     console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
     console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
     console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
-
 
     // Creating rewards mint
     const [
@@ -855,7 +854,7 @@ describe("defios", () => {
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        repositoryTokenPoolAccount:repositoryTokenPoolAccount
+        repositoryTokenPoolAccount: repositoryTokenPoolAccount,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -870,7 +869,7 @@ describe("defios", () => {
       routerCreatorKeypair,
       nameRouterAccount,
       issueCreatorKeypair.publicKey
-    )
+    );
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -960,7 +959,7 @@ describe("defios", () => {
       routerCreatorKeypair,
       nameRouterAccount,
       commitCreatorKeypair.publicKey
-    )
+    );
 
     // Adding a commit
     const treeHash = sha1("Tree hash 1").slice(0, 8);
@@ -1018,7 +1017,7 @@ describe("defios", () => {
       routerCreatorKeypair,
       nameRouterAccount,
       repositoryCreator.publicKey
-    )
+    );
     // Creating rewards mint
     const [
       repositoryAccount,
@@ -1040,7 +1039,7 @@ describe("defios", () => {
         nameRouterAccount,
         repositoryAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryTokenPoolAccount:repositoryTokenPoolAccount,
+        repositoryTokenPoolAccount: repositoryTokenPoolAccount,
         repositoryVerifiedUser: repositoryVerifiedUser,
         rewardsMint: mintKeypair.publicKey,
         routerCreator: routerCreatorKeypair.publicKey,
@@ -1059,7 +1058,7 @@ describe("defios", () => {
       routerCreatorKeypair,
       nameRouterAccount,
       issueCreatorKeypair.publicKey
-    )
+    );
 
     // Creating issue
     const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
@@ -1149,7 +1148,7 @@ describe("defios", () => {
       routerCreatorKeypair,
       nameRouterAccount,
       commitCreatorKeypair.publicKey
-    )
+    );
 
     // Adding all commits
     const commits = [
@@ -1222,33 +1221,37 @@ describe("defios", () => {
 
     const commitCreatorRewardTokenAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
-      commitCreatorKeypair.publicKey
+      commitCreatorKeypair.publicKey,
+      true
     );
 
+    console.log({
+      "IssuecreatorKeypair":issueCreatorKeypair.publicKey,
+      "IssueTokenPoolAccount": issueTokenPoolAccount
+    })
     await program.methods
-       .claimReward()
-       .accounts({
-         commitCreatorRewardTokenAccount,
-         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-         commitCreator: commitCreatorKeypair.publicKey,
-         commitVerifiedUser,
-         issueAccount,
-         rent: web3.SYSVAR_RENT_PUBKEY,
-         rewardsMint: mintKeypair.publicKey,
-         repositoryAccount,
-         repositoryCreator: repositoryCreator.publicKey,
-         systemProgram: web3.SystemProgram.programId,
-         routerCreator: routerCreatorKeypair.publicKey,
-         tokenProgram: TOKEN_PROGRAM_ID,
-         nameRouterAccount,
-         issueTokenPoolAccount,
-         issueCreator: issueCreatorKeypair.publicKey,
-         firstCommitAccount: commitAccounts[0],
+      .claimReward()
+      .accounts({
+        commitCreatorRewardTokenAccount,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        commitCreator: commitCreatorKeypair.publicKey,
+        commitVerifiedUser,
+        issueAccount,
+        rewardsMint: mintKeypair.publicKey,
+        repositoryAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        routerCreator: routerCreatorKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        nameRouterAccount,
+        issueTokenPoolAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        firstCommitAccount: commitAccounts[0],
         secondCommitAccount: commitAccounts[1],
-         thirdCommitAccount: commitAccounts[2],
+        thirdCommitAccount: commitAccounts[2],
         fourthCommitAccount: commitAccounts[3],
-       })
-       .signers([commitCreatorKeypair])
-       .rpc({ skipPreflight: true });
+      })
+      .signers([commitCreatorKeypair])
+      .rpc({ skipPreflight: true });
   });
 });

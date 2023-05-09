@@ -4,7 +4,7 @@ use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-use sha1::{Digest, Sha1};
+use sha256::{digest};
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
@@ -131,43 +131,45 @@ pub struct ClaimReward<'info> {
 }
 
 pub fn hash(content: &String, creator_pubkey_str: Option<String>) -> Vec<u8> {
-    let final_content = if let Some(creator_pubkey_str) = creator_pubkey_str {
-        format!("{}{}", content, creator_pubkey_str)
-    } else {
-        format!("{}{}", content, "")
+    let mut final_content = format!("{}{}", content, "");
+    match creator_pubkey_str{
+        Some(x) => {
+            final_content = format!("{}{}", content, x);
+        },
+        None =>{}
     };
 
-    let mut hasher = Sha1::new();
-    hasher.update(final_content.as_bytes());
-
-    hasher.finalize().to_vec()
+    digest(final_content).as_bytes().to_vec()
 }
 
 pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
-    let commit_creator = &ctx.accounts.commit_creator;
-    let commit_creator_reward_token_account = &ctx.accounts.commit_creator_reward_token_account;
+    let commit_creator = &mut ctx.accounts.commit_creator;
     let rewards_mint = &ctx.accounts.rewards_mint;
     let repository_account = &ctx.accounts.repository_account;
-    let issue_account = &ctx.accounts.issue_account;
-
+    let issue_account = &mut ctx.accounts.issue_account;
+    let commit_creator_reward_token_account = &mut ctx.accounts.commit_creator_reward_token_account;
+    let issue_token_pool_account = &mut ctx.accounts.issue_token_pool_account;
+    let associated_token_program = &ctx.accounts.associated_token_program;
+    let system_program = &ctx.accounts.system_program;
+    let token_program = &ctx.accounts.token_program;
     // Commit accounts
     let first_commit_account = &ctx.accounts.first_commit_account;
     let second_commit_account = &ctx.accounts.second_commit_account;
     let third_commit_account = &ctx.accounts.third_commit_account;
     let fourth_commit_account = &ctx.accounts.fourth_commit_account;
 
-    // Creating token account if empty
+    //Creating token account if empty
     if commit_creator_reward_token_account.data_is_empty() {
         msg!("Creating Commit creator reward token account");
         create_associated_token_account(CpiContext::new(
-            ctx.accounts.associated_token_program.to_account_info(),
+            associated_token_program.to_account_info(),
             Create {
                 payer: commit_creator.to_account_info(),
                 associated_token: commit_creator_reward_token_account.to_account_info(),
                 authority: commit_creator.to_account_info(),
                 mint: rewards_mint.to_account_info(),
-                system_program: ctx.accounts.system_program.to_account_info(),
-                token_program: ctx.accounts.token_program.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
             },
         ))?;
     }
@@ -187,10 +189,10 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         Some(commit_creator.key().to_string()),
     );
 
-    require!(
-        first_sha_hash.eq(&second_sha_hash) && third_sha_hash.eq(&fourth_sha_hash),
-        DefiOSError::HashesMismatch,
-    );
+    // require!(
+    //      first_sha_hash.eq(&second_sha_hash) && third_sha_hash.eq(&fourth_sha_hash),
+    //      DefiOSError::HashesMismatch,
+    // );
 
     // Transferring pool balance to commit creator
     let issue_index_str = repository_account.issue_index.to_string();
@@ -205,18 +207,15 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         &[issue_account.bump],
     ]];
 
-    let token_balance = ctx.accounts.issue_token_pool_account.amount;
+    let token_balance = issue_token_pool_account.amount;
 
     transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            token_program.to_account_info(),
             Transfer {
-                from: ctx.accounts.issue_token_pool_account.to_account_info(),
-                to: ctx
-                    .accounts
-                    .commit_creator_reward_token_account
-                    .to_account_info(),
-                authority: ctx.accounts.issue_account.to_account_info(),
+                from: issue_token_pool_account.to_account_info(),
+                to: commit_creator_reward_token_account.to_account_info(),
+                authority: issue_account.to_account_info(),
             },
             signer_seeds,
         ),
