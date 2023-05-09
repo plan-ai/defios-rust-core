@@ -21,7 +21,7 @@ pub struct AddUserClaim<'info> {
     pub name_router_account: Account<'info, NameRouter>,
 
     #[account(
-        init,
+        init_if_needed,
         payer = router_creator,
         space = UserClaim::size(),
         seeds = [
@@ -44,7 +44,7 @@ pub fn handler(ctx: Context<AddUserClaim>, user_name: String, claim_amount: u64)
     let repository_account = &ctx.accounts.repository_account;
 
     user_claim_account.bump = *ctx.bumps.get("user_claim_account").unwrap();
-    user_claim_account.token_amount = claim_amount;
+    user_claim_account.token_amount += claim_amount;
     user_claim_account.gh_user = user_name;
     user_claim_account.is_claimed = false;
     user_claim_account.repository_account = repository_account.key();

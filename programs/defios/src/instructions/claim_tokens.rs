@@ -127,19 +127,6 @@ pub fn handler(ctx: Context<ClaimUserTokens>, _user_name: String) -> Result<()> 
     );
     anchor_spl::token::transfer(cpi_ctx, token_balance)?;
 
-    // transfer(
-    //     CpiContext::new_with_signer(
-    //         ctx.accounts.token_program.to_account_info(),
-    //         Transfer {
-    //             from: ctx.accounts.repository_token_pool_account.to_account_info(),
-    //             to: ctx.accounts.user_reward_token_account.to_account_info(),
-    //             authority: ctx.accounts.repository_account.to_account_info(),
-    //         },
-    //         signer_seeds,
-    //     ),
-    //     token_balance,
-    // )?;
-
     user_claim_account.is_claimed = true;
 
     Ok(())
