@@ -252,6 +252,7 @@ pub struct Objective {
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_staker_ids: Vec<Pubkey>,
     pub objective_staker_amts: Vec<u64>,
+    pub objective_issue: Pubkey,
 }
 
 impl Objective {
@@ -340,6 +341,7 @@ pub struct AddObjectiveDataEvent {
     pub objective_end_unix: u64,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_public_key: Pubkey,
+    pub objective_issue: Pubkey,
 }
 
 #[event]
