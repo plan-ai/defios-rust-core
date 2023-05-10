@@ -4,7 +4,7 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddObjectiveDataEvent, Objective, ObjectiveDeliverable, ObjectiveState};
+use crate::state::{AddObjectiveDataEvent, Issue, Objective, ObjectiveDeliverable, ObjectiveState};
 
 #[derive(Accounts)]
 pub struct AddObjective<'info> {
@@ -22,6 +22,8 @@ pub struct AddObjective<'info> {
         bump
     )]
     pub metadata_account: Account<'info, Objective>,
+    #[account(mut)]
+    pub objective_issue: Account<'info, Issue>,
     pub system_program: Program<'info, System>,
 }
 
@@ -36,7 +38,7 @@ pub fn handler(
 ) -> Result<()> {
     let objective_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
-
+    let objective_issue = &ctx.accounts.objective_issue;
     msg!(
         "Adding objective: Title:{}, Description: {}",
         objective_title,
@@ -55,7 +57,7 @@ pub fn handler(
     metadata_account.objective_deliverable = objective_deliverable;
     metadata_account.objective_staker_ids = vec![];
     metadata_account.objective_staker_amts = vec![];
-
+    metadata_account.objective_issue = objective_issue.key();
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,
@@ -63,7 +65,8 @@ pub fn handler(
         objective_creation_unix: objective_creation_unix as u64,
         objective_end_unix: objective_end_unix,
         objective_deliverable: objective_deliverable,
-        objective_public_key: metadata_account.key()
+        objective_public_key: metadata_account.key(),
+        objective_issue: objective_issue.key()
     });
 
     Ok(())

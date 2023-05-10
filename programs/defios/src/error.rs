@@ -40,5 +40,5 @@ pub enum DefiOSError {
 
     // 6009
     #[msg("Parent was not mentioned to which objective is to be added")]
-    NoParentEntered
+    NoParentEntered,
 }
