@@ -4,8 +4,8 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
 use crate::error::DefiOSError;
+use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
 
 #[derive(Accounts)]
 pub struct AddChildObjective<'info> {
@@ -56,10 +56,7 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
                 });
             }
             None => {
-                require!(
-                    true.eq(&false),
-                    DefiOSError::NoParentEntered
-                );
+                require!(true.eq(&false), DefiOSError::NoParentEntered);
             }
         },
     }

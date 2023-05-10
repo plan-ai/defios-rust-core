@@ -4,7 +4,7 @@ use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-use sha256::{digest};
+use sha256::digest;
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
@@ -132,11 +132,11 @@ pub struct ClaimReward<'info> {
 
 pub fn hash(content: &String, creator_pubkey_str: Option<String>) -> Vec<u8> {
     let mut final_content = format!("{}{}", content, "");
-    match creator_pubkey_str{
+    match creator_pubkey_str {
         Some(x) => {
             final_content = format!("{}{}", content, x);
-        },
-        None =>{}
+        }
+        None => {}
     };
 
     digest(final_content).as_bytes().to_vec()

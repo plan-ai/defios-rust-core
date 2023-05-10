@@ -1226,9 +1226,10 @@ describe("defios", () => {
     );
 
     console.log({
-      "IssuecreatorKeypair":issueCreatorKeypair.publicKey,
-      "IssueTokenPoolAccount": issueTokenPoolAccount
-    })
+      IssuecreatorKeypair: issueCreatorKeypair.publicKey,
+      IssueTokenPoolAccount: issueTokenPoolAccount,
+    });
+
     await program.methods
       .claimReward()
       .accounts({
@@ -1236,15 +1237,15 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         commitCreator: commitCreatorKeypair.publicKey,
         commitVerifiedUser,
-        issueAccount,
+        issueAccount: issueAccount,
         rewardsMint: mintKeypair.publicKey,
         repositoryAccount,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
         routerCreator: routerCreatorKeypair.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
+        issueTokenPoolAccount: issueTokenPoolAccount,
         nameRouterAccount,
-        issueTokenPoolAccount,
         issueCreator: issueCreatorKeypair.publicKey,
         firstCommitAccount: commitAccounts[0],
         secondCommitAccount: commitAccounts[1],
