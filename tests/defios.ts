@@ -15,7 +15,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 
-import sha1 from "sha1";
+import sha256 from "sha256";
 import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
 
 describe("defios", () => {
@@ -962,8 +962,8 @@ describe("defios", () => {
     );
 
     // Adding a commit
-    const treeHash = sha1("Tree hash 1").slice(0, 8);
-    const commitHash = sha1("Commit hash 1").slice(0, 8);
+    const treeHash = sha256("Tree hash 1").slice(0, 8);
+    const commitHash = sha256("Commit hash 1").slice(0, 8);
     const metadataURI =
       "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
 
@@ -1153,32 +1153,32 @@ describe("defios", () => {
     // Adding all commits
     const commits = [
       {
-        treeHash: sha1("Tree hash 1").slice(0, 8),
-        commitHash: sha1("Commit hash 1").slice(0, 8),
+        treeHash: sha256("Tree hash 1").slice(0, 8),
+        commitHash: sha256("Commit hash 1").slice(0, 8),
         metadataURI:
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
-        treeHash: sha1(
-          sha1("Tree hash 1").slice(0, 8) +
+        treeHash: sha256(
+          sha256("Tree hash 1").slice(0, 8) +
             commitCreatorKeypair.publicKey.toString()
         ).slice(0, 8),
-        commitHash: sha1("Commit hash 2").slice(0, 8),
+        commitHash: sha256("Commit hash 2").slice(0, 8),
         metadataURI:
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
-        treeHash: sha1(
-          sha1("Tree hash 3").slice(0, 8) +
+        treeHash: sha256(
+          sha256("Tree hash 3").slice(0, 8) +
             commitCreatorKeypair.publicKey.toString()
         ).slice(0, 8),
-        commitHash: sha1("Commit hash 3").slice(0, 8),
+        commitHash: sha256("Commit hash 3").slice(0, 8),
         metadataURI:
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
       {
-        treeHash: sha1(sha1("Tree hash 3").slice(0, 8)),
-        commitHash: sha1("Commit hash 4").slice(0, 8),
+        treeHash: sha256(sha256("Tree hash 3").slice(0, 8)),
+        commitHash: sha256("Commit hash 4").slice(0, 8),
         metadataURI:
           "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0",
       },
