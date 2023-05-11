@@ -7,7 +7,7 @@ pub mod state;
 use crate::instructions::*;
 use crate::state::*;
 
-declare_id!("5kC3GR4DEgaF5e5UBH5VWsF1A5UVpLyHaqoWdFSCBMN7");
+declare_id!("Uxg6s2212nfJrpogLQUvecey9kYUEWTaeBmUCsWBQWa");
 
 #[program]
 pub mod token_vesting {

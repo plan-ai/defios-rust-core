@@ -19,7 +19,7 @@ pub struct AddObjective<'info> {
         space = Objective::size(),
         seeds = [
             b"objectivedataadd",
-            metadata_account.key().as_ref(),
+            objective_issue.key().as_ref(),
             objective_data_addr.key().as_ref()
         ],
         bump
