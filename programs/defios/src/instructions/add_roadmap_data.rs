@@ -4,8 +4,10 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddRoadmapDataEvent, RoadMapMetaDataStore, RoadmapOutlook,NameRouter,VerifiedUser};
-use crate::error::{DefiOSError};
+use crate::error::DefiOSError;
+use crate::state::{
+    AddRoadmapDataEvent, NameRouter, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser,
+};
 #[derive(Accounts)]
 pub struct AddMetadata<'info> {
     #[account(mut)]

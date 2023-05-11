@@ -250,8 +250,6 @@ pub struct Objective {
     pub objective_state: ObjectiveState,
     pub children_objective_id: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
-    pub objective_staker_ids: Vec<Pubkey>,
-    pub objective_staker_amts: Vec<u64>,
     pub objective_issue: Pubkey,
 }
 
@@ -270,22 +268,6 @@ impl Objective {
         1 + //objective deliverable
         640 + //objective_staker_ids
         160 //objective_staker_amts
-    }
-}
-
-#[account]
-pub struct Vote {
-    pub bump: u8,
-    pub pr_pub_key: Pubkey,
-    pub voted_by: Pubkey,
-}
-
-impl Vote {
-    pub fn size() -> usize {
-        8 + // discriminator
-        1 + //bump
-        32 + //issue_pub_key
-        32 //voted_by
     }
 }
 
@@ -312,12 +294,6 @@ pub struct PullRequestSent {
     pub sent_by: Vec<Pubkey>,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
-}
-
-#[event]
-pub struct VoteCasted {
-    pub pr_pub_key: Pubkey,
-    pub voted_by: Pubkey,
 }
 
 #[event]
@@ -350,12 +326,6 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_description_link: String,
     pub roadmap_creation_unix: u64,
     pub roadmap_creator: Pubkey,
-}
-
-#[event]
-pub struct StakeOnObjectiveEvent {
-    pub objective_pub_key: Pubkey,
-    pub staked_by: Pubkey,
 }
 
 #[event]

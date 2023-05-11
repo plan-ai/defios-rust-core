@@ -4,8 +4,11 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddObjectiveDataEvent, Issue, Objective, ObjectiveDeliverable, ObjectiveState,VerifiedUser,NameRouter};
-use crate::error::{DefiOSError};
+use crate::error::DefiOSError;
+use crate::state::{
+    AddObjectiveDataEvent, Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState,
+    VerifiedUser,
+};
 #[derive(Accounts)]
 pub struct AddObjective<'info> {
     #[account(mut)]
@@ -78,8 +81,6 @@ pub fn handler(
     metadata_account.objective_description_link = objective_description_link.clone();
     metadata_account.objective_state = objective_state;
     metadata_account.objective_deliverable = objective_deliverable;
-    metadata_account.objective_staker_ids = vec![];
-    metadata_account.objective_staker_amts = vec![];
     metadata_account.objective_issue = objective_issue.key();
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,

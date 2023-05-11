@@ -4,8 +4,8 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddCommitToPR, Commit, PullRequest,VerifiedUser,NameRouter};
-use crate::error::{DefiOSError};
+use crate::error::DefiOSError;
+use crate::state::{AddCommitToPR, Commit, NameRouter, PullRequest, VerifiedUser};
 #[derive(Accounts)]
 pub struct AddCommitToPullRequest<'info> {
     #[account(mut)]

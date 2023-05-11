@@ -92,10 +92,6 @@ pub mod defios {
         )
     }
 
-    pub fn send_funds(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()> {
-        send_funds::handler(ctx, transfer_amount)
-    }
-
     pub fn add_objective_data(
         ctx: Context<AddObjective>,
         objective_title: String,
@@ -118,10 +114,6 @@ pub mod defios {
 
     pub fn add_child_objective(ctx: Context<AddChildObjective>) -> Result<()> {
         add_child_objective::handler(ctx)
-    }
-
-    pub fn cast_vote(ctx: Context<CastVote>) -> Result<()> {
-        cast_vote::handler(ctx)
     }
 
     pub fn add_pr(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()> {

@@ -5,7 +5,9 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore,VerifiedUser,NameRouter};
+use crate::state::{
+    AddChildObjectiveEvent, NameRouter, Objective, RoadMapMetaDataStore, VerifiedUser,
+};
 
 #[derive(Accounts)]
 pub struct AddChildObjective<'info> {
