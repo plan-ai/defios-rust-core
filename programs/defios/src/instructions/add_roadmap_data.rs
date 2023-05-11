@@ -4,8 +4,8 @@ use anchor_spl::{
     token::Token,
 };
 
-use crate::state::{AddRoadmapDataEvent, RoadMapMetaDataStore, RoadmapOutlook};
-
+use crate::state::{AddRoadmapDataEvent, RoadMapMetaDataStore, RoadmapOutlook,NameRouter,VerifiedUser};
+use crate::error::{DefiOSError};
 #[derive(Accounts)]
 pub struct AddMetadata<'info> {
     #[account(mut)]
@@ -22,6 +22,29 @@ pub struct AddMetadata<'info> {
         bump
     )]
     pub metadata_account: Account<'info, RoadMapMetaDataStore>,
+    #[account(
+        seeds = [
+            roadmap_metadata_verified_user.user_name.as_bytes(),
+            roadmap_data_adder.key().as_ref(),
+            name_router_account.key().as_ref()
+        ],
+        bump = roadmap_metadata_verified_user.bump
+    )]
+    pub roadmap_metadata_verified_user: Account<'info, VerifiedUser>,
+    #[account(
+        address = roadmap_metadata_verified_user.name_router @ DefiOSError::InvalidNameRouter,
+        seeds = [
+            name_router_account.signing_domain.as_bytes(),
+            name_router_account.signature_version.to_string().as_bytes(),
+            router_creator.key().as_ref()
+        ],
+        bump = name_router_account.bump
+    )]
+    pub name_router_account: Account<'info, NameRouter>,
+    #[account(
+        address = name_router_account.router_creator
+    )]
+    pub router_creator: SystemAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 
