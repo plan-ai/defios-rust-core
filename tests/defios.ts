@@ -1923,7 +1923,7 @@ describe("defios", () => {
     await program.methods
       .addCommit(commitHash2, treeHash2, metadataURI2)
       .accounts({
-        commitAccount:commitAccount2,
+        commitAccount: commitAccount2,
         commitCreator: roadmapDataAdder.publicKey,
         commitVerifiedUser: verifiedUserAccount,
         issueAccount,
@@ -1945,10 +1945,10 @@ describe("defios", () => {
     await program.methods
       .addCommitToPr()
       .accounts({
-        commitVerifiedUser:verifiedUserAccount,
-        commitAddr:roadmapDataAdder.publicKey,
-        commit:commitAccount2,
-        pullRequestMeatdataAccount:pullRequestMeatdataAccount,
+        commitVerifiedUser: verifiedUserAccount,
+        commitAddr: roadmapDataAdder.publicKey,
+        commit: commitAccount2,
+        pullRequestMeatdataAccount: pullRequestMeatdataAccount,
         nameRouterAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
