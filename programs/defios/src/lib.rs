@@ -98,8 +98,7 @@ pub mod defios {
         objective_start_unix: u64,
         objective_end_unix: u64,
         objective_description_link: String,
-        objective_state: ObjectiveState,
-        objective_deliverable: ObjectiveDeliverable,
+        objective_deliverable: u32,
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
@@ -107,7 +106,6 @@ pub mod defios {
             objective_start_unix,
             objective_end_unix,
             objective_description_link,
-            objective_state,
             objective_deliverable,
         )
     }
