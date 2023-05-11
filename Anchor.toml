@@ -2,8 +2,8 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-defios = "B7fYt6ZuT2Kw3tgtz3RXv6ADDQ3Tww9Zv4MLooRmd4fx"
-token_vesting = "Uxg6s2212nfJrpogLQUvecey9kYUEWTaeBmUCsWBQWa"
+defios = "HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6"
+token_vesting = "5Wm1LaCnGUY5S1om7qUy7PC6FnKRBCwxPLNeA97w17Hs"
 [programs.devnet]
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 token_vesting = "vEsTJ2AkFvth5Cp8VvGAim1RFFTnyjPF3nxGZBm3Cbp"

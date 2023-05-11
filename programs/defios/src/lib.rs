@@ -6,7 +6,7 @@ pub mod error;
 pub mod instructions;
 pub mod state;
 
-declare_id!("B7fYt6ZuT2Kw3tgtz3RXv6ADDQ3Tww9Zv4MLooRmd4fx");
+declare_id!("HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6");
 
 #[program]
 pub mod defios {

@@ -1,7 +1,7 @@
 use crate::{error::DefiOSError, state::*};
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{create as create_associated_token_account, AssociatedToken, Create},
+    associated_token::{create as create_associated_token_account, AssociatedToken, Create,get_associated_token_address},
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 use sha256::digest;
@@ -157,6 +157,15 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let second_commit_account = &ctx.accounts.second_commit_account;
     let third_commit_account = &ctx.accounts.third_commit_account;
     let fourth_commit_account = &ctx.accounts.fourth_commit_account;
+
+    //checking if issue token account sent is same as expected
+    let expected_issue_token_pool_account =
+        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
+
+    require!(
+        expected_issue_token_pool_account.eq(&issue_token_pool_account.key()),
+        DefiOSError::TokenAccountMismatch
+    );
 
     //Creating token account if empty
     if commit_creator_reward_token_account.data_is_empty() {
