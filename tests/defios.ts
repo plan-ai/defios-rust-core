@@ -45,6 +45,9 @@ describe("defios", () => {
   const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
     microLamports: 1,
   });
+  const roadmapTitle = "Test Roadmap";
+  const roadmapDescription = "https://github.com/defi-os/Issues";
+  const roadmapOutlook = 0;
   //helper functions
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
@@ -271,7 +274,7 @@ describe("defios", () => {
     //adds logs to keypair
     console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
     console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
+      `Repository creator: ${repositoryCreator.publicKey.toString()}`
     );
 
     program.addEventListener("RepositoryCreated", async (event) => {
@@ -1253,6 +1256,39 @@ describe("defios", () => {
         fourthCommitAccount: commitAccounts[3],
       })
       .signers([commitCreatorKeypair])
+      .rpc({ skipPreflight: true });
+  });
+  it("Creates a roadmap!", async () => {
+    //generates key pairs and airdrops solana to them
+    const roadmapDataAdder = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      roadmapDataAdder.publicKey
+    );
+
+    //adds logs to keypair
+    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
+    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
+
+    const [metadataAccount] = await get_pda_from_seeds([
+      Buffer.from("roadmapmetadataadd"),
+      verifiedUserAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+    await program.methods
+      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .accounts({
+        nameRouterAccount,
+        metadataAccount,
+        roadmapDataAdder: roadmapDataAdder.publicKey,
+        roadmapVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
 });

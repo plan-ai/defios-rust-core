@@ -18,7 +18,7 @@ pub struct AddMetadata<'info> {
         space = RoadMapMetaDataStore::size(),
         seeds = [
             b"roadmapmetadataadd",
-            metadata_account.key().as_ref(),
+            roadmap_verified_user.key().as_ref(),
             roadmap_data_adder.key().as_ref()
         ],
         bump
@@ -26,15 +26,15 @@ pub struct AddMetadata<'info> {
     pub metadata_account: Account<'info, RoadMapMetaDataStore>,
     #[account(
         seeds = [
-            roadmap_metadata_verified_user.user_name.as_bytes(),
+            roadmap_verified_user.user_name.as_bytes(),
             roadmap_data_adder.key().as_ref(),
             name_router_account.key().as_ref()
         ],
-        bump = roadmap_metadata_verified_user.bump
+        bump = roadmap_verified_user.bump
     )]
-    pub roadmap_metadata_verified_user: Account<'info, VerifiedUser>,
+    pub roadmap_verified_user: Account<'info, VerifiedUser>,
     #[account(
-        address = roadmap_metadata_verified_user.name_router @ DefiOSError::InvalidNameRouter,
+        address = roadmap_verified_user.name_router @ DefiOSError::InvalidNameRouter,
         seeds = [
             name_router_account.signing_domain.as_bytes(),
             name_router_account.signature_version.to_string().as_bytes(),
@@ -54,11 +54,26 @@ pub fn handler(
     ctx: Context<AddMetadata>,
     roadmap_title: String,
     roadmap_description_link: String,
-    roadmap_outlook: RoadmapOutlook,
+    roadmap_outlook_no: u32,
 ) -> Result<()> {
     let roadmap_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
     let roadmap_data_adder = &mut ctx.accounts.roadmap_data_adder;
+    let mut roadmap_outlook = RoadmapOutlook::Next2;
+    match roadmap_outlook_no {
+        1 => {
+            roadmap_outlook = RoadmapOutlook::Next5;
+        }
+        2 => {
+            roadmap_outlook = RoadmapOutlook::Plus5;
+        }
+        3 => {
+            roadmap_outlook = RoadmapOutlook::LongTerm;
+        }
+        _ => {
+            roadmap_outlook = RoadmapOutlook::Next2;
+        }
+    };
     msg!(
         "Adding roadmap: Title:{}, Description: {}",
         roadmap_title,
