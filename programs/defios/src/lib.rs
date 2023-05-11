@@ -6,7 +6,7 @@ pub mod error;
 pub mod instructions;
 pub mod state;
 
-declare_id!("DppsrKuyLhDX7sZtn4KFoZuUrQPnfQcvqQWV1FTR15Hp");
+declare_id!("B7fYt6ZuT2Kw3tgtz3RXv6ADDQ3Tww9Zv4MLooRmd4fx");
 
 #[program]
 pub mod defios {
@@ -82,7 +82,7 @@ pub mod defios {
         ctx: Context<AddMetadata>,
         roadmap_title: String,
         roadmap_description_link: String,
-        roadmap_outlook: RoadmapOutlook,
+        roadmap_outlook: u32,
     ) -> Result<()> {
         add_roadmap_data::handler(
             ctx,
@@ -98,8 +98,7 @@ pub mod defios {
         objective_start_unix: u64,
         objective_end_unix: u64,
         objective_description_link: String,
-        objective_state: ObjectiveState,
-        objective_deliverable: ObjectiveDeliverable,
+        objective_deliverable: u32,
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
@@ -107,7 +106,6 @@ pub mod defios {
             objective_start_unix,
             objective_end_unix,
             objective_description_link,
-            objective_state,
             objective_deliverable,
         )
     }

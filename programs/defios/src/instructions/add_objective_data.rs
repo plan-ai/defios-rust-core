@@ -19,7 +19,7 @@ pub struct AddObjective<'info> {
         space = Objective::size(),
         seeds = [
             b"objectivedataadd",
-            metadata_account.key().as_ref(),
+            objective_issue.key().as_ref(),
             objective_data_addr.key().as_ref()
         ],
         bump
@@ -59,12 +59,34 @@ pub fn handler(
     objective_start_unix: u64,
     objective_end_unix: u64,
     objective_description_link: String,
-    objective_state: ObjectiveState,
-    objective_deliverable: ObjectiveDeliverable,
+    objective_deliverable_no: u32,
 ) -> Result<()> {
-    let objective_creation_unix = Clock::get()?.unix_timestamp;
+    let objective_creation_unix = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_issue = &ctx.accounts.objective_issue;
+    let objective_state = ObjectiveState::InProgress;
+    let mut objective_deliverable = ObjectiveDeliverable::Infrastructure;
+    match objective_deliverable_no {
+        1 => {
+            objective_deliverable = ObjectiveDeliverable::Tooling;
+        }
+        2 => {
+            objective_deliverable = ObjectiveDeliverable::Publication;
+        }
+        3 => {
+            objective_deliverable = ObjectiveDeliverable::Product;
+        }
+        4 => {
+            objective_deliverable = ObjectiveDeliverable::Other;
+        }
+        _ => {
+            objective_deliverable = ObjectiveDeliverable::Infrastructure;
+        }
+    };
+    require!(
+        objective_creation_unix < objective_end_unix,
+        DefiOSError::RoadmapInvalidEndTime
+    );
     msg!(
         "Adding objective: Title:{}, Description: {}",
         objective_title,
