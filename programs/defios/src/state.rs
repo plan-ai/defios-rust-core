@@ -277,6 +277,7 @@ pub struct PullRequest {
     pub sent_by: Vec<Pubkey>,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
+    pub accepted:bool
 }
 
 impl PullRequest {

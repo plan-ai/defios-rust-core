@@ -45,4 +45,8 @@ pub enum DefiOSError {
     //6010
     #[msg("Roadmap end time before roadmap creation time")]
     RoadmapInvalidEndTime,
+
+    //6010
+    #[msg("Can not add PR of somebody else's commits")]
+    UnauthorizedPR
 }

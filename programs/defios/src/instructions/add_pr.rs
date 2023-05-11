@@ -12,7 +12,7 @@ pub struct AddPullRequest<'info> {
     pub pull_request_addr: Signer<'info>,
     #[account(mut)]
     pub issue: Account<'info, Issue>,
-    #[account(constraint = pull_request_addr.key() == commit.commit_creator)]
+    #[account(constraint = pull_request_addr.key().eq(&commit.commit_creator) @ DefiOSError::UnauthorizedPR)]
     pub commit: Account<'info, Commit>,
     #[account(
         init,
@@ -67,7 +67,7 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     pull_request_meatdata_account.sent_by = vec![pull_request_addr.key()];
     pull_request_meatdata_account.commits = vec![commit.key()];
     pull_request_meatdata_account.metadata_uri = metadata_uri.clone();
-
+    pull_request_meatdata_account.accepted = false;
     emit!(PullRequestSent {
         sent_by: vec![pull_request_addr.key()],
         commits: vec![commit.key()],
