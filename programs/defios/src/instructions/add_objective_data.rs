@@ -10,6 +10,7 @@ use crate::state::{
     VerifiedUser,
 };
 #[derive(Accounts)]
+#[instruction(objective_id: String)]
 pub struct AddObjective<'info> {
     #[account(mut)]
     pub objective_data_addr: Signer<'info>,
@@ -20,7 +21,8 @@ pub struct AddObjective<'info> {
         seeds = [
             b"objectivedataadd",
             objective_issue.key().as_ref(),
-            objective_data_addr.key().as_ref()
+            objective_data_addr.key().as_ref(),
+            objective_id.as_bytes()            
         ],
         bump
     )]
@@ -55,6 +57,7 @@ pub struct AddObjective<'info> {
 
 pub fn handler(
     ctx: Context<AddObjective>,
+    objective_id: String,
     objective_title: String,
     objective_start_unix: u64,
     objective_end_unix: u64,

@@ -81,8 +81,6 @@ describe("defios", () => {
   async function create_name_router() {
     //generating keypair and airdropping solana to it
     const routerCreatorKeypair = await create_keypair();
-    //console log router creator key pair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
 
     //get public key of pda ideally generated using seeds
     const [nameRouterAccount] = await get_pda_from_seeds([
@@ -238,15 +236,6 @@ describe("defios", () => {
       bump,
       totalVerifiedUsers,
     } = await program.account.nameRouter.fetch(nameRouterAccount);
-
-    //console log the data
-    console.log(
-      routerCreator.toString(),
-      fSignatureVersion,
-      signingDomain,
-      bump,
-      totalVerifiedUsers.toNumber()
-    );
   });
 
   it("Adds a verified user", async () => {
@@ -277,17 +266,9 @@ describe("defios", () => {
       preInstructions,
     ] = await create_spl_token(repositoryCreator);
 
-    //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${repositoryCreator.publicKey.toString()}`
-    );
-
     program.addEventListener("RepositoryCreated", async (event) => {
-      console.log("Repository created", event);
       event.ghUsernames.forEach(async (username, i) => {
         try {
-          console.log("Adding user claim", username, event.claimAmounts[i]);
           const [userClaimAccount] = await get_pda_from_seeds([
             Buffer.from("user_claim"),
             Buffer.from(username),
@@ -307,10 +288,7 @@ describe("defios", () => {
             .signers([routerCreatorKeypair])
             .rpc();
 
-          console.log(await program.account.userClaim.fetch(userClaimAccount));
-
           const newUser = await create_keypair();
-          console.log("user", newUser.publicKey.toString());
 
           const [verifiedUserAccount] = await create_verified_user(
             routerCreatorKeypair,
@@ -322,9 +300,7 @@ describe("defios", () => {
             mintKeypair.publicKey,
             newUser.publicKey
           );
-          console.log("userClaimAccount", userClaimAccount.toString());
-          console.log("repositoryAccount", repositoryAccount.toString());
-          console.log("nameRouter", nameRouterAccount.toString());
+
           await program.methods
             .claimUserTokens(username)
             .accounts({
@@ -344,13 +320,6 @@ describe("defios", () => {
             })
             .signers([newUser])
             .rpc();
-
-          console.log(
-            "User balance",
-            await connection.getTokenAccountBalance(userRewardTokenAccount)
-          );
-          console.log(await program.account.userClaim.fetch(userClaimAccount));
-          console.log("User claim added", username, event.claimAmounts[i]);
         } catch (e) {
           console.log(e);
         }
@@ -378,11 +347,6 @@ describe("defios", () => {
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
       .rpc();
-
-    console.log(
-      "Repository data",
-      await program.account.repository.fetch(repositoryAccount)
-    );
   });
 
   it("Creates a issue", async () => {
@@ -425,12 +389,6 @@ describe("defios", () => {
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -476,8 +434,6 @@ describe("defios", () => {
       })
       .signers([issueCreatorKeypair])
       .rpc();
-
-    console.log("Issue data", await program.account.issue.fetch(issueAccount));
   });
 
   it("Stakes on a issue", async () => {
@@ -491,13 +447,6 @@ describe("defios", () => {
       nameRouterAccount,
       repositoryCreator.publicKey
     );
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
-    console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
     // Creating repository
     const [
@@ -629,11 +578,6 @@ describe("defios", () => {
       .preInstructions([createIssueStakerTokenAccountIx, mintToIssueStakerIx])
       .signers([repositoryCreator, issueStakerKeypair])
       .rpc();
-
-    console.log(
-      "Issue Staker data",
-      await program.account.issueStaker.fetch(issueStakerAccount)
-    );
   });
 
   it("Unstakes on a issue", async () => {
@@ -649,13 +593,6 @@ describe("defios", () => {
       nameRouterAccount,
       repositoryCreator.publicKey
     );
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
-    console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
 
     // Creating rewards mint
     const [
@@ -831,14 +768,6 @@ describe("defios", () => {
       repositoryCreator.publicKey
     );
 
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${repositoryCreator.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
-    console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
-    console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
-
     // Creating rewards mint
     const [
       repositoryAccount,
@@ -999,11 +928,6 @@ describe("defios", () => {
       })
       .signers([commitCreatorKeypair])
       .rpc({ skipPreflight: true });
-
-    console.log(
-      "Commit data",
-      await program.account.commit.fetch(commitAccount)
-    );
   });
 
   it("Claims the reward after completing an issue", async () => {
@@ -1013,13 +937,6 @@ describe("defios", () => {
     const commitCreatorKeypair = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
       await create_name_router();
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${repositoryCreator.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
-    console.log(`Issue staker: ${issueStakerKeypair.publicKey.toString()}`);
-    console.log(`Commit creator: ${commitCreatorKeypair.publicKey.toString()}`);
 
     // Adding repository creator user
     const [repositoryVerifiedUser] = await create_verified_user(
@@ -1220,11 +1137,6 @@ describe("defios", () => {
         .signers([commitCreatorKeypair])
         .rpc({ skipPreflight: true });
 
-      console.log(
-        "Commit data",
-        await program.account.commit.fetch(commitAccount)
-      );
-
       commitAccounts.push(commitAccount);
     }
 
@@ -1233,11 +1145,6 @@ describe("defios", () => {
       commitCreatorKeypair.publicKey,
       true
     );
-
-    console.log({
-      IssuecreatorKeypair: issueCreatorKeypair.publicKey,
-      IssueTokenPoolAccount: issueTokenPoolAccount,
-    });
 
     await program.methods
       .claimReward()
@@ -1276,8 +1183,6 @@ describe("defios", () => {
     );
 
     //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
@@ -1309,8 +1214,6 @@ describe("defios", () => {
     );
 
     //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
 
     const [
       repositoryAccount,
@@ -1342,12 +1245,6 @@ describe("defios", () => {
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -1394,8 +1291,6 @@ describe("defios", () => {
       .signers([issueCreatorKeypair])
       .rpc();
 
-    console.log("Issue data", await program.account.issue.fetch(issueAccount));
-
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
       verifiedUserAccount.toBuffer(),
@@ -1413,14 +1308,17 @@ describe("defios", () => {
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
-
+    let objective_number = 1;
+    const objectiveId: string = objective_number.toString();
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from(objectiveId),
     ]);
     await program.methods
       .addObjectiveData(
+        objectiveId,
         objectiveTitle,
         objectiveStartUnix,
         objectiveEndUnix,
@@ -1451,8 +1349,6 @@ describe("defios", () => {
     );
 
     //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
 
     const [
       repositoryAccount,
@@ -1484,12 +1380,6 @@ describe("defios", () => {
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -1536,8 +1426,6 @@ describe("defios", () => {
       .signers([issueCreatorKeypair])
       .rpc();
 
-    console.log("Issue data", await program.account.issue.fetch(issueAccount));
-
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
       verifiedUserAccount.toBuffer(),
@@ -1560,9 +1448,11 @@ describe("defios", () => {
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("1"),
     ]);
     await program.methods
       .addObjectiveData(
+        "1",
         objectiveTitle,
         objectiveStartUnix,
         objectiveEndUnix,
@@ -1587,7 +1477,6 @@ describe("defios", () => {
         nameRouterAccount,
         objectiveAccount: objectiveAccount,
         roadmapMetadataAccount: metadataAccount,
-        metadataAccount: objectiveAccount,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         parentAccount: null,
@@ -1597,7 +1486,7 @@ describe("defios", () => {
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
-  it("Add a PR to an issue", async () => {
+  it("Add a child objective to an objective", async () => {
     //generates key pairs and airdrops solana to them
     const roadmapDataAdder = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
@@ -1609,8 +1498,6 @@ describe("defios", () => {
     );
 
     //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
 
     const [
       repositoryAccount,
@@ -1642,12 +1529,6 @@ describe("defios", () => {
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -1694,7 +1575,182 @@ describe("defios", () => {
       .signers([issueCreatorKeypair])
       .rpc();
 
-    console.log("Issue data", await program.account.issue.fetch(issueAccount));
+    const [metadataAccount] = await get_pda_from_seeds([
+      Buffer.from("roadmapmetadataadd"),
+      verifiedUserAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+    await program.methods
+      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .accounts({
+        nameRouterAccount,
+        metadataAccount,
+        roadmapDataAdder: roadmapDataAdder.publicKey,
+        roadmapVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    const [objectiveAccount] = await get_pda_from_seeds([
+      Buffer.from("objectivedataadd"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("1"),
+    ]);
+    await program.methods
+      .addObjectiveData(
+        "1",
+        objectiveTitle,
+        objectiveStartUnix,
+        objectiveEndUnix,
+        objectiveDescription,
+        objectiveDeliverable
+      )
+      .accounts({
+        nameRouterAccount,
+        objectiveIssue: issueAccount,
+        metadataAccount: objectiveAccount,
+        objectiveDataAddr: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    const [objectiveAccount2] = await get_pda_from_seeds([
+      Buffer.from("objectivedataadd"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("2"),
+    ]);
+    await program.methods
+      .addObjectiveData(
+        "2",
+        objectiveTitle,
+        objectiveStartUnix,
+        objectiveEndUnix,
+        objectiveDescription,
+        objectiveDeliverable
+      )
+      .accounts({
+        nameRouterAccount,
+        objectiveIssue: issueAccount,
+        metadataAccount: objectiveAccount2,
+        objectiveDataAddr: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    await program.methods
+      .addChildObjective()
+      .accounts({
+        nameRouterAccount,
+        objectiveAccount: objectiveAccount2,
+        roadmapMetadataAccount: null,
+        childObjectiveAdder: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        parentAccount: objectiveAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+  });
+  it("Add a PR to an issue", async () => {
+    //generates key pairs and airdrops solana to them
+    const roadmapDataAdder = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      roadmapDataAdder.publicKey
+    );
+
+    //adds logs to keypair
+
+    const [
+      repositoryAccount,
+      repositoryTokenPoolAccount,
+      mintKeypair,
+      preInstructions,
+    ] = await create_spl_token(roadmapDataAdder);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        ["123456", "12345"],
+        [new anchor.BN(1000000000), new anchor.BN(1000000000)]
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        repositoryTokenPoolAccount: repositoryTokenPoolAccount,
+      })
+      .preInstructions(preInstructions)
+      .signers([roadmapDataAdder, mintKeypair])
+      .rpc();
+
+    const issueCreatorKeypair = await create_keypair();
+
+    const { issueIndex } = await program.account.repository.fetch(
+      repositoryAccount
+    );
+
+    // Adding issue creator user
+
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
+    );
+    // Creating issue
+    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
+
+    const issueTokenPoolAccount = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      issueAccount,
+      true
+    );
+
+    await program.methods
+      .addIssue(issueURI)
+      .accounts({
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        issueTokenPoolAccount,
+        issueVerifiedUser,
+        nameRouterAccount,
+        repositoryAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([issueCreatorKeypair])
+      .rpc();
+
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
     const commitHash = sha256("Commit hash 1").slice(0, 8);
@@ -1724,11 +1780,6 @@ describe("defios", () => {
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
-
-    console.log(
-      "Commit data",
-      await program.account.commit.fetch(commitAccount)
-    );
 
     const [pullRequestMeatdataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -1764,8 +1815,6 @@ describe("defios", () => {
     );
 
     //adds logs to keypair
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(`Roadmap creator: ${roadmapDataAdder.publicKey.toString()}`);
 
     const [
       repositoryAccount,
@@ -1797,12 +1846,6 @@ describe("defios", () => {
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
-
-    console.log(`Router creator: ${routerCreatorKeypair.publicKey.toString()}`);
-    console.log(
-      `Repository creator: ${routerCreatorKeypair.publicKey.toString()}`
-    );
-    console.log(`Issue creator: ${issueCreatorKeypair.publicKey.toString()}`);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -1849,7 +1892,6 @@ describe("defios", () => {
       .signers([issueCreatorKeypair])
       .rpc();
 
-    console.log("Issue data", await program.account.issue.fetch(issueAccount));
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
     const commitHash = sha256("Commit hash 1").slice(0, 8);
@@ -1879,11 +1921,6 @@ describe("defios", () => {
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
-
-    console.log(
-      "Commit data",
-      await program.account.commit.fetch(commitAccount)
-    );
 
     const [pullRequestMeatdataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -1936,11 +1973,6 @@ describe("defios", () => {
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
-
-    console.log(
-      "Commit data",
-      await program.account.commit.fetch(commitAccount2)
-    );
 
     await program.methods
       .addCommitToPr()
