@@ -1308,19 +1308,22 @@ describe("defios", () => {
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
-
+    let objective_number = 1;
+    const objectiveId:string = objective_number.toString();
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from(objectiveId)
     ]);
     await program.methods
       .addObjectiveData(
+        objectiveId,
         objectiveTitle,
         objectiveStartUnix,
         objectiveEndUnix,
         objectiveDescription,
-        objectiveDeliverable
+        objectiveDeliverable,
       )
       .accounts({
         nameRouterAccount,
@@ -1332,7 +1335,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true });
+      .rpc({ skipPreflight: false });
   });
   it("Add an objective to a roadmap!", async () => {
     //generates key pairs and airdrops solana to them
@@ -1445,14 +1448,16 @@ describe("defios", () => {
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("1")
     ]);
     await program.methods
       .addObjectiveData(
+        "1",
         objectiveTitle,
         objectiveStartUnix,
         objectiveEndUnix,
         objectiveDescription,
-        objectiveDeliverable
+        objectiveDeliverable,
       )
       .accounts({
         nameRouterAccount,
@@ -1464,7 +1469,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true });
+      .rpc({ skipPreflight: false });
 
     await program.methods
       .addChildObjective()

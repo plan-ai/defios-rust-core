@@ -94,19 +94,21 @@ pub mod defios {
 
     pub fn add_objective_data(
         ctx: Context<AddObjective>,
+        objective_id:String,
         objective_title: String,
         objective_start_unix: u64,
         objective_end_unix: u64,
         objective_description_link: String,
-        objective_deliverable: u32,
+        objective_deliverable: u32
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
+            objective_id,
             objective_title,
             objective_start_unix,
             objective_end_unix,
             objective_description_link,
-            objective_deliverable,
+            objective_deliverable
         )
     }
 
