@@ -1160,7 +1160,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         routerCreator: routerCreatorKeypair.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
-        issueTokenPoolAccount:issueTokenPoolAccount,
+        issueTokenPoolAccount: issueTokenPoolAccount,
         nameRouterAccount,
         issueCreator: issueCreatorKeypair.publicKey,
         firstCommitAccount: commitAccounts[0],
@@ -1169,7 +1169,7 @@ describe("defios", () => {
         fourthCommitAccount: commitAccounts[3],
       })
       .signers([commitCreatorKeypair])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
   });
   it("Creates a roadmap!", async () => {
     //generates key pairs and airdrops solana to them
@@ -1309,12 +1309,12 @@ describe("defios", () => {
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
     let objective_number = 1;
-    const objectiveId:string = objective_number.toString();
+    const objectiveId: string = objective_number.toString();
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from(objectiveId)
+      Buffer.from(objectiveId),
     ]);
     await program.methods
       .addObjectiveData(
@@ -1323,7 +1323,7 @@ describe("defios", () => {
         objectiveStartUnix,
         objectiveEndUnix,
         objectiveDescription,
-        objectiveDeliverable,
+        objectiveDeliverable
       )
       .accounts({
         nameRouterAccount,
@@ -1335,7 +1335,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
   });
   it("Add an objective to a roadmap!", async () => {
     //generates key pairs and airdrops solana to them
@@ -1448,7 +1448,7 @@ describe("defios", () => {
       Buffer.from("objectivedataadd"),
       issueAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from("1")
+      Buffer.from("1"),
     ]);
     await program.methods
       .addObjectiveData(
@@ -1457,7 +1457,7 @@ describe("defios", () => {
         objectiveStartUnix,
         objectiveEndUnix,
         objectiveDescription,
-        objectiveDeliverable,
+        objectiveDeliverable
       )
       .accounts({
         nameRouterAccount,
@@ -1469,7 +1469,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
 
     await program.methods
       .addChildObjective()
@@ -1477,10 +1477,185 @@ describe("defios", () => {
         nameRouterAccount,
         objectiveAccount: objectiveAccount,
         roadmapMetadataAccount: metadataAccount,
-        metadataAccount: objectiveAccount,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         parentAccount: null,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+  });
+  it("Add a child objective to an objective", async () => {
+    //generates key pairs and airdrops solana to them
+    const roadmapDataAdder = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      roadmapDataAdder.publicKey
+    );
+
+    //adds logs to keypair
+
+    const [
+      repositoryAccount,
+      repositoryTokenPoolAccount,
+      mintKeypair,
+      preInstructions,
+    ] = await create_spl_token(roadmapDataAdder);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        ["123456", "12345"],
+        [new anchor.BN(1000000000), new anchor.BN(1000000000)]
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        repositoryTokenPoolAccount: repositoryTokenPoolAccount,
+      })
+      .preInstructions(preInstructions)
+      .signers([roadmapDataAdder, mintKeypair])
+      .rpc();
+
+    const issueCreatorKeypair = await create_keypair();
+
+    const { issueIndex } = await program.account.repository.fetch(
+      repositoryAccount
+    );
+
+    // Adding issue creator user
+
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
+    );
+    // Creating issue
+    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
+
+    const issueTokenPoolAccount = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      issueAccount,
+      true
+    );
+
+    await program.methods
+      .addIssue(issueURI)
+      .accounts({
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        issueTokenPoolAccount,
+        issueVerifiedUser,
+        nameRouterAccount,
+        repositoryAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([issueCreatorKeypair])
+      .rpc();
+
+    const [metadataAccount] = await get_pda_from_seeds([
+      Buffer.from("roadmapmetadataadd"),
+      verifiedUserAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+    await program.methods
+      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .accounts({
+        nameRouterAccount,
+        metadataAccount,
+        roadmapDataAdder: roadmapDataAdder.publicKey,
+        roadmapVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    const [objectiveAccount] = await get_pda_from_seeds([
+      Buffer.from("objectivedataadd"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("1"),
+    ]);
+    await program.methods
+      .addObjectiveData(
+        "1",
+        objectiveTitle,
+        objectiveStartUnix,
+        objectiveEndUnix,
+        objectiveDescription,
+        objectiveDeliverable
+      )
+      .accounts({
+        nameRouterAccount,
+        objectiveIssue: issueAccount,
+        metadataAccount: objectiveAccount,
+        objectiveDataAddr: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    const [objectiveAccount2] = await get_pda_from_seeds([
+      Buffer.from("objectivedataadd"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+      Buffer.from("2"),
+    ]);
+    await program.methods
+      .addObjectiveData(
+        "2",
+        objectiveTitle,
+        objectiveStartUnix,
+        objectiveEndUnix,
+        objectiveDescription,
+        objectiveDeliverable
+      )
+      .accounts({
+        nameRouterAccount,
+        objectiveIssue: issueAccount,
+        metadataAccount: objectiveAccount2,
+        objectiveDataAddr: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    await program.methods
+      .addChildObjective()
+      .accounts({
+        nameRouterAccount,
+        objectiveAccount: objectiveAccount2,
+        roadmapMetadataAccount: null,
+        childObjectiveAdder: roadmapDataAdder.publicKey,
+        objectiveVerifiedUser: verifiedUserAccount,
+        parentAccount: objectiveAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
