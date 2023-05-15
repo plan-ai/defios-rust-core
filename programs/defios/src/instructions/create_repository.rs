@@ -5,8 +5,8 @@ use crate::{
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{create, get_associated_token_address, Create, AssociatedToken},
-    token::{Mint, TokenAccount,Token},
+    associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    token::{Mint, Token, TokenAccount},
 };
 
 #[derive(Accounts)]
@@ -142,10 +142,11 @@ pub fn handler(
     //add checks for making sure token vesting accounts are correct
     let expected_vesting_token_account =
         get_associated_token_address(&vesting_account.key(), &rewards_mint.key());
-    let expected_repository_token_pool_account = 
-    get_associated_token_address(&repository_creator.key(),&rewards_mint.key());
+    let expected_repository_token_pool_account =
+        get_associated_token_address(&repository_creator.key(), &rewards_mint.key());
     require!(
-        expected_vesting_token_account.eq(&vesting_token_account.key()) && expected_repository_token_pool_account.eq(&repository_token_pool_account.key()),
+        expected_vesting_token_account.eq(&vesting_token_account.key())
+            && expected_repository_token_pool_account.eq(&repository_token_pool_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
@@ -163,7 +164,7 @@ pub fn handler(
             amount: PER_VEST_AMOUNT,
         });
         release_time += UNIX_CHANGE;
-    };
+    }
 
     //add vestifn schedule to repository
     repository_account.vesting_schedule = vesting_account.key();
