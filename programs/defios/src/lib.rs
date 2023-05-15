@@ -1,4 +1,4 @@
-use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook};
+use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook, Schedule};
 use anchor_lang::prelude::*;
 use instructions::*;
 
@@ -39,18 +39,6 @@ pub mod defios {
     ) -> Result<()> {
         create_repository::handler(ctx, name, description, uri)
     }
-
-    pub fn add_user_claim(
-        ctx: Context<AddUserClaim>,
-        user_name: String,
-        amount: u64,
-    ) -> Result<()> {
-        add_user_claim::handler(ctx, user_name, amount)
-    }
-
-    // pub fn claim_user_tokens(ctx: Context<ClaimUserTokens>, user_name: String) -> Result<()> {
-    //     claim_tokens::handler(ctx, user_name)
-    // }
 
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         add_issue::handler(ctx, uri)
@@ -121,5 +109,20 @@ pub mod defios {
 
     pub fn add_commit_to_pr(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
         add_commit_to_pr::handler(ctx)
+    }
+
+    pub fn unlock_tokens(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
+        unlock_tokens::handler(ctx, repo_name)
+    }
+
+    pub fn accept_pr(ctx: Context<AcceptPullRequest>, repo_name: String) -> Result<()> {
+        accept_pr::handler(ctx, repo_name)
+    }
+
+    pub fn change_vesting_schedule(
+        ctx: Context<AdminVestingScheduleShift>,
+        new_vesting_schedule: Vec<Schedule>,
+    ) -> Result<()> {
+        change_vesting_schedule::handler(ctx, new_vesting_schedule)
     }
 }

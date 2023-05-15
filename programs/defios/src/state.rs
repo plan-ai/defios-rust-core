@@ -143,12 +143,6 @@ pub struct VestingSchedule {
     pub schedules: Vec<Schedule>,
 }
 
-#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
-pub struct Schedule {
-    pub release_time: u64,
-    pub amount: u64,
-}
-
 impl VestingSchedule {
     pub fn size(number_of_schedules: u64) -> usize {
         let number_of_schedules = if number_of_schedules > 0 {
@@ -163,6 +157,13 @@ impl VestingSchedule {
         32 + // mint_address
         number_of_schedules as usize * Schedule::size()
     }
+}
+
+#[account]
+#[derive(Default)]
+pub struct Schedule {
+    pub release_time: u64,
+    pub amount: u64,
 }
 
 impl Schedule {
@@ -223,30 +224,6 @@ impl IssueStaker {
             32 + // issue_staker
             32 + // issue
             32 // issue_staker_token_account
-    }
-}
-
-#[account]
-#[derive(Default)]
-pub struct UserClaim {
-    pub bump: u8,
-    pub token_amount: u64,
-    pub repository_account: Pubkey,
-    pub name_router_account: Pubkey,
-    pub gh_user: String,
-    pub is_claimed: bool,
-}
-
-impl UserClaim {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // token_amount
-            32 + // repository_account
-            32 + // name_router_account
-            40 + // gh_user
-            4 +
-            1 // is_claimed
     }
 }
 
@@ -429,4 +406,21 @@ pub struct IssueUnstaked {
     pub unstaked_amount: u64,
     pub rewards_mint: Pubkey,
     pub issue_contribution_link: String,
+}
+
+#[event]
+pub struct PullRequestAccepted {
+    pub pull_request_addr: Pubkey,
+    pub repository: Pubkey,
+    pub repository_name: String,
+    pub issue: Pubkey,
+    pub repository_creator: Pubkey,
+}
+
+#[event]
+pub struct VestingScheduleChanged {
+    pub repository_account: Pubkey,
+    pub repository_creator: Pubkey,
+    pub old_vesting_schedule: Vec<Schedule>,
+    pub new_vesting_schedule: Vec<Schedule>,
 }

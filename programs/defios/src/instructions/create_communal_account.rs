@@ -1,9 +1,10 @@
 use anchor_lang::prelude::*;
+use crate::constants::AUTHORIZED_PUBLIC_KEY;
 
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
-    #[account(mut)]
-    pub authority: Signer<'info>,
+    #[account(constrant=AUTHORIZED_PUBLIC_KEY.eq(&authority.pubkey()),signer)]
+    pub authority: AccountInfo<'info>,
     ///CHECK: Communal deposit account
     #[account(init_if_needed,
         payer = authority,
