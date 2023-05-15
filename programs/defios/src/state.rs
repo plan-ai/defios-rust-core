@@ -82,7 +82,7 @@ pub struct Repository {
     pub name: String,
     pub description: String,
     pub uri: String,
-    pub repository_token_pool_account: Pubkey,
+    pub vesting_schedule: Pubkey,
 }
 
 impl Repository {
@@ -98,7 +98,8 @@ impl Repository {
             4 +
             100 + // description
             4 +
-            200 // uri
+            200 + // uri
+            32 //vesting schedule
     }
 }
 
@@ -137,7 +138,6 @@ impl Issue {
 #[derive(Default)]
 pub struct VestingSchedule {
     pub bump: u8,
-    pub max_schedules: u64,
     pub destination_address: Pubkey,
     pub mint_address: Pubkey,
     pub schedules: Vec<Schedule>,
@@ -159,7 +159,6 @@ impl VestingSchedule {
 
         8 + // discriminator
         1 + // bump
-        8 + // max_schedules
         32 + // destination_address
         32 + // mint_address
         number_of_schedules as usize * Schedule::size()

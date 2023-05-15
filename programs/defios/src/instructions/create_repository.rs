@@ -68,9 +68,10 @@ pub struct CreateRepository<'info> {
         bump
     )]
     pub vesting_account: Account<'info, VestingSchedule>,
-    pub repository_token_pool_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub vesting_token_account: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub repository_token_pool_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -92,8 +93,8 @@ pub fn handler(
     let repository_creator = &mut ctx.accounts.repository_creator;
     let token_program = &ctx.accounts.token_program;
     let system_program = &ctx.accounts.system_program;
-    let repository_token_pool_account = &ctx.accounts.repository_token_pool_account;
     let associated_token_program = &ctx.accounts.associated_token_program;
+    let repository_token_pool_account = &ctx.accounts.repository_token_pool_account;
 
     //logs repository and spl token creation
     msg!(
@@ -112,8 +113,6 @@ pub fn handler(
     repository_account.description = description;
     repository_account.uri = uri;
     repository_account.issue_index = 0;
-    repository_account.repository_token_pool_account =
-        ctx.accounts.repository_token_pool_account.key();
 
     //emits event of repository created
     emit!(RepositoryCreated {
@@ -164,6 +163,9 @@ pub fn handler(
             amount: PER_VEST_AMOUNT,
         });
         release_time += UNIX_CHANGE;
-    }
+    };
+
+    //add vestifn schedule to repository
+    repository_account.vesting_schedule = vesting_account.key();
     Ok(())
 }

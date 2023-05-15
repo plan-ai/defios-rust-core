@@ -48,9 +48,9 @@ pub mod defios {
         add_user_claim::handler(ctx, user_name, amount)
     }
 
-    pub fn claim_user_tokens(ctx: Context<ClaimUserTokens>, user_name: String) -> Result<()> {
-        claim_tokens::handler(ctx, user_name)
-    }
+    // pub fn claim_user_tokens(ctx: Context<ClaimUserTokens>, user_name: String) -> Result<()> {
+    //     claim_tokens::handler(ctx, user_name)
+    // }
 
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         add_issue::handler(ctx, uri)
