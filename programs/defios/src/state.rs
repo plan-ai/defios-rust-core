@@ -159,8 +159,7 @@ impl VestingSchedule {
     }
 }
 
-#[account]
-#[derive(Default)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct Schedule {
     pub release_time: u64,
     pub amount: u64,

@@ -8,7 +8,8 @@ use anchor_spl::{
 };
 #[derive(Accounts)]
 pub struct AdminVestingScheduleShift<'info> {
-    #[account(constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()),signer)]
+    ///CHECK: This is not dangerous public key constraint is already set
+    #[account(constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted,signer)]
     pub authority: AccountInfo<'info>,
     #[account(constraint=repository_account.vesting_schedule.eq(&vesting_schedule.key()))]
     pub repository_account: Account<'info, Repository>,
