@@ -139,6 +139,21 @@ pub fn handler(
         ))?;
     }
 
+    //creates repository token account if empty
+    if repository_token_pool_account.data_is_empty() {
+        create(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: repository_creator.to_account_info(),
+                associated_token: repository_token_pool_account.to_account_info(),
+                authority: repository_creator.to_account_info(),
+                mint: rewards_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+
     //add checks for making sure token vesting accounts are correct
     let expected_vesting_token_account =
         get_associated_token_address(&vesting_account.key(), &rewards_mint.key());
