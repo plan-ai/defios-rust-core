@@ -2,6 +2,7 @@ use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook};
 use anchor_lang::prelude::*;
 use instructions::*;
 
+pub mod constants;
 pub mod error;
 pub mod instructions;
 pub mod state;
@@ -35,10 +36,8 @@ pub mod defios {
         name: String,
         description: String,
         uri: String,
-        gh_usernames: Vec<String>,
-        claim_amounts: Vec<u64>,
     ) -> Result<()> {
-        create_repository::handler(ctx, name, description, uri, gh_usernames, claim_amounts)
+        create_repository::handler(ctx, name, description, uri)
     }
 
     pub fn add_user_claim(
@@ -49,9 +48,9 @@ pub mod defios {
         add_user_claim::handler(ctx, user_name, amount)
     }
 
-    pub fn claim_user_tokens(ctx: Context<ClaimUserTokens>, user_name: String) -> Result<()> {
-        claim_tokens::handler(ctx, user_name)
-    }
+    // pub fn claim_user_tokens(ctx: Context<ClaimUserTokens>, user_name: String) -> Result<()> {
+    //     claim_tokens::handler(ctx, user_name)
+    // }
 
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         add_issue::handler(ctx, uri)
@@ -94,12 +93,12 @@ pub mod defios {
 
     pub fn add_objective_data(
         ctx: Context<AddObjective>,
-        objective_id:String,
+        objective_id: String,
         objective_title: String,
         objective_start_unix: u64,
         objective_end_unix: u64,
         objective_description_link: String,
-        objective_deliverable: u32
+        objective_deliverable: u32,
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
@@ -108,7 +107,7 @@ pub mod defios {
             objective_start_unix,
             objective_end_unix,
             objective_description_link,
-            objective_deliverable
+            objective_deliverable,
         )
     }
 

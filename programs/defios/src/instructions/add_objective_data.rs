@@ -22,8 +22,8 @@ pub struct AddObjective<'info> {
             b"objectivedataadd",
             objective_issue.key().as_ref(),
             objective_data_addr.key().as_ref(),
-            objective_id.as_bytes()            
-        ],
+            objective_id.as_bytes()
+            ],
         bump
     )]
     pub metadata_account: Account<'info, Objective>,

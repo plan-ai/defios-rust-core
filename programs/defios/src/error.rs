@@ -48,5 +48,17 @@ pub enum DefiOSError {
 
     //6010
     #[msg("Can not add PR of somebody else's commits")]
-    UnauthorizedPR
+    UnauthorizedPR,
+
+    // 6011
+    #[msg("Math overflow")]
+    MathOverflow,
+
+    // 6012
+    #[msg("Token Mint mismatch")]
+    MintMismatch,
+
+    // 6013
+    #[msg("Vesting contract has not reached release time")]
+    VestingNotReachedRelease,
 }

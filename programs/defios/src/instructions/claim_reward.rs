@@ -1,7 +1,10 @@
 use crate::{error::DefiOSError, state::*};
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{create as create_associated_token_account, AssociatedToken, Create,get_associated_token_address},
+    associated_token::{
+        create as create_associated_token_account, get_associated_token_address, AssociatedToken,
+        Create,
+    },
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 use sha256::digest;
