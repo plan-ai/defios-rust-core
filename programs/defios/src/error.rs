@@ -65,4 +65,8 @@ pub enum DefiOSError {
     //6014
     #[msg("Pull request not yet accepted")]
     PullRequestNotYetAccepted,
+
+    //6015
+    #[msg("You are not authorized to merge this pull request")]
+    CanNotMergePullRequest
 }

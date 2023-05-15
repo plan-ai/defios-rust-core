@@ -1,21 +1,49 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::{token::{transfer, Mint, Token, TokenAccount, Transfer},associated_token::{get_associated_token_address}};
 
-use crate::{error::TokenVestingError, state::VestingSchedule};
+use crate::{error::DefiOSError, state::{VestingSchedule,NameRouter,VerifiedUser,Repository}};
 
 #[derive(Accounts)]
+#[instruction(repo_name:String)]
 pub struct UnlockTokens<'info> {
     #[account(
-        address = vesting_account.authority
+        mut,
+        address = repository_verified_user.user_pubkey @ DefiOSError::UnauthorizedUser,
     )]
-    pub authority: Signer<'info>,
+    pub repository_creator: Signer<'info>,
+
+    #[account(
+        seeds = [
+            repository_verified_user.user_name.as_bytes(),
+            repository_creator.key().as_ref(),
+            name_router_account.key().as_ref()
+        ],
+        bump = repository_verified_user.bump
+    )]
+    pub repository_verified_user: Box<Account<'info, VerifiedUser>>,
+
+    #[account(
+        address = repository_verified_user.name_router @ DefiOSError::InvalidNameRouter,
+        seeds = [
+            name_router_account.signing_domain.as_bytes(),
+            name_router_account.signature_version.to_string().as_bytes(),
+            router_creator.key().as_ref()
+        ],
+        bump = name_router_account.bump
+    )]
+    pub name_router_account: Box<Account<'info, NameRouter>>,
+
+    #[account(
+        address = name_router_account.router_creator
+    )]
+    pub router_creator: SystemAccount<'info>,
 
     #[account(
         mut,
-        constraint = destination_token_account.mint.eq(&token_mint.key()),
+        constraint = repository_creator_token_account.mint.eq(&token_mint.key()),
         address = vesting_account.destination_address,
     )]
-    pub destination_token_account: Account<'info, TokenAccount>,
+    pub repository_creator_token_account: Account<'info, TokenAccount>,
 
     #[account(
         address = vesting_account.mint_address,
@@ -23,12 +51,21 @@ pub struct UnlockTokens<'info> {
     pub token_mint: Account<'info, Mint>,
 
     #[account(
+        seeds = [
+            b"repository",
+            repo_name.as_bytes(),
+            repository_creator.key().as_ref(),
+        ],
+        bump=repository_account.bump
+    )]
+    pub repository_account: Account<'info, Repository>,
+
+    #[account(
         mut,
-        constraint = !vesting_account.is_initialized @ TokenVestingError::VestingAccountAlreadyInitialized,
         seeds = [
             b"vesting",
             token_mint.key().as_ref(),
-            authority.key().as_ref(),
+            repository_account.key().as_ref(),
         ],
         bump = vesting_account.bump
     )]
@@ -37,26 +74,32 @@ pub struct UnlockTokens<'info> {
     #[account(
         mut,
         constraint = vesting_token_account.mint.eq(&token_mint.key()),
-        constraint = vesting_token_account.owner.eq(&vesting_account.key()),
-        constraint = vesting_token_account.close_authority.is_none() @ TokenVestingError::VestingAccountInvalidClose,
-        constraint = vesting_token_account.delegate.is_none() @ TokenVestingError::VestingAccountInvalidDelegate,
+        constraint = vesting_token_account.owner.eq(&vesting_account.key())
     )]
     pub vesting_token_account: Account<'info, TokenAccount>,
-
+    pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<UnlockTokens>) -> Result<()> {
+pub fn handler(ctx: Context<UnlockTokens>,repo_name:String) -> Result<()> {
     let vesting_account = &mut ctx.accounts.vesting_account;
-
-    let authority = &ctx.accounts.authority;
-
+    let repository_creator = &mut ctx.accounts.repository_creator;
+    let repository_account = &ctx.accounts.repository_account;
     let token_program = &ctx.accounts.token_program;
-    let destination_token_account = &ctx.accounts.destination_token_account;
+    let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let token_mint = &ctx.accounts.token_mint;
     let vesting_token_account = &ctx.accounts.vesting_token_account;
-
+    let rewards_mint = &ctx.accounts.token_mint;
     let current_timestamp = Clock::get()?.unix_timestamp;
+
+    let expected_repository_creator_token_account = get_associated_token_address(
+        &repository_creator.key(), &rewards_mint.key()
+    );
+
+    require!(
+        expected_repository_creator_token_account.eq(&repository_creator.key()),
+        DefiOSError::CanNotMergePullRequest
+    );
 
     let mut total_transfer_tokens = 0;
     for s in vesting_account.schedules.iter_mut() {
@@ -68,16 +111,15 @@ pub fn handler(ctx: Context<UnlockTokens>) -> Result<()> {
 
     require!(
         total_transfer_tokens > 0,
-        TokenVestingError::VestingNotReachedRelease
+        DefiOSError::VestingNotReachedRelease
     );
 
     let token_mint_key = token_mint.key();
-    let authority_key = authority.key();
-
+    let repository_account_key = repository_account.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"vesting",
         token_mint_key.as_ref(),
-        authority_key.as_ref(),
+        repository_account_key.as_ref(),
         &[vesting_account.bump],
     ]];
 
@@ -86,7 +128,7 @@ pub fn handler(ctx: Context<UnlockTokens>) -> Result<()> {
             token_program.to_account_info(),
             Transfer {
                 from: vesting_token_account.to_account_info(),
-                to: destination_token_account.to_account_info(),
+                to: repository_creator_token_account.to_account_info(),
                 authority: vesting_account.to_account_info(),
             },
             signer_seeds,

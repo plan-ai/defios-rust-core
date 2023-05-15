@@ -12,6 +12,7 @@ pub mod create_name_router;
 pub mod create_repository;
 pub mod stake_issue;
 pub mod unstake_issue;
+pub mod unlock_tokens;
 
 pub use add_child_objective::*;
 pub use add_commit::*;
@@ -27,3 +28,4 @@ pub use create_name_router::*;
 pub use create_repository::*;
 pub use stake_issue::*;
 pub use unstake_issue::*;
+pub use unlock_tokens::*;

@@ -118,4 +118,8 @@ pub mod defios {
     pub fn add_commit_to_pr(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
         add_commit_to_pr::handler(ctx)
     }
+
+    pub fn unlock_tokens(ctx:Context<UnlockTokens>,repoName:String) -> Result<()> {
+        unlock_tokens::handler(ctx,repoName)
+    }
 }
