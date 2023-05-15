@@ -13,6 +13,7 @@ pub mod stake_issue;
 pub mod unlock_tokens;
 pub mod unstake_issue;
 pub mod accept_pr;
+pub mod change_vesting_schedule;
 
 pub use add_child_objective::*;
 pub use add_commit::*;
@@ -29,3 +30,4 @@ pub use stake_issue::*;
 pub use unlock_tokens::*;
 pub use unstake_issue::*;
 pub use accept_pr::*;
+pub use change_vesting_schedule::*;

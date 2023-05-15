@@ -143,12 +143,6 @@ pub struct VestingSchedule {
     pub schedules: Vec<Schedule>,
 }
 
-#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
-pub struct Schedule {
-    pub release_time: u64,
-    pub amount: u64,
-}
-
 impl VestingSchedule {
     pub fn size(number_of_schedules: u64) -> usize {
         let number_of_schedules = if number_of_schedules > 0 {
@@ -163,6 +157,13 @@ impl VestingSchedule {
         32 + // mint_address
         number_of_schedules as usize * Schedule::size()
     }
+}
+
+#[account]
+#[derive(Default)]
+pub struct Schedule {
+    pub release_time: u64,
+    pub amount: u64,
 }
 
 impl Schedule {
@@ -414,4 +415,12 @@ pub struct PullRequestAccepted {
     pub repository_name:String,
     pub issue:Pubkey,
     pub repository_creator:Pubkey
+}
+
+#[event]
+pub struct VestingScheduleChanged {
+    pub repository_account: Pubkey,
+    pub repository_creator: Pubkey,
+    pub old_vesting_schedule: Vec<Schedule>,
+    pub new_vesting_schedule:Vec<Schedule>
 }

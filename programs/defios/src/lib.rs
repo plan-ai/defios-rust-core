@@ -1,4 +1,4 @@
-use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook};
+use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook,Schedule};
 use anchor_lang::prelude::*;
 use instructions::*;
 
@@ -117,5 +117,9 @@ pub mod defios {
 
     pub fn accept_pr(ctx:Context<AcceptPullRequest>,repo_name:String) -> Result<()> {
         accept_pr::handler(ctx,repo_name)
+    }
+
+    pub fn change_vesting_schedule(ctx:Context<AdminVestingScheduleShift>,new_vesting_schedule:Vec<Schedule>) -> Result<()> {
+        change_vesting_schedule::handler(ctx,new_vesting_schedule)
     }
 }
