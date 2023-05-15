@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 use crate::constants::AUTHORIZED_PUBLIC_KEY;
-
+use crate::error::DefiOSError
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
-    #[account(constrant=AUTHORIZED_PUBLIC_KEY.eq(&authority.pubkey()),signer)]
+    #[account(constrant=AUTHORIZED_PUBLIC_KEY.eq(&authority.pubkey())@DefiOSError::UnauthorizedActionAttempted,signer)]
     pub authority: AccountInfo<'info>,
     ///CHECK: Communal deposit account
     #[account(init_if_needed,

@@ -69,8 +69,10 @@ pub struct CreateRepository<'info> {
     )]
     pub vesting_account: Account<'info, VestingSchedule>,
     #[account(mut)]
+    ///CHECK: The account checks are done in function, unchecked as it might not exist and will be created in that case
     pub vesting_token_account: UncheckedAccount<'info>,
     #[account(mut)]
+    ///CHECK: The account checks are done in function, unchecked as it might not exist and will be created in that case
     pub repository_creator_token_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
