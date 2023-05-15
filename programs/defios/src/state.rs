@@ -412,9 +412,9 @@ pub struct IssueUnstaked {
 pub struct PullRequestAccepted {
     pub pull_request_addr: Pubkey,
     pub repository: Pubkey,
-    pub repository_name:String,
-    pub issue:Pubkey,
-    pub repository_creator:Pubkey
+    pub repository_name: String,
+    pub issue: Pubkey,
+    pub repository_creator: Pubkey,
 }
 
 #[event]
@@ -422,5 +422,5 @@ pub struct VestingScheduleChanged {
     pub repository_account: Pubkey,
     pub repository_creator: Pubkey,
     pub old_vesting_schedule: Vec<Schedule>,
-    pub new_vesting_schedule:Vec<Schedule>
+    pub new_vesting_schedule: Vec<Schedule>,
 }

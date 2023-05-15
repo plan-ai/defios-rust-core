@@ -72,5 +72,5 @@ pub enum DefiOSError {
 
     //6016
     #[msg("Unauthorized smart contract Action")]
-    UnauthorizedActionAttempted
+    UnauthorizedActionAttempted,
 }

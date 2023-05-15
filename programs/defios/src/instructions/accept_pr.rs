@@ -5,7 +5,7 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{Issue, NameRouter, PullRequest, VerifiedUser,Repository,PullRequestAccepted};
+use crate::state::{Issue, NameRouter, PullRequest, PullRequestAccepted, Repository, VerifiedUser};
 
 #[derive(Accounts)]
 #[instruction(repo_name:String)]
@@ -83,13 +83,13 @@ pub fn handler(ctx: Context<AcceptPullRequest>, repo_name: String) -> Result<()>
     let timestamp = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     issue.closed_at = Some(timestamp);
 
-    emit!(PullRequestAccepted{
+    emit!(PullRequestAccepted {
         pull_request_addr: pull_request_addr.key(),
         repository: repository.key(),
-        repository_name:repo_name,
-        issue:issue.key(),
-     repository_creator:repository_creator.key()
+        repository_name: repo_name,
+        issue: issue.key(),
+        repository_creator: repository_creator.key()
     });
-    
+
     Ok(())
 }
