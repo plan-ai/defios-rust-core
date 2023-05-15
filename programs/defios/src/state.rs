@@ -135,6 +135,47 @@ impl Issue {
 
 #[account]
 #[derive(Default)]
+pub struct VestingSchedule {
+    pub bump: u8,
+    pub max_schedules: u64,
+    pub destination_address: Pubkey,
+    pub mint_address: Pubkey,
+    pub schedules: Vec<Schedule>,
+}
+
+#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct Schedule {
+    pub release_time: u64,
+    pub amount: u64,
+}
+
+impl VestingSchedule {
+    pub fn size(number_of_schedules: u64) -> usize {
+        let number_of_schedules = if number_of_schedules > 0 {
+            number_of_schedules
+        } else {
+            1
+        };
+
+        8 + // discriminator
+        1 + // bump
+        8 + // max_schedules
+        32 + // destination_address
+        32 + // mint_address
+        number_of_schedules as usize * Schedule::size()
+    }
+}
+
+impl Schedule {
+    pub fn size() -> usize {
+        4 + // Vec length discriminator
+        8 + // release_time
+        8 // amount
+    }
+}
+
+#[account]
+#[derive(Default)]
 pub struct Commit {
     pub bump: u8,
     pub index: u64,
@@ -277,7 +318,7 @@ pub struct PullRequest {
     pub sent_by: Vec<Pubkey>,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
-    pub accepted:bool
+    pub accepted: bool,
 }
 
 impl PullRequest {
@@ -369,8 +410,6 @@ pub struct RepositoryCreated {
     pub uri: String,
     pub name: String,
     pub description: String,
-    pub gh_usernames: Vec<String>,
-    pub claim_amounts: Vec<u64>,
 }
 
 #[event]
