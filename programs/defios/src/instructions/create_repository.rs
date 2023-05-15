@@ -71,7 +71,7 @@ pub struct CreateRepository<'info> {
     #[account(mut)]
     pub vesting_token_account: UncheckedAccount<'info>,
     #[account(mut)]
-    pub repository_token_pool_account: UncheckedAccount<'info>,
+    pub repository_creator_token_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -94,7 +94,7 @@ pub fn handler(
     let token_program = &ctx.accounts.token_program;
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
-    let repository_token_pool_account = &ctx.accounts.repository_token_pool_account;
+    let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
 
     //logs repository and spl token creation
     msg!(
@@ -140,12 +140,12 @@ pub fn handler(
     }
 
     //creates repository token account if empty
-    if repository_token_pool_account.data_is_empty() {
+    if repository_creator_token_account.data_is_empty() {
         create(CpiContext::new(
             associated_token_program.to_account_info(),
             Create {
                 payer: repository_creator.to_account_info(),
-                associated_token: repository_token_pool_account.to_account_info(),
+                associated_token: repository_creator_token_account.to_account_info(),
                 authority: repository_creator.to_account_info(),
                 mint: rewards_mint.to_account_info(),
                 system_program: system_program.to_account_info(),
@@ -161,13 +161,13 @@ pub fn handler(
         get_associated_token_address(&repository_creator.key(), &rewards_mint.key());
     require!(
         expected_vesting_token_account.eq(&vesting_token_account.key())
-            && expected_repository_token_pool_account.eq(&repository_token_pool_account.key()),
+            && expected_repository_token_pool_account.eq(&repository_creator_token_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
     //add data to token vesting account
     vesting_account.bump = *ctx.bumps.get("vesting_account").unwrap();
-    vesting_account.destination_address = repository_token_pool_account.key();
+    vesting_account.destination_address = repository_creator_token_account.key();
     vesting_account.mint_address = rewards_mint.key();
     vesting_account.schedules = vec![];
 

@@ -47,7 +47,7 @@ pub mod defios {
     ) -> Result<()> {
         add_user_claim::handler(ctx, user_name, amount)
     }
-    
+
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         add_issue::handler(ctx, uri)
     }

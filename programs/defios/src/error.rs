@@ -61,4 +61,8 @@ pub enum DefiOSError {
     // 6013
     #[msg("Vesting contract has not reached release time")]
     VestingNotReachedRelease,
+
+    //6014
+    #[msg("Pull request not yet accepted")]
+    PullRequestNotYetAccepted,
 }
