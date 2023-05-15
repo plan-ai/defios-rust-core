@@ -40,14 +40,6 @@ pub mod defios {
         create_repository::handler(ctx, name, description, uri)
     }
 
-    pub fn add_user_claim(
-        ctx: Context<AddUserClaim>,
-        user_name: String,
-        amount: u64,
-    ) -> Result<()> {
-        add_user_claim::handler(ctx, user_name, amount)
-    }
-
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         add_issue::handler(ctx, uri)
     }
@@ -119,7 +111,11 @@ pub mod defios {
         add_commit_to_pr::handler(ctx)
     }
 
-    pub fn unlock_tokens(ctx:Context<UnlockTokens>,repoName:String) -> Result<()> {
-        unlock_tokens::handler(ctx,repoName)
+    pub fn unlock_tokens(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
+        unlock_tokens::handler(ctx, repo_name)
+    }
+
+    pub fn accept_pr(ctx:Context<AcceptPullRequest>,repo_name:String) -> Result<()> {
+        accept_pr::handler(ctx,repo_name)
     }
 }

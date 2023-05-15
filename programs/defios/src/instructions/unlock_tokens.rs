@@ -1,7 +1,13 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{token::{transfer, Mint, Token, TokenAccount, Transfer},associated_token::{get_associated_token_address}};
+use anchor_spl::{
+    associated_token::get_associated_token_address,
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
+};
 
-use crate::{error::DefiOSError, state::{VestingSchedule,NameRouter,VerifiedUser,Repository}};
+use crate::{
+    error::DefiOSError,
+    state::{NameRouter, Repository, VerifiedUser, VestingSchedule},
+};
 
 #[derive(Accounts)]
 #[instruction(repo_name:String)]
@@ -81,7 +87,7 @@ pub struct UnlockTokens<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<UnlockTokens>,repo_name:String) -> Result<()> {
+pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
     let vesting_account = &mut ctx.accounts.vesting_account;
     let repository_creator = &mut ctx.accounts.repository_creator;
     let repository_account = &ctx.accounts.repository_account;
@@ -92,9 +98,8 @@ pub fn handler(ctx: Context<UnlockTokens>,repo_name:String) -> Result<()> {
     let rewards_mint = &ctx.accounts.token_mint;
     let current_timestamp = Clock::get()?.unix_timestamp;
 
-    let expected_repository_creator_token_account = get_associated_token_address(
-        &repository_creator.key(), &rewards_mint.key()
-    );
+    let expected_repository_creator_token_account =
+        get_associated_token_address(&repository_creator.key(), &rewards_mint.key());
 
     require!(
         expected_repository_creator_token_account.eq(&repository_creator.key()),

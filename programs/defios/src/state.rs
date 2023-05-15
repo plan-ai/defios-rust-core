@@ -227,30 +227,6 @@ impl IssueStaker {
 }
 
 #[account]
-#[derive(Default)]
-pub struct UserClaim {
-    pub bump: u8,
-    pub token_amount: u64,
-    pub repository_account: Pubkey,
-    pub name_router_account: Pubkey,
-    pub gh_user: String,
-    pub is_claimed: bool,
-}
-
-impl UserClaim {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // token_amount
-            32 + // repository_account
-            32 + // name_router_account
-            40 + // gh_user
-            4 +
-            1 // is_claimed
-    }
-}
-
-#[account]
 pub struct RoadMapMetaDataStore {
     pub bump: u8,
     pub roadmap_title: String,
@@ -429,4 +405,13 @@ pub struct IssueUnstaked {
     pub unstaked_amount: u64,
     pub rewards_mint: Pubkey,
     pub issue_contribution_link: String,
+}
+
+#[event]
+pub struct PullRequestAccepted {
+    pub pull_request_addr: Pubkey,
+    pub repository: Pubkey,
+    pub repository_name:String,
+    pub issue:Pubkey,
+    pub repository_creator:Pubkey
 }

@@ -68,5 +68,5 @@ pub enum DefiOSError {
 
     //6015
     #[msg("You are not authorized to merge this pull request")]
-    CanNotMergePullRequest
+    CanNotMergePullRequest,
 }
