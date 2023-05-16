@@ -306,6 +306,18 @@ impl PullRequest {
     }
 }
 
+#[account]
+pub struct CommunalAccount {
+    pub bump: u8
+}
+
+impl CommunalAccount {
+    pub fn size() -> usize {
+        8 + // discriminator
+        1  //bump
+    }
+}
+
 #[event]
 pub struct PullRequestSent {
     pub sent_by: Vec<Pubkey>,

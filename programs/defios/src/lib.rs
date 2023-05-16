@@ -125,4 +125,8 @@ pub mod defios {
     ) -> Result<()> {
         change_vesting_schedule::handler(ctx, new_vesting_schedule)
     }
+
+    pub fn create_communal_account(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
+        create_communal_account::handler(ctx)
+    }
 }
