@@ -110,14 +110,6 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
         issue_token_pool_account.key().to_string(),
     );
 
-    let expected_issue_token_pool_account =
-        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
-
-    require!(
-        expected_issue_token_pool_account.eq(&issue_token_pool_account.key()),
-        DefiOSError::TokenAccountMismatch
-    );
-
     create_associated_token_account(CpiContext::new(
         ctx.accounts.associated_token_program.to_account_info(),
         Create {
