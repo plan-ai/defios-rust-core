@@ -156,6 +156,11 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
 
     let token_balance = issue_token_pool_account.amount;
 
+    require!(
+        token_balance>0,
+        DefiOSError::NoMoneyStakedOnIssue
+    );
+    
     transfer(
         CpiContext::new_with_signer(
             token_program.to_account_info(),

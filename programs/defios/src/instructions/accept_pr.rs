@@ -44,9 +44,9 @@ pub struct AcceptPullRequest<'info> {
             issue.key().as_ref(),
             pull_request_addr.key().as_ref()
         ],
-        bump=pull_request_meatdata_account.bump
+        bump=pull_request_metadata_account.bump
     )]
-    pub pull_request_meatdata_account: Account<'info, PullRequest>,
+    pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
         seeds = [
             pull_request_verified_user.user_name.as_bytes(),
@@ -78,8 +78,8 @@ pub fn handler(ctx: Context<AcceptPullRequest>, repo_name: String) -> Result<()>
     let issue = &mut ctx.accounts.issue;
     let repository = &ctx.accounts.repository_account;
     let repository_creator = &ctx.accounts.repository_creator;
-    let pull_request_meatdata_account = &mut ctx.accounts.pull_request_meatdata_account;
-    pull_request_meatdata_account.accepted = true;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
+    pull_request_metadata_account.accepted = true;
     let timestamp = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     issue.closed_at = Some(timestamp);
 

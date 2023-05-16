@@ -13,7 +13,7 @@ pub struct AddCommitToPullRequest<'info> {
     #[account(constraint = commit_addr.key() == commit.commit_creator)]
     pub commit: Account<'info, Commit>,
     #[account(mut)]
-    pub pull_request_meatdata_account: Account<'info, PullRequest>,
+    pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
         seeds = [
             commit_verified_user.user_name.as_bytes(),
@@ -44,18 +44,18 @@ pub struct AddCommitToPullRequest<'info> {
 pub fn handler(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
     let commit_addr = &ctx.accounts.commit_addr;
     let commit = &ctx.accounts.commit;
-    let pull_request_meatdata_account = &mut ctx.accounts.pull_request_meatdata_account;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
 
     msg!(
         "Adding commit {} to pull request {}",
         commit.key(),
-        pull_request_meatdata_account.key()
+        pull_request_metadata_account.key()
     );
 
-    pull_request_meatdata_account
+    pull_request_metadata_account
         .sent_by
         .push(commit_addr.key());
-    pull_request_meatdata_account.commits.push(commit.key());
+    pull_request_metadata_account.commits.push(commit.key());
 
     emit!(AddCommitToPR {
         commit: commit.key(),

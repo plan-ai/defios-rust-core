@@ -102,8 +102,8 @@ pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
         get_associated_token_address(&repository_creator.key(), &rewards_mint.key());
 
     require!(
-        expected_repository_creator_token_account.eq(&repository_creator.key()),
-        DefiOSError::CanNotMergePullRequest
+        expected_repository_creator_token_account.eq(&repository_creator_token_account.key()),
+        DefiOSError::TokenAccountMismatch
     );
 
     let mut total_transfer_tokens = 0;

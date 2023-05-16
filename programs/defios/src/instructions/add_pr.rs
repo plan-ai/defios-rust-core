@@ -25,7 +25,7 @@ pub struct AddPullRequest<'info> {
         ],
         bump
     )]
-    pub pull_request_meatdata_account: Account<'info, PullRequest>,
+    pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
         seeds = [
             pull_request_verified_user.user_name.as_bytes(),
@@ -56,7 +56,7 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     let pull_request_addr = &ctx.accounts.pull_request_addr;
     let issue = &ctx.accounts.issue;
     let commit = &ctx.accounts.commit;
-    let pull_request_meatdata_account = &mut ctx.accounts.pull_request_meatdata_account;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
 
     msg!(
         "Adding pull request on issue {} by {}",
@@ -64,10 +64,11 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
         pull_request_addr.key()
     );
 
-    pull_request_meatdata_account.sent_by = vec![pull_request_addr.key()];
-    pull_request_meatdata_account.commits = vec![commit.key()];
-    pull_request_meatdata_account.metadata_uri = metadata_uri.clone();
-    pull_request_meatdata_account.accepted = false;
+    pull_request_metadata_account.bump = *ctx.bumps.get("pull_request_metadata_account").unwrap();
+    pull_request_metadata_account.sent_by = vec![pull_request_addr.key()];
+    pull_request_metadata_account.commits = vec![commit.key()];
+    pull_request_metadata_account.metadata_uri = metadata_uri.clone();
+    pull_request_metadata_account.accepted = false;
     emit!(PullRequestSent {
         sent_by: vec![pull_request_addr.key()],
         commits: vec![commit.key()],
