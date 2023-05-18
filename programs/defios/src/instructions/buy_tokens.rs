@@ -6,7 +6,6 @@ use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
     token::{mint_to, transfer, Mint, MintTo, Token, TokenAccount, Transfer},
 };
-use solana_program;
 
 #[derive(Accounts)]
 #[instruction(solana_amount:u64)]
@@ -44,7 +43,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
 
-    let mut token_supply = 0;
+    let token_supply:u64;
     {
         let account_info = &rewards_mint.to_account_info();
         let data = &*account_info.try_borrow_data()?;

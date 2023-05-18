@@ -59,7 +59,7 @@ pub fn handler(
     let roadmap_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
     let roadmap_data_adder = &mut ctx.accounts.roadmap_data_adder;
-    let mut roadmap_outlook = RoadmapOutlook::Next2;
+    let roadmap_outlook:RoadmapOutlook;
     match roadmap_outlook_no {
         1 => {
             roadmap_outlook = RoadmapOutlook::Next5;

@@ -68,7 +68,7 @@ pub fn handler(
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_issue = &ctx.accounts.objective_issue;
     let objective_state = ObjectiveState::InProgress;
-    let mut objective_deliverable = ObjectiveDeliverable::Infrastructure;
+    let objective_deliverable: ObjectiveDeliverable;
     match objective_deliverable_no {
         1 => {
             objective_deliverable = ObjectiveDeliverable::Tooling;

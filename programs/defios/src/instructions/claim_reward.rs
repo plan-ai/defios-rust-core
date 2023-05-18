@@ -10,7 +10,6 @@ use anchor_spl::{
     },
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-use sha256::digest;
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {

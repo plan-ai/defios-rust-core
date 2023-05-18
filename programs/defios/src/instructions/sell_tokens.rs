@@ -42,7 +42,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     let seller_token_account = &mut ctx.accounts.seller_token_account;
 
     //get supply of token
-    let mut token_supply = 0;
+    let token_supply:u64;
     {
         let account_info = &rewards_mint.to_account_info();
         let data = &*account_info.try_borrow_data()?;
