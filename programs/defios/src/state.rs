@@ -105,6 +105,25 @@ impl Repository {
 
 #[account]
 #[derive(Default)]
+pub struct DefaultVestingSchedule {
+    pub bump: u8,
+    pub number_of_schedules: u32,
+    pub per_vesting_amount: u64,
+    pub unix_change: u64,
+}
+
+impl DefaultVestingSchedule {
+    pub fn size() -> usize {
+        8 + // discriminator
+            1 + // bump
+        4 + //number of schedules
+        8 + //total vesting amount
+        4 //unix change
+    }
+}
+
+#[account]
+#[derive(Default)]
 pub struct Issue {
     pub bump: u8,
     pub index: u64,
@@ -436,4 +455,11 @@ pub struct VestingScheduleChanged {
     pub repository_creator: Pubkey,
     pub old_vesting_schedule: Vec<Schedule>,
     pub new_vesting_schedule: Vec<Schedule>,
+}
+
+#[event]
+pub struct DefaultVestingScheduleChanged {
+    pub number_of_schedules: u32,
+    pub per_vesting_amount: u64,
+    pub unix_change: u64,
 }
