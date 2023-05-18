@@ -62,30 +62,13 @@ pub fn handler(
     objective_start_unix: u64,
     objective_end_unix: u64,
     objective_description_link: String,
-    objective_deliverable_no: u32,
+    objective_deliverable: ObjectiveDeliverable,
 ) -> Result<()> {
     let objective_creation_unix = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_issue = &ctx.accounts.objective_issue;
     let objective_state = ObjectiveState::InProgress;
-    let objective_deliverable: ObjectiveDeliverable;
-    match objective_deliverable_no {
-        1 => {
-            objective_deliverable = ObjectiveDeliverable::Tooling;
-        }
-        2 => {
-            objective_deliverable = ObjectiveDeliverable::Publication;
-        }
-        3 => {
-            objective_deliverable = ObjectiveDeliverable::Product;
-        }
-        4 => {
-            objective_deliverable = ObjectiveDeliverable::Other;
-        }
-        _ => {
-            objective_deliverable = ObjectiveDeliverable::Infrastructure;
-        }
-    };
+
     require!(
         objective_creation_unix < objective_end_unix,
         DefiOSError::RoadmapInvalidEndTime

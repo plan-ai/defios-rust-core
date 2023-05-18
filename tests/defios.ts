@@ -48,8 +48,8 @@ describe("defios", () => {
   });
   const roadmapTitle = "Test Roadmap";
   const roadmapDescription = "https://github.com/defi-os/Issues";
-  const roadmapOutlook = 0;
-  const objectiveDeliverable = 0;
+  const roadmapOutlook = { next2: {} };
+  const objectiveDeliverable = { tooling: {} };
   const objectiveTitle = "Test Objective";
   const objectiveDescription = "https://github.com/defi-os/Issues";
   const objectiveEndUnix = new anchor.BN(1735603200);

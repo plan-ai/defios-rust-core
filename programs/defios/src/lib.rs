@@ -70,7 +70,7 @@ pub mod defios {
         ctx: Context<AddMetadata>,
         roadmap_title: String,
         roadmap_description_link: String,
-        roadmap_outlook: u32,
+        roadmap_outlook: RoadmapOutlook,
     ) -> Result<()> {
         add_roadmap_data::handler(
             ctx,
@@ -87,7 +87,7 @@ pub mod defios {
         objective_start_unix: u64,
         objective_end_unix: u64,
         objective_description_link: String,
-        objective_deliverable: u32,
+        objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
