@@ -16,6 +16,7 @@ pub mod create_repository;
 pub mod stake_issue;
 pub mod unlock_tokens;
 pub mod unstake_issue;
+pub mod sell_tokens;
 
 pub use accept_pr::*;
 pub use add_child_objective::*;
@@ -35,3 +36,4 @@ pub use create_repository::*;
 pub use stake_issue::*;
 pub use unlock_tokens::*;
 pub use unstake_issue::*;
+pub use sell_tokens::*;

@@ -77,4 +77,9 @@ pub enum DefiOSError {
     //6017
     #[msg("No money was staked on this issue, Still thanks for the support to the community")]
     NoMoneyStakedOnIssue,
+
+    // 6018
+    #[msg("Insufficient funds")]
+    InsufficientFunds,
+
 }

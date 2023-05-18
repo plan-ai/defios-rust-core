@@ -3,69 +3,93 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     token,
     token::{transfer, Burn, Mint, Token, TokenAccount, Transfer},
+    associated_token::AssociatedToken
 };
+use crate::state::CommunalAccount;
+use crate::error::DefiOSError;
 
 #[derive(Accounts)]
+#[instruction(number_of_tokens:u64)]
 pub struct SellToken<'info> {
-    ///CHECK: Communal deposit account
+    #[account(mut)]
+    pub seller: Signer<'info>,
     #[account(mut,
         seeds = [
             b"are_we_conscious",
             b"is love life ?  ",
-            b"arewemadorinlove"
+            b"arewemadorinlove",
+            rewards_mint.key().as_ref()
         ],
     bump
     )]
-    pub communal_account: AccountInfo<'info>,
-    /// CHECK: This is the token that we want to mint
+    pub communal_deposit: Account<'info, CommunalAccount>,
     #[account(mut)]
-    pub mint: Account<'info, Mint>,
+    pub communal_token_account: Account<'info, TokenAccount>,
+    #[account(mut, constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds)]
+    pub seller_token_account: Account<'info,TokenAccount>,
     pub token_program: Program<'info, Token>,
-    /// CHECK: This is the token account that we want to burn tokens from
-    #[account(mut)]
-    pub from: AccountInfo<'info>,
-    #[account(
-        mut,
-        constraint = from_token_account.owner.eq(&from.key()),
-    )]
-    pub from_token_account: Account<'info, TokenAccount>,
-    /// CHECK: the authority of the mint account
-    pub authority: Signer<'info>,
+    pub rewards_mint: Account<'info, Mint>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<SellToken>, amount: u128) -> Result<()> {
-    let mint = &ctx.accounts.mint;
-    let authority = &ctx.accounts.authority;
+pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
+    let rewards_mint = &ctx.accounts.rewards_mint;
     let token_program = &ctx.accounts.token_program;
-    let communal_account = &ctx.accounts.communal_account;
-    let from_token_account = &ctx.accounts.from_token_account;
+    let communal_deposit = &mut ctx.accounts.communal_deposit;
+    let communal_token_account = &mut ctx.accounts.communal_token_account;
+    let seller = &mut ctx.accounts.seller;
+    let seller_token_account = &mut ctx.accounts.seller_token_account;
+    
+    //get supply of token
+    let mut token_supply = 0;
+    {
+        let account_info = &rewards_mint.to_account_info();
+        let data = &*account_info.try_borrow_data()?;
+        let bytes_data = &mut &**data;
+        token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
+    }
+    //get amount of solana to transfer
+    let solana_amount = calculate_burn(token_supply, number_of_tokens);
 
-    let transfer_amount = calculate_burn(1, amount);
-
-    let cpi_accounts = Burn {
-        mint: mint.to_account_info(),
-        from: from_token_account.to_account_info(),
-        authority: authority.to_account_info(),
-    };
-    let cpi_program = ctx.accounts.token_program.to_account_info();
-    // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-
-    // Execute anchor's helper function to burn tokens
-    token::burn(cpi_ctx, amount.try_into().unwrap())?;
-
-    //execute function to send amount to users
+    //transfers sol to communal token account
     transfer(
         CpiContext::new(
             token_program.to_account_info(),
             Transfer {
-                from: communal_account.to_account_info(),
-                to: from_token_account.to_account_info(),
-                authority: authority.to_account_info(),
-            },
+                from: seller_token_account.to_account_info(),
+                to: communal_token_account.to_account_info(),
+                authority: seller.to_account_info(),
+            }
         ),
-        transfer_amount,
+        number_of_tokens,
     )?;
+
+    //execute function to send native sol amount to communal deposits
+    let ix = anchor_lang::solana_program::system_instruction::transfer(
+        &communal_deposit.key(),
+        &seller.key(),
+        solana_amount,
+    );
+    anchor_lang::solana_program::program::invoke(
+        &ix,
+        &[
+            communal_deposit.to_account_info(),
+            seller.to_account_info(),
+        ],
+    )?;
+    
+    let cpi_accounts = Burn {
+        mint: rewards_mint.to_account_info(),
+        from: communal_token_account.to_account_info(),
+        authority: rewards_mint.to_account_info(),
+    };
+    let cpi_program = token_program.to_account_info();
+    // Create the CpiContext we need for the request
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+    //Execute anchor's helper function to burn tokens
+    token::burn(cpi_ctx, number_of_tokens)?;
 
     Ok(())
 }

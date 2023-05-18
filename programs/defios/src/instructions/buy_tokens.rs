@@ -11,7 +11,7 @@ use solana_program;
 #[derive(Accounts)]
 #[instruction(solana_amount:u64)]
 pub struct BuyToken<'info> {
-    #[account(mut,constraint = buyer.to_account_info().lamports() >= solana_amount)]
+    #[account(mut,constraint = buyer.to_account_info().lamports() >= solana_amount @DefiOSError::InsufficientFunds)]
     pub buyer: Signer<'info>,
     #[account(mut,
         seeds = [
@@ -36,10 +36,10 @@ pub struct BuyToken<'info> {
 
 pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
-    let buyer = &ctx.accounts.buyer;
-    let communal_deposit = &ctx.accounts.communal_deposit;
+    let buyer = &mut ctx.accounts.buyer;
+    let communal_deposit = &mut ctx.accounts.communal_deposit;
     let communal_token_account = &mut ctx.accounts.communal_token_account;
-    let buyer_token_account = &ctx.accounts.buyer_token_account;
+    let buyer_token_account = &mut ctx.accounts.buyer_token_account;
     let rewards_mint = &mut ctx.accounts.rewards_mint;
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;

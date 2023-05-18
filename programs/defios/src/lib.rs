@@ -134,4 +134,8 @@ pub mod defios {
     pub fn buy_tokens(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
         buy_tokens::handler(ctx, solana_amount)
     }
+
+    pub fn sell_tokens(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
+        sell_tokens::handler(ctx, number_of_tokens)
+    }
 }
