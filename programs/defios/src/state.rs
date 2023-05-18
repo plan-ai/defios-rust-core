@@ -267,7 +267,7 @@ pub struct Objective {
     pub children_objective_keys: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_issue: Pubkey,
-    pub objective_id:String
+    pub objective_id: String,
 }
 
 impl Objective {
