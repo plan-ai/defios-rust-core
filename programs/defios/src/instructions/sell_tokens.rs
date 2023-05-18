@@ -1,12 +1,12 @@
+use crate::error::DefiOSError;
 use crate::helper::calculate_burn;
+use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
+    associated_token::AssociatedToken,
     token,
     token::{transfer, Burn, Mint, Token, TokenAccount, Transfer},
-    associated_token::AssociatedToken
 };
-use crate::state::CommunalAccount;
-use crate::error::DefiOSError;
 
 #[derive(Accounts)]
 #[instruction(number_of_tokens:u64)]
@@ -26,7 +26,7 @@ pub struct SellToken<'info> {
     #[account(mut)]
     pub communal_token_account: Account<'info, TokenAccount>,
     #[account(mut, constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds)]
-    pub seller_token_account: Account<'info,TokenAccount>,
+    pub seller_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -40,7 +40,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     let communal_token_account = &mut ctx.accounts.communal_token_account;
     let seller = &mut ctx.accounts.seller;
     let seller_token_account = &mut ctx.accounts.seller_token_account;
-    
+
     //get supply of token
     let mut token_supply = 0;
     {
@@ -60,7 +60,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
                 from: seller_token_account.to_account_info(),
                 to: communal_token_account.to_account_info(),
                 authority: seller.to_account_info(),
-            }
+            },
         ),
         number_of_tokens,
     )?;
@@ -73,12 +73,9 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     );
     anchor_lang::solana_program::program::invoke(
         &ix,
-        &[
-            communal_deposit.to_account_info(),
-            seller.to_account_info(),
-        ],
+        &[communal_deposit.to_account_info(), seller.to_account_info()],
     )?;
-    
+
     let cpi_accounts = Burn {
         mint: rewards_mint.to_account_info(),
         from: communal_token_account.to_account_info(),

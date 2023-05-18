@@ -290,7 +290,7 @@ impl Objective {
 #[account]
 pub struct PullRequest {
     pub bump: u8,
-    pub sent_by: Vec<Pubkey>,
+    pub sent_by: Pubkey,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
     pub accepted: bool,
@@ -320,7 +320,7 @@ impl CommunalAccount {
 
 #[event]
 pub struct PullRequestSent {
-    pub sent_by: Vec<Pubkey>,
+    pub sent_by: Pubkey,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
 }

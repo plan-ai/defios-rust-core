@@ -81,5 +81,4 @@ pub enum DefiOSError {
     // 6018
     #[msg("Insufficient funds")]
     InsufficientFunds,
-
 }
