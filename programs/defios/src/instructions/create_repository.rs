@@ -1,5 +1,4 @@
 use crate::{
-    constants::{NUMBER_OF_SCHEDULES, PER_VEST_AMOUNT, UNIX_CHANGE},
     error::DefiOSError,
     state::{NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser, VestingSchedule,DefaultVestingSchedule},
 };
@@ -59,7 +58,7 @@ pub struct CreateRepository<'info> {
     #[account(
         init,
         payer = repository_creator,
-        space = VestingSchedule::size(NUMBER_OF_SCHEDULES),
+        space = VestingSchedule::size(default_schedule.number_of_schedules.into()),
         seeds = [
             b"vesting",
             rewards_mint.key().as_ref(),
