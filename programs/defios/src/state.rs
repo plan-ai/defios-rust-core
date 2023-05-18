@@ -264,9 +264,10 @@ pub struct Objective {
     pub objective_end_unix: u64,
     pub objective_description_link: String,
     pub objective_state: ObjectiveState,
-    pub children_objective_id: Vec<Pubkey>,
+    pub children_objective_keys: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_issue: Pubkey,
+    pub objective_id:String
 }
 
 impl Objective {
@@ -277,13 +278,14 @@ impl Objective {
         16 + // objective_creation_unix
         16 + // objective_end_unix
         16 + // objective_start_unix
-        640 + // children_objective_id
+        640 + // children_objective_keys
         32 +  //objective_creator_gh_id
         32 + // objective_description_link 
         1 + //objective_state
         1 + //objective deliverable
         640 + //objective_staker_ids
-        160 //objective_staker_amts
+        160 + //objective_staker_amts
+        40 //objective id
     }
 }
 

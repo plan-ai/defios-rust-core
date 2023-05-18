@@ -69,7 +69,7 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
         }
         None => match parent_account {
             Some(i) => {
-                i.children_objective_id.push(objective_account.key());
+                i.children_objective_keys.push(objective_account.key());
                 msg!(
                     "Adding objective to roadmap, objective: {}, roadmap:{}",
                     objective_account.key(),

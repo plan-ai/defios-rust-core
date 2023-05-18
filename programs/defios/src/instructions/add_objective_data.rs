@@ -85,11 +85,12 @@ pub fn handler(
     metadata_account.objective_end_unix = objective_end_unix;
     metadata_account.objective_creation_unix = objective_creation_unix as u64;
     metadata_account.objective_creator_gh_id = ctx.accounts.objective_data_addr.key();
-    metadata_account.children_objective_id = vec![];
+    metadata_account.children_objective_keys = vec![];
     metadata_account.objective_description_link = objective_description_link.clone();
     metadata_account.objective_state = objective_state;
     metadata_account.objective_deliverable = objective_deliverable;
     metadata_account.objective_issue = objective_issue.key();
+    metadata_account.objective_id = objective_id;
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,
