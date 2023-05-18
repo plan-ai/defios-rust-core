@@ -105,6 +105,25 @@ impl Repository {
 
 #[account]
 #[derive(Default)]
+pub struct DefaultVestingSchedule {
+    pub bump: u8,
+    pub number_of_schedules: u32,
+    pub per_vesting_amount: u64,
+    pub unix_change: u64,
+}
+
+impl DefaultVestingSchedule {
+    pub fn size() -> usize {
+        8 + // discriminator
+            1 + // bump
+        4 + //number of schedules
+        8 + //total vesting amount
+        4 //unix change
+    }
+}
+
+#[account]
+#[derive(Default)]
 pub struct Issue {
     pub bump: u8,
     pub index: u64,
@@ -261,12 +280,13 @@ pub struct Objective {
     pub objective_creation_unix: u64,
     pub objective_creator_gh_id: Pubkey,
     pub objective_start_unix: u64,
-    pub objective_end_unix: u64,
+    pub objective_end_unix: Option<u64>,
     pub objective_description_link: String,
     pub objective_state: ObjectiveState,
-    pub children_objective_id: Vec<Pubkey>,
+    pub children_objective_keys: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_issue: Pubkey,
+    pub objective_id: String,
 }
 
 impl Objective {
@@ -277,20 +297,21 @@ impl Objective {
         16 + // objective_creation_unix
         16 + // objective_end_unix
         16 + // objective_start_unix
-        640 + // children_objective_id
+        640 + // children_objective_keys
         32 +  //objective_creator_gh_id
         32 + // objective_description_link 
         1 + //objective_state
         1 + //objective deliverable
         640 + //objective_staker_ids
-        160 //objective_staker_amts
+        160 + //objective_staker_amts
+        40 //objective id
     }
 }
 
 #[account]
 pub struct PullRequest {
     pub bump: u8,
-    pub sent_by: Vec<Pubkey>,
+    pub sent_by: Pubkey,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
     pub accepted: bool,
@@ -306,9 +327,21 @@ impl PullRequest {
     }
 }
 
+#[account]
+pub struct CommunalAccount {
+    pub bump: u8,
+}
+
+impl CommunalAccount {
+    pub fn size() -> usize {
+        8 + // discriminator
+        1 //bump
+    }
+}
+
 #[event]
 pub struct PullRequestSent {
-    pub sent_by: Vec<Pubkey>,
+    pub sent_by: Pubkey,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
 }
@@ -331,7 +364,7 @@ pub struct AddObjectiveDataEvent {
     pub objective_metadata_uri: String,
     pub objective_start_unix: u64,
     pub objective_creation_unix: u64,
-    pub objective_end_unix: u64,
+    pub objective_end_unix: Option<u64>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_public_key: Pubkey,
     pub objective_issue: Pubkey,
@@ -422,4 +455,11 @@ pub struct VestingScheduleChanged {
     pub repository_creator: Pubkey,
     pub old_vesting_schedule: Vec<Schedule>,
     pub new_vesting_schedule: Vec<Schedule>,
+}
+
+#[event]
+pub struct DefaultVestingScheduleChanged {
+    pub number_of_schedules: u32,
+    pub per_vesting_amount: u64,
+    pub unix_change: u64,
 }

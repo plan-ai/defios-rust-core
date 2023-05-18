@@ -1,12 +1,14 @@
 use crate::{
-    constants::{NUMBER_OF_SCHEDULES, PER_VEST_AMOUNT, UNIX_CHANGE},
     error::DefiOSError,
-    state::{NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser, VestingSchedule},
+    state::{
+        DefaultVestingSchedule, NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser,
+        VestingSchedule,
+    },
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    token::{Mint, Token, TokenAccount},
+    token::{Mint, Token},
 };
 
 #[derive(Accounts)]
@@ -59,7 +61,7 @@ pub struct CreateRepository<'info> {
     #[account(
         init,
         payer = repository_creator,
-        space = VestingSchedule::size(NUMBER_OF_SCHEDULES),
+        space = VestingSchedule::size(default_schedule.number_of_schedules.into()),
         seeds = [
             b"vesting",
             rewards_mint.key().as_ref(),
@@ -74,6 +76,15 @@ pub struct CreateRepository<'info> {
     #[account(mut)]
     ///CHECK: The account checks are done in function, unchecked as it might not exist and will be created in that case
     pub repository_creator_token_account: UncheckedAccount<'info>,
+    #[account(
+        seeds = [
+            b"isGodReal?",
+            b"DoULoveMe?",
+            b"SweetChick"
+        ],
+        bump = default_schedule.bump,
+    )]
+    pub default_schedule: Account<'info, DefaultVestingSchedule>,
     pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -97,6 +108,7 @@ pub fn handler(
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
+    let default_schedule = &ctx.accounts.default_schedule;
 
     //logs repository and spl token creation
     msg!(
@@ -175,12 +187,12 @@ pub fn handler(
 
     //adding schedules to vesting
     let mut release_time = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
-    for _i in 0..NUMBER_OF_SCHEDULES {
+    for _i in 0..default_schedule.number_of_schedules {
         vesting_account.schedules.push(Schedule {
             release_time: release_time,
-            amount: PER_VEST_AMOUNT,
+            amount: default_schedule.per_vesting_amount,
         });
-        release_time += UNIX_CHANGE;
+        release_time += default_schedule.unix_change;
     }
 
     //add vestifn schedule to repository

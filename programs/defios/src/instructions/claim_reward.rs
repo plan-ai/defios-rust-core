@@ -10,7 +10,6 @@ use anchor_spl::{
     },
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-use sha256::digest;
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
@@ -110,21 +109,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let pull_request = &ctx.accounts.pull_request;
 
-    //checking if issue token account sent is same as expected
-    let expected_issue_token_pool_account =
-        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
-
-    require!(
-        expected_issue_token_pool_account.eq(&issue_token_pool_account.key()),
-        DefiOSError::TokenAccountMismatch
-    );
-
-    //require pull request to be accepted to claim rewards
-    require!(
-        pull_request.accepted,
-        DefiOSError::PullRequestNotYetAccepted
-    );
-
     //Creating token account if empty
     if pull_request_creator_reward_account.data_is_empty() {
         msg!("Creating Commit creator reward token account");
@@ -141,8 +125,27 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         ))?;
     }
 
+    //checking if issue token account sent is same as expected
+    let expected_issue_token_pool_account =
+        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
+
+    let expected_pull_request_creator_reward_account =
+        get_associated_token_address(&pull_request_creator.key(), &rewards_mint.key());
+    require!(
+        expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
+            && expected_pull_request_creator_reward_account
+                .eq(&pull_request_creator_reward_account.key()),
+        DefiOSError::TokenAccountMismatch
+    );
+
+    //require pull request to be accepted to claim rewards
+    require!(
+        pull_request.accepted,
+        DefiOSError::PullRequestNotYetAccepted
+    );
+
     // Transferring pool balance to commit creator
-    let issue_index_str = repository_account.issue_index.to_string();
+    let issue_index_str = issue_account.index.to_string();
     let repository_account_key = repository_account.key();
     let issue_creator_key = issue_account.issue_creator.key();
 
@@ -156,11 +159,8 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
 
     let token_balance = issue_token_pool_account.amount;
 
-    require!(
-        token_balance>0,
-        DefiOSError::NoMoneyStakedOnIssue
-    );
-    
+    require!(token_balance > 0, DefiOSError::NoMoneyStakedOnIssue);
+
     transfer(
         CpiContext::new_with_signer(
             token_program.to_account_info(),

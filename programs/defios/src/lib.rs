@@ -1,9 +1,10 @@
-use crate::state::{ObjectiveDeliverable, ObjectiveState, RoadmapOutlook, Schedule};
+use crate::state::{ObjectiveDeliverable, RoadmapOutlook, Schedule};
 use anchor_lang::prelude::*;
 use instructions::*;
 
 pub mod constants;
 pub mod error;
+pub mod helper;
 pub mod instructions;
 pub mod state;
 
@@ -69,7 +70,7 @@ pub mod defios {
         ctx: Context<AddMetadata>,
         roadmap_title: String,
         roadmap_description_link: String,
-        roadmap_outlook: u32,
+        roadmap_outlook: RoadmapOutlook,
     ) -> Result<()> {
         add_roadmap_data::handler(
             ctx,
@@ -84,9 +85,9 @@ pub mod defios {
         objective_id: String,
         objective_title: String,
         objective_start_unix: u64,
-        objective_end_unix: u64,
+        objective_end_unix: Option<u64>,
         objective_description_link: String,
-        objective_deliverable: u32,
+        objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {
         add_objective_data::handler(
             ctx,
@@ -124,5 +125,26 @@ pub mod defios {
         new_vesting_schedule: Vec<Schedule>,
     ) -> Result<()> {
         change_vesting_schedule::handler(ctx, new_vesting_schedule)
+    }
+
+    pub fn create_communal_account(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
+        create_communal_account::handler(ctx)
+    }
+
+    pub fn buy_tokens(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
+        buy_tokens::handler(ctx, solana_amount)
+    }
+
+    pub fn sell_tokens(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
+        sell_tokens::handler(ctx, number_of_tokens)
+    }
+
+    pub fn set_default_schedule(
+        ctx: Context<AdminDefaultVestingScheduleShift>,
+        number_of_schedules: u32,
+        per_vesting_amount: u64,
+        unix_change: u64,
+    ) -> Result<()> {
+        set_default_schedule::handler(ctx, number_of_schedules, per_vesting_amount, unix_change)
     }
 }

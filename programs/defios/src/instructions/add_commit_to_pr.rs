@@ -1,16 +1,18 @@
+use crate::error::DefiOSError;
+use crate::state::{AddCommitToPR, Commit, NameRouter, PullRequest, VerifiedUser};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create as get_associated_token_address, AssociatedToken},
     token::Token,
 };
 
-use crate::error::DefiOSError;
-use crate::state::{AddCommitToPR, Commit, NameRouter, PullRequest, VerifiedUser};
 #[derive(Accounts)]
 pub struct AddCommitToPullRequest<'info> {
     #[account(mut)]
     pub commit_addr: Signer<'info>,
-    #[account(constraint = commit_addr.key() == commit.commit_creator)]
+    #[account(constraint = commit_addr.key() == commit.commit_creator @DefiOSError::UnauthorizedActionAttempted,
+        constraint = commit_addr.key() == pull_request_metadata_account.sent_by@DefiOSError::UnauthorizedActionAttempted
+    )]
     pub commit: Account<'info, Commit>,
     #[account(mut)]
     pub pull_request_metadata_account: Account<'info, PullRequest>,
@@ -52,9 +54,6 @@ pub fn handler(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
         pull_request_metadata_account.key()
     );
 
-    pull_request_metadata_account
-        .sent_by
-        .push(commit_addr.key());
     pull_request_metadata_account.commits.push(commit.key());
 
     emit!(AddCommitToPR {

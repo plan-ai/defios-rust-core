@@ -60,36 +60,24 @@ pub fn handler(
     objective_id: String,
     objective_title: String,
     objective_start_unix: u64,
-    objective_end_unix: u64,
+    objective_end_unix: Option<u64>,
     objective_description_link: String,
-    objective_deliverable_no: u32,
+    objective_deliverable: ObjectiveDeliverable,
 ) -> Result<()> {
     let objective_creation_unix = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_issue = &ctx.accounts.objective_issue;
     let objective_state = ObjectiveState::InProgress;
-    let mut objective_deliverable = ObjectiveDeliverable::Infrastructure;
-    match objective_deliverable_no {
-        1 => {
-            objective_deliverable = ObjectiveDeliverable::Tooling;
+
+    match objective_end_unix {
+        Some(x) => {
+            require!(
+                objective_creation_unix < x,
+                DefiOSError::RoadmapInvalidEndTime
+            );
         }
-        2 => {
-            objective_deliverable = ObjectiveDeliverable::Publication;
-        }
-        3 => {
-            objective_deliverable = ObjectiveDeliverable::Product;
-        }
-        4 => {
-            objective_deliverable = ObjectiveDeliverable::Other;
-        }
-        _ => {
-            objective_deliverable = ObjectiveDeliverable::Infrastructure;
-        }
-    };
-    require!(
-        objective_creation_unix < objective_end_unix,
-        DefiOSError::RoadmapInvalidEndTime
-    );
+        None => {}
+    }
     msg!(
         "Adding objective: Title:{}, Description: {}",
         objective_title,
@@ -102,11 +90,12 @@ pub fn handler(
     metadata_account.objective_end_unix = objective_end_unix;
     metadata_account.objective_creation_unix = objective_creation_unix as u64;
     metadata_account.objective_creator_gh_id = ctx.accounts.objective_data_addr.key();
-    metadata_account.children_objective_id = vec![];
+    metadata_account.children_objective_keys = vec![];
     metadata_account.objective_description_link = objective_description_link.clone();
     metadata_account.objective_state = objective_state;
     metadata_account.objective_deliverable = objective_deliverable;
     metadata_account.objective_issue = objective_issue.key();
+    metadata_account.objective_id = objective_id;
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,

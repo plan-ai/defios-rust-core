@@ -65,12 +65,12 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     );
 
     pull_request_metadata_account.bump = *ctx.bumps.get("pull_request_metadata_account").unwrap();
-    pull_request_metadata_account.sent_by = vec![pull_request_addr.key()];
+    pull_request_metadata_account.sent_by = pull_request_addr.key();
     pull_request_metadata_account.commits = vec![commit.key()];
     pull_request_metadata_account.metadata_uri = metadata_uri.clone();
     pull_request_metadata_account.accepted = false;
     emit!(PullRequestSent {
-        sent_by: vec![pull_request_addr.key()],
+        sent_by: pull_request_addr.key(),
         commits: vec![commit.key()],
         metadata_uri: metadata_uri
     });

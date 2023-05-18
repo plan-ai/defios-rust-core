@@ -17,6 +17,7 @@ import {
 
 import sha256 from "sha256";
 import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
+import { min } from "bn.js";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -47,8 +48,8 @@ describe("defios", () => {
   });
   const roadmapTitle = "Test Roadmap";
   const roadmapDescription = "https://github.com/defi-os/Issues";
-  const roadmapOutlook = 0;
-  const objectiveDeliverable = 0;
+  const roadmapOutlook = { next2: {} };
+  const objectiveDeliverable = { tooling: {} };
   const objectiveTitle = "Test Objective";
   const objectiveDescription = "https://github.com/defi-os/Issues";
   const objectiveEndUnix = new anchor.BN(1735603200);
@@ -2267,6 +2268,258 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: false });
+  });
+
+  it("Create communal account to store tokens", async () => {
+    //generates key pairs and airdrops solana to them
+    const repositoryCreator = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreator.publicKey
+    );
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      preInstructions,
+    ] = await create_spl_token(repositoryCreator);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .preInstructions(preInstructions)
+      .signers([repositoryCreator, mintKeypair])
+      .rpc({ skipPreflight: false });
+
+    const [communal_account] = await get_pda_from_seeds([
+      Buffer.from("are_we_conscious"),
+      Buffer.from("is love life ?  "),
+      Buffer.from("arewemadorinlove"),
+      mintKeypair.publicKey.toBuffer(),
+    ]);
+
+    const communalTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      communal_account,
+      true
+    );
+
+    await program.methods
+      .createCommunalAccount()
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        systemProgram: web3.SystemProgram.programId,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: true });
+  });
+
+  it("Sends a buy transaction", async () => {
+    //generates key pairs and airdrops solana to them
+    const repositoryCreator = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreator.publicKey
+    );
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      preInstructions,
+    ] = await create_spl_token(repositoryCreator);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .preInstructions(preInstructions)
+      .signers([repositoryCreator, mintKeypair])
+      .rpc({ skipPreflight: false });
+
+    const [communal_account] = await get_pda_from_seeds([
+      Buffer.from("are_we_conscious"),
+      Buffer.from("is love life ?  "),
+      Buffer.from("arewemadorinlove"),
+      mintKeypair.publicKey.toBuffer(),
+    ]);
+
+    const communalTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      communal_account,
+      true
+    );
+
+    await program.methods
+      .createCommunalAccount()
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        systemProgram: web3.SystemProgram.programId,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: true });
+
+    await program.methods
+      .buyTokens(new anchor.BN(1))
+      .accounts({
+        buyer: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+        buyerTokenAccount: repositoryCreatorTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+  });
+
+  it("Sends a sell transaction", async () => {
+    //generates key pairs and airdrops solana to them
+    const repositoryCreator = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreator.publicKey
+    );
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      preInstructions,
+    ] = await create_spl_token(repositoryCreator);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair.publicKey,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .preInstructions(preInstructions)
+      .signers([repositoryCreator, mintKeypair])
+      .rpc({ skipPreflight: false });
+
+    const [communal_account] = await get_pda_from_seeds([
+      Buffer.from("are_we_conscious"),
+      Buffer.from("is love life ?  "),
+      Buffer.from("arewemadorinlove"),
+      mintKeypair.publicKey.toBuffer(),
+    ]);
+
+    const communalTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      communal_account,
+      true
+    );
+
+    await program.methods
+      .createCommunalAccount()
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        systemProgram: web3.SystemProgram.programId,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: true });
+
+    await program.methods
+      .buyTokens(new anchor.BN(1))
+      .accounts({
+        buyer: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+        buyerTokenAccount: repositoryCreatorTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
+    await program.methods
+      .sellTokens(new anchor.BN(1))
+      .accounts({
+        seller: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+        sellerTokenAccount: repositoryCreatorTokenAccount,
+      })
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
   });
 });
