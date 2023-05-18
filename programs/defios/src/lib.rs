@@ -85,7 +85,7 @@ pub mod defios {
         objective_id: String,
         objective_title: String,
         objective_start_unix: u64,
-        objective_end_unix: u64,
+        objective_end_unix: Option<u64>,
         objective_description_link: String,
         objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {
