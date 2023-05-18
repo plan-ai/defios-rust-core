@@ -99,7 +99,6 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     let issue_account = &mut ctx.accounts.issue_account;
     let issue_token_pool_account = &mut ctx.accounts.issue_token_pool_account;
     let issue_verified_user = &ctx.accounts.issue_verified_user;
-    let rewards_mint = &ctx.accounts.rewards_mint;
     let created_at = Clock::get()?.unix_timestamp;
     let mint = &ctx.accounts.rewards_mint.to_account_info();
 

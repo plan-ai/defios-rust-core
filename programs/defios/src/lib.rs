@@ -4,9 +4,9 @@ use instructions::*;
 
 pub mod constants;
 pub mod error;
+pub mod helper;
 pub mod instructions;
 pub mod state;
-pub mod helper;
 
 declare_id!("HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6");
 
@@ -131,7 +131,7 @@ pub mod defios {
         create_communal_account::handler(ctx)
     }
 
-    pub fn buy_tokens(ctx:Context<BuyToken>,solana_amount:u64) -> Result<()> {
-        buy_tokens::handler(ctx,solana_amount)
+    pub fn buy_tokens(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
+        buy_tokens::handler(ctx, solana_amount)
     }
 }

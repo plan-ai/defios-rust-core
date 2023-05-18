@@ -1,18 +1,16 @@
 use crate::constants::AUTHORIZED_PUBLIC_KEY;
 use crate::error::DefiOSError;
+use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{
-        create , get_associated_token_address, AssociatedToken,
-        Create,
-    },
+    associated_token::{create, get_associated_token_address, AssociatedToken, Create},
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-use crate::state::CommunalAccount;
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key
-    #[account(mut,signer)]//constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted,signer)]
+    #[account(mut, signer)]
+    //constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted,signer)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,
@@ -25,11 +23,11 @@ pub struct RegisterCommunalAccount<'info> {
         ],
     bump
     )]
-    pub communal_deposit: Account<'info,CommunalAccount>,
+    pub communal_deposit: Account<'info, CommunalAccount>,
     ///CHECK: This is handled in function body
     #[account(mut)]
-    pub communal_token_account:UncheckedAccount<'info>,
-    pub rewards_mint: Account<'info,Mint>,
+    pub communal_token_account: UncheckedAccount<'info>,
+    pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,

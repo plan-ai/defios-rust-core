@@ -2271,7 +2271,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
   });
 
-  it("Create communal account to store tokens",async() => {
+  it("Create communal account to store tokens", async () => {
     //generates key pairs and airdrops solana to them
     const repositoryCreator = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
@@ -2312,37 +2312,35 @@ describe("defios", () => {
       .signers([repositoryCreator, mintKeypair])
       .rpc({ skipPreflight: false });
 
-    const [communal_account] = await get_pda_from_seeds(
-      [
-        Buffer.from("are_we_conscious"),
-        Buffer.from("is love life ?  "),
-        Buffer.from("arewemadorinlove"),
-        mintKeypair.publicKey.toBuffer()
-    ]
-    );
+    const [communal_account] = await get_pda_from_seeds([
+      Buffer.from("are_we_conscious"),
+      Buffer.from("is love life ?  "),
+      Buffer.from("arewemadorinlove"),
+      mintKeypair.publicKey.toBuffer(),
+    ]);
 
     const communalTokenAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
       communal_account,
       true
-    )
+    );
 
     await program.methods
-         .createCommunalAccount()
-         .accounts({
-          authority:repositoryCreator.publicKey,
-          communalDeposit: communal_account,
-          communalTokenAccount:communalTokenAccount,
-          systemProgram:web3.SystemProgram.programId,
-          rewardsMint:mintKeypair.publicKey,
-          tokenProgram:TOKEN_PROGRAM_ID,
-          associatedTokenProgram:ASSOCIATED_TOKEN_PROGRAM_ID
-         })
-         .signers([repositoryCreator])
-         .rpc({skipPreflight:true})
-  })
+      .createCommunalAccount()
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        systemProgram: web3.SystemProgram.programId,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: true });
+  });
 
-  it("Sends a buy transaction",async() => {
+  it("Sends a buy transaction", async () => {
     //generates key pairs and airdrops solana to them
     const repositoryCreator = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
@@ -2383,48 +2381,46 @@ describe("defios", () => {
       .signers([repositoryCreator, mintKeypair])
       .rpc({ skipPreflight: false });
 
-    const [communal_account] = await get_pda_from_seeds(
-      [
-        Buffer.from("are_we_conscious"),
-        Buffer.from("is love life ?  "),
-        Buffer.from("arewemadorinlove"),
-        mintKeypair.publicKey.toBuffer()
-    ]
-    );
+    const [communal_account] = await get_pda_from_seeds([
+      Buffer.from("are_we_conscious"),
+      Buffer.from("is love life ?  "),
+      Buffer.from("arewemadorinlove"),
+      mintKeypair.publicKey.toBuffer(),
+    ]);
 
     const communalTokenAccount = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
       communal_account,
       true
-    )
+    );
 
     await program.methods
-         .createCommunalAccount()
-         .accounts({
-          authority:repositoryCreator.publicKey,
-          communalDeposit: communal_account,
-          communalTokenAccount:communalTokenAccount,
-          systemProgram:web3.SystemProgram.programId,
-          rewardsMint:mintKeypair.publicKey,
-          tokenProgram:TOKEN_PROGRAM_ID,
-          associatedTokenProgram:ASSOCIATED_TOKEN_PROGRAM_ID
-         })
-         .signers([repositoryCreator])
-         .rpc({skipPreflight:true})
-    
+      .createCommunalAccount()
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        systemProgram: web3.SystemProgram.programId,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: true });
+
     await program.methods
-         .buyTokens(new anchor.BN(1))
-         .accounts({
-          buyer:repositoryCreator.publicKey,
-          communalDeposit:communal_account,
-          communalTokenAccount:communalTokenAccount,
-          rewardsMint:mintKeypair.publicKey,
-          tokenProgram:TOKEN_PROGRAM_ID,
-          associatedTokenProgram:ASSOCIATED_TOKEN_PROGRAM_ID,
-          systemProgram:web3.SystemProgram.programId,
-          buyerTokenAccount:repositoryCreatorTokenAccount
-         })
-         .signers([repositoryCreator])
-         .rpc({skipPreflight:false})
-  })
+      .buyTokens(new anchor.BN(1))
+      .accounts({
+        buyer: repositoryCreator.publicKey,
+        communalDeposit: communal_account,
+        communalTokenAccount: communalTokenAccount,
+        rewardsMint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+        buyerTokenAccount: repositoryCreatorTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+  });
 });

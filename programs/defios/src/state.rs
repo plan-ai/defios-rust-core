@@ -308,13 +308,13 @@ impl PullRequest {
 
 #[account]
 pub struct CommunalAccount {
-    pub bump: u8
+    pub bump: u8,
 }
 
 impl CommunalAccount {
     pub fn size() -> usize {
         8 + // discriminator
-        1  //bump
+        1 //bump
     }
 }
 
