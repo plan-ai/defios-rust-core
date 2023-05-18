@@ -1,6 +1,9 @@
 use crate::{
     error::DefiOSError,
-    state::{NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser, VestingSchedule,DefaultVestingSchedule},
+    state::{
+        DefaultVestingSchedule, NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser,
+        VestingSchedule,
+    },
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{

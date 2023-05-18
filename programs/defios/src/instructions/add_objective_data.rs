@@ -69,14 +69,15 @@ pub fn handler(
     let objective_issue = &ctx.accounts.objective_issue;
     let objective_state = ObjectiveState::InProgress;
 
-    match objective_end_unix{
+    match objective_end_unix {
         Some(x) => {
             require!(
-        objective_creation_unix < x,
-        DefiOSError::RoadmapInvalidEndTime
-    );},
-    None => {}
-}
+                objective_creation_unix < x,
+                DefiOSError::RoadmapInvalidEndTime
+            );
+        }
+        None => {}
+    }
     msg!(
         "Adding objective: Title:{}, Description: {}",
         objective_title,
