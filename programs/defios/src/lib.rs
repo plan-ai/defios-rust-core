@@ -147,4 +147,13 @@ pub mod defios {
     ) -> Result<()> {
         set_default_schedule::handler(ctx, number_of_schedules, per_vesting_amount, unix_change)
     }
+
+    pub fn create_spl_token(
+        ctx: Context<MintNft>,
+        metadata_title: String,
+        metadata_symbol: String,
+        metadata_uri: String,
+    ) -> Result<()> {
+        create_spl_token::handler(ctx, metadata_title, metadata_symbol, metadata_uri)
+    }
 }

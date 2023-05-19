@@ -27,6 +27,8 @@ pub struct SellToken<'info> {
     pub communal_token_account: Account<'info, TokenAccount>,
     #[account(mut, constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds)]
     pub seller_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub mint_authority: Signer<'info>,
     pub token_program: Program<'info, Token>,
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -40,6 +42,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     let communal_token_account = &mut ctx.accounts.communal_token_account;
     let seller = &mut ctx.accounts.seller;
     let seller_token_account = &mut ctx.accounts.seller_token_account;
+    let mint_authority = &mut ctx.accounts.mint_authority;
 
     //get supply of token
     let token_supply: u64;
@@ -82,8 +85,16 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
         authority: rewards_mint.to_account_info(),
     };
     let cpi_program = token_program.to_account_info();
+    let rewards_key = rewards_mint.key();
+    let signer_seeds: &[&[&[u8]]] = &[&[
+        b"are_we_conscious",
+        b"is love life ?  ",
+        b"arewemadorinlove",
+        rewards_key.as_ref(),
+        &[communal_deposit.bump],
+    ]];
     // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts,signer_seeds);
 
     //Execute anchor's helper function to burn tokens
     token::burn(cpi_ctx, number_of_tokens)?;

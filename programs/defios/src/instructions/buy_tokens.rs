@@ -27,6 +27,8 @@ pub struct BuyToken<'info> {
     ///CHECK: Check for this account done in function call
     #[account(mut)]
     pub buyer_token_account: AccountInfo<'info>,
+    #[account(mut)]
+    pub mint_authority: Signer<'info>,
     pub token_program: Program<'info, Token>,
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -42,7 +44,8 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let rewards_mint = &mut ctx.accounts.rewards_mint;
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
-
+    let mint_authority = &mut ctx.accounts.mint_authority;
+    
     let token_supply: u64;
     {
         let account_info = &rewards_mint.to_account_info();
@@ -98,7 +101,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let cpi_accounts = MintTo {
         mint: rewards_mint.to_account_info(),
         to: communal_token_account.to_account_info(),
-        authority: rewards_mint.to_account_info(),
+        authority: mint_authority.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
     // Create the CpiContext we need for the request
