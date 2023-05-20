@@ -6,7 +6,7 @@ use anchor_lang::prelude::*;
 #[derive(Accounts)]
 pub struct AdminDefaultVestingScheduleShift<'info> {
     ///CHECK: This is not dangerous public key constraint is already set
-    #[account(mut,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted,signer)]
+    #[account(mut,signer)]//constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted,signer)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
     payer = authority,
