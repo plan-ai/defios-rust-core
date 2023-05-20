@@ -86,15 +86,8 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     };
     let cpi_program = token_program.to_account_info();
     let rewards_key = rewards_mint.key();
-    let signer_seeds: &[&[&[u8]]] = &[&[
-        b"are_we_conscious",
-        b"is love life ?  ",
-        b"arewemadorinlove",
-        rewards_key.as_ref(),
-        &[communal_deposit.bump],
-    ]];
     // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts,signer_seeds);
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
     //Execute anchor's helper function to burn tokens
     token::burn(cpi_ctx, number_of_tokens)?;

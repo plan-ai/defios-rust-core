@@ -228,6 +228,22 @@ describe("defios", () => {
       repositoryCreator.publicKey
     );
 
+    const [defaultVestingSchedule] = await get_pda_from_seeds([
+      Buffer.from("isGodReal?"),
+      Buffer.from("DoULoveMe?"),
+      Buffer.from("SweetChick"),
+    ]);
+
+    await program.methods
+      .setDefaultSchedule(4, new anchor.BN(2500), new anchor.BN(1000))
+      .accounts({
+        authority: repositoryCreator.publicKey,
+        defaultSchedule: defaultVestingSchedule,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
     return [
       repositoryAccount,
       repositoryCreatorTokenAccount,
@@ -235,6 +251,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ];
   }
   //main testsuite
@@ -280,6 +297,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -299,6 +317,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -322,6 +341,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -341,6 +361,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -414,6 +435,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -429,6 +451,7 @@ describe("defios", () => {
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: repositoryVerifiedUser,
         rewardsMint: mintKeypair.publicKey,
+        defaultSchedule: defaultVestingSchedule,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
@@ -562,6 +585,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     // Creating repository
@@ -582,6 +606,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -738,6 +763,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -757,6 +783,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -945,6 +972,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -964,6 +992,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1082,6 +1111,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1101,6 +1131,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1233,6 +1264,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1252,6 +1284,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1411,6 +1444,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1430,6 +1464,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1554,6 +1589,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1573,6 +1609,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1742,6 +1779,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1761,6 +1799,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -1947,6 +1986,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -1967,6 +2007,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -2010,6 +2051,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
     await program.methods
@@ -2029,6 +2071,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([roadmapDataAdder, mintKeypair])
@@ -2288,6 +2331,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -2307,6 +2351,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -2357,6 +2402,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -2376,6 +2422,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])
@@ -2441,6 +2488,7 @@ describe("defios", () => {
       mintKeypair,
       vestingAccount,
       preInstructions,
+      defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
     await program.methods
@@ -2460,6 +2508,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .preInstructions(preInstructions)
       .signers([repositoryCreator, mintKeypair])

@@ -92,7 +92,7 @@ pub fn handler(
             metadata_symbol,
             metadata_uri,
             None,
-            1,
+            2,
             true,
             false,
             None,

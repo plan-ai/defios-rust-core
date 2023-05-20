@@ -118,7 +118,7 @@ impl DefaultVestingSchedule {
             1 + // bump
         4 + //number of schedules
         8 + //total vesting amount
-        4 //unix change
+        8 //unix change
     }
 }
 

@@ -105,7 +105,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
     // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
     // Execute anchor's helper function to mint tokens
     mint_to(cpi_ctx, number_of_tokens)?;
