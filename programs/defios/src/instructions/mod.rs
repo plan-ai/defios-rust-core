@@ -17,8 +17,10 @@ pub mod create_spl_token;
 pub mod sell_tokens;
 pub mod set_default_schedule;
 pub mod stake_issue;
+pub mod stake_pr;
 pub mod unlock_tokens;
 pub mod unstake_issue;
+pub mod unstake_pr;
 
 pub use accept_pr::*;
 pub use add_child_objective::*;
@@ -39,5 +41,7 @@ pub use create_spl_token::*;
 pub use sell_tokens::*;
 pub use set_default_schedule::*;
 pub use stake_issue::*;
+pub use stake_pr::*;
 pub use unlock_tokens::*;
 pub use unstake_issue::*;
+pub use unstake_pr::*;

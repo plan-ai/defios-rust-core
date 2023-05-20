@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-defios = "HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6"
+defios = "7NWdxBpwFC5wyMiLb6viNyiZXyhmDhCM4zkdD8knPqJz"
 [programs.devnet]
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 [programs.testnet]

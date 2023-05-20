@@ -8,7 +8,7 @@ pub mod helper;
 pub mod instructions;
 pub mod state;
 
-declare_id!("HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6");
+declare_id!("7NWdxBpwFC5wyMiLb6viNyiZXyhmDhCM4zkdD8knPqJz");
 
 #[program]
 pub mod defios {
@@ -155,5 +155,13 @@ pub mod defios {
         metadata_uri: String,
     ) -> Result<()> {
         create_spl_token::handler(ctx, metadata_title, metadata_symbol, metadata_uri)
+    }
+
+    pub fn stake_pr(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
+        stake_pr::handler(ctx, transfer_amount)
+    }
+
+    pub fn unstake_pr(ctx: Context<UnStakePR>) -> Result<()> {
+        unstake_pr::handler(ctx)
     }
 }
