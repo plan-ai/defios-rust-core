@@ -99,6 +99,13 @@ pub fn handler(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
         rewards_mint.key().to_string()
     );
 
+    let expected_staker_token_account =
+        get_associated_token_address(&pull_request_staker.key(), &rewards_mint.key());
+    require!(
+        expected_staker_token_account.eq(&pull_request_staker_token_account.key()),
+        DefiOSError::TokenAccountMismatch
+    );
+
     transfer(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),

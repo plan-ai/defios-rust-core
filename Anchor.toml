@@ -1,8 +1,8 @@
 [features]
-seeds = false
+seeds = true
 skip-lint = false
 [programs.localnet]
-defios = "7NWdxBpwFC5wyMiLb6viNyiZXyhmDhCM4zkdD8knPqJz"
+defios = "EYJjYKdY8zS3QwcvPXgS5FtPHjdExHA3YTWe2obLn76m"
 [programs.devnet]
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 [programs.testnet]
@@ -11,10 +11,10 @@ defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 
 [registry]
-url = "https://ancient-quick-frost.solana-testnet.discover.quiknode.pro/44bdd9af57d104e26d5bae07400c2fc8d8600507/"
+url = "https://damp-ancient-forest.solana-devnet.discover.quiknode.pro/4c38979f4ca8eca0840486c9d5f3f23a986c9cd2/"
 
 [provider]
-cluster = "https://ancient-quick-frost.solana-testnet.discover.quiknode.pro/44bdd9af57d104e26d5bae07400c2fc8d8600507/"
+cluster = "localnet"
 wallet = "/home/tanmay/.config/solana/id.json"
 
 [scripts]

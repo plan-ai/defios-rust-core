@@ -1,6 +1,6 @@
 use crate::error::DefiOSError;
 use crate::helper::calculate_burn;
-use crate::state::CommunalAccount;
+use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -28,8 +28,12 @@ pub struct SellToken<'info> {
     #[account(mut, constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds)]
     pub seller_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub mint_authority: Signer<'info>,
+    pub repository_account: Account<'info, Repository>,
     pub token_program: Program<'info, Token>,
+    #[account(mut,seeds = [b"Miners",
+    b"MinerC",
+    repository_account.key().as_ref()],
+    bump)]
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -42,7 +46,6 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     let communal_token_account = &mut ctx.accounts.communal_token_account;
     let seller = &mut ctx.accounts.seller;
     let seller_token_account = &mut ctx.accounts.seller_token_account;
-    let mint_authority = &mut ctx.accounts.mint_authority;
 
     //get supply of token
     let token_supply: u64;
@@ -55,7 +58,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
     //get amount of solana to transfer
     let solana_amount = calculate_burn(token_supply, number_of_tokens);
 
-    //transfers sol to communal token account
+    //transfers spl token to communal token account
     transfer(
         CpiContext::new(
             token_program.to_account_info(),
@@ -68,29 +71,34 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
         number_of_tokens,
     )?;
 
-    //execute function to send native sol amount to communal deposits
-    let ix = anchor_lang::solana_program::system_instruction::transfer(
-        &communal_deposit.key(),
-        &seller.key(),
-        solana_amount,
-    );
-    anchor_lang::solana_program::program::invoke(
-        &ix,
-        &[communal_deposit.to_account_info(), seller.to_account_info()],
-    )?;
+    //calculates signer seeds
+    let rewards_key = rewards_mint.key();
+    let signer_seeds: &[&[&[u8]]] = &[&[
+        b"are_we_conscious",
+        b"is love life ?  ",
+        b"arewemadorinlove",
+        rewards_key.as_ref(),
+        &[communal_deposit.bump],
+    ]];
+
+    //burns incoming spl tokens
 
     let cpi_accounts = Burn {
         mint: rewards_mint.to_account_info(),
         from: communal_token_account.to_account_info(),
-        authority: rewards_mint.to_account_info(),
+        authority: communal_deposit.to_account_info(),
     };
     let cpi_program = token_program.to_account_info();
-    let rewards_key = rewards_mint.key();
     // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
 
     //Execute anchor's helper function to burn tokens
     token::burn(cpi_ctx, number_of_tokens)?;
+
+    //execute function to send native sol amount to seller
+    let communal_info = &communal_deposit.to_account_info();
+    **communal_info.try_borrow_mut_lamports()? -= solana_amount;
+    **seller.try_borrow_mut_lamports()? += solana_amount;
 
     Ok(())
 }
