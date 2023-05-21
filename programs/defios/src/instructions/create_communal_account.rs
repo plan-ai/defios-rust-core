@@ -9,8 +9,7 @@ use anchor_spl::{
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key
-    #[account(mut, signer)]
-    //constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted,signer)]
+    #[account(mut, signer,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,

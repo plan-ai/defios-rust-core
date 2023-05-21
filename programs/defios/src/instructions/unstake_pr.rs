@@ -111,24 +111,24 @@ pub fn handler(ctx: Context<UnStakePR>) -> Result<()> {
         pull_request_staker_account.staked_amount,
     )?;
 
-    // close_account(CpiContext::new_with_signer(
-    //     ctx.accounts.token_program.to_account_info(),
-    //     CloseAccount {
-    //         account: pull_request_token_account.to_account_info(),
-    //         authority: pull_request_metadata_account.to_account_info(),
-    //         destination: pull_request_staker.to_account_info(),
-    //     },
-    //     signer_seeds,
-    // ))?;
+    close_account(CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        CloseAccount {
+            account: pull_request_token_account.to_account_info(),
+            authority: pull_request_metadata_account.to_account_info(),
+            destination: pull_request_staker.to_account_info(),
+        },
+        signer_seeds,
+    ))?;
 
-    // emit!(PullRequestUnstaked {
-    //     pr_staker: pull_request_staker.key(),
-    //     pr_staker_token_account: pull_request_staker_token_account.key(),
-    //     pr_account: pull_request_metadata_account.key(),
-    //     staked_amount: transfer_amount,
-    //     rewards_mint: rewards_mint.key(),
-    //     pr_contribution_link: pull_request_metadata_account.metadata_uri.clone()
-    // });
+    emit!(PullRequestUnstaked {
+        pr_staker: pull_request_staker.key(),
+        pr_staker_token_account: pull_request_staker_token_account.key(),
+        pr_account: pull_request_metadata_account.key(),
+        staked_amount: pull_request_staker_account.staked_amount,
+        rewards_mint: rewards_mint.key(),
+        pr_contribution_link: pull_request_metadata_account.metadata_uri.clone()
+    });
 
     Ok(())
 }
