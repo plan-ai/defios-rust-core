@@ -97,7 +97,7 @@ pub fn handler(
             false,
             None,
             None,
-            None
+            None,
         ),
         &[
             ctx.accounts.metadata.to_account_info(),

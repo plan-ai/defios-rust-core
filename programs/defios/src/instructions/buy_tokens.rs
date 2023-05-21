@@ -45,7 +45,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let mint_authority = &mut ctx.accounts.mint_authority;
-    
+
     let token_supply: u64;
     {
         let account_info = &rewards_mint.to_account_info();

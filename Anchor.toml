@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-defios = "HdPtQX5VYkR5AbqgHTt5Rfaxhqgjryp73bmMrbFaLSo6"
+defios = "7NWdxBpwFC5wyMiLb6viNyiZXyhmDhCM4zkdD8knPqJz"
 [programs.devnet]
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 [programs.testnet]
@@ -11,10 +11,10 @@ defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 
 [registry]
-url = "https://api.apr.dev"
+url = "https://ancient-quick-frost.solana-testnet.discover.quiknode.pro/44bdd9af57d104e26d5bae07400c2fc8d8600507/"
 
 [provider]
-cluster = "localnet"
+cluster = "https://ancient-quick-frost.solana-testnet.discover.quiknode.pro/44bdd9af57d104e26d5bae07400c2fc8d8600507/"
 wallet = "/home/tanmay/.config/solana/id.json"
 
 [scripts]

@@ -246,6 +246,29 @@ impl IssueStaker {
 }
 
 #[account]
+#[derive(Default)]
+pub struct PRStaker {
+    pub bump: u8,
+    pub staked_amount: u64,
+    pub staked_at: u64,
+    pub pr_staker: Pubkey,
+    pub pr: Pubkey,
+    pub pr_staker_token_account: Pubkey,
+}
+
+impl PRStaker {
+    pub fn size() -> usize {
+        8 + // discriminator
+            1 + // bump
+            8 + // staked_amount
+            8 + // staked_at
+            32 + // pr_staker
+            32 + // pr
+            32 // pr_staker_token_account
+    }
+}
+
+#[account]
 pub struct RoadMapMetaDataStore {
     pub bump: u8,
     pub roadmap_title: String,
@@ -304,6 +327,7 @@ impl Objective {
         1 + //objective deliverable
         640 + //objective_staker_ids
         160 + //objective_staker_amts
+        32 + //objective_issue
         40 //objective id
     }
 }
@@ -315,6 +339,7 @@ pub struct PullRequest {
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
     pub accepted: bool,
+    pub pull_request_token_account: Pubkey,
 }
 
 impl PullRequest {
@@ -323,7 +348,8 @@ impl PullRequest {
         1 + //bump
         960 + //sent_by
         960 + //commits
-        200 //metadata_uri
+        200 + //metadata_uri
+        32 //pull request token account
     }
 }
 
@@ -462,4 +488,24 @@ pub struct DefaultVestingScheduleChanged {
     pub number_of_schedules: u32,
     pub per_vesting_amount: u64,
     pub unix_change: u64,
+}
+
+#[event]
+pub struct PullRequestStaked {
+    pub pr_staker: Pubkey,
+    pub pr_staker_token_account: Pubkey,
+    pub pr_account: Pubkey,
+    pub staked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub pr_contribution_link: String,
+}
+
+#[event]
+pub struct PullRequestUnstaked {
+    pub pr_staker: Pubkey,
+    pub pr_staker_token_account: Pubkey,
+    pub pr_account: Pubkey,
+    pub staked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub pr_contribution_link: String,
 }
