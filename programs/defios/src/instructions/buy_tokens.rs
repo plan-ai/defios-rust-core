@@ -1,10 +1,11 @@
 use crate::error::DefiOSError;
 use crate::helper::calculate_mint;
-use crate::state::CommunalAccount;
+use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    token::{mint_to, transfer, Mint, MintTo, Token, TokenAccount, Transfer},
+    token,
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
 #[derive(Accounts)]
@@ -28,8 +29,12 @@ pub struct BuyToken<'info> {
     #[account(mut)]
     pub buyer_token_account: AccountInfo<'info>,
     #[account(mut)]
-    pub mint_authority: Signer<'info>,
+    pub repository_account: Account<'info, Repository>,
     pub token_program: Program<'info, Token>,
+    #[account(mut,seeds = [b"Miners",
+    b"MinerC",
+    repository_account.key().as_ref()],
+    bump)]
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -44,7 +49,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     let rewards_mint = &mut ctx.accounts.rewards_mint;
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
-    let mint_authority = &mut ctx.accounts.mint_authority;
+    let repository_account = &ctx.accounts.repository_account;
 
     let token_supply: u64;
     {
@@ -89,27 +94,35 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
     );
 
     //mints required number of tokens
-    // Create the MintTo struct for our context
+    let bump = *ctx.bumps.get("rewards_mint").unwrap();
+    let repository_account_key = repository_account.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
+        b"Miners",
+        b"MinerC",
+        repository_account_key.as_ref(),
+        &[bump],
+    ]];
+
+    token::mint_to(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            token::MintTo {
+                mint: rewards_mint.to_account_info(),
+                to: communal_token_account.to_account_info(),
+                authority: rewards_mint.to_account_info(),
+            },
+            signer_seeds,
+        ),
+        number_of_tokens,
+    )?;
+    //transfers token to buyer
+    let communal_signer_seeds: &[&[&[u8]]] = &[&[
         b"are_we_conscious",
         b"is love life ?  ",
         b"arewemadorinlove",
         rewards_key.as_ref(),
         &[communal_deposit.bump],
     ]];
-
-    let cpi_accounts = MintTo {
-        mint: rewards_mint.to_account_info(),
-        to: communal_token_account.to_account_info(),
-        authority: mint_authority.to_account_info(),
-    };
-    let cpi_program = ctx.accounts.token_program.to_account_info();
-    // Create the CpiContext we need for the request
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-
-    // Execute anchor's helper function to mint tokens
-    mint_to(cpi_ctx, number_of_tokens)?;
-    //transfers token to buyer
 
     transfer(
         CpiContext::new_with_signer(
@@ -119,7 +132,7 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
                 to: buyer_token_account.to_account_info(),
                 authority: communal_deposit.to_account_info(),
             },
-            signer_seeds,
+            communal_signer_seeds,
         ),
         number_of_tokens,
     )?;

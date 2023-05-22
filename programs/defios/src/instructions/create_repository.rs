@@ -8,6 +8,7 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    token,
     token::{Mint, Token},
 };
 
@@ -85,6 +86,16 @@ pub struct CreateRepository<'info> {
         bump = default_schedule.bump,
     )]
     pub default_schedule: Account<'info, DefaultVestingSchedule>,
+    #[account(
+        init,
+        payer = repository_creator,
+        mint::authority = rewards_mint,
+        mint::decimals = 9,
+        seeds = [b"Miners",
+        b"MinerC",
+        repository_account.key().as_ref()],
+        bump
+    )]
     pub rewards_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -167,6 +178,29 @@ pub fn handler(
             },
         ))?;
     }
+
+    let repository_account_key = repository_account.key();
+    let bump = *ctx.bumps.get("rewards_mint").unwrap();
+
+    let signer_seeds: &[&[&[u8]]] = &[&[
+        b"Miners",
+        b"MinerC",
+        repository_account_key.as_ref(),
+        &[bump],
+    ]];
+
+    token::mint_to(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            token::MintTo {
+                mint: rewards_mint.to_account_info(),
+                to: vesting_token_account.to_account_info(),
+                authority: rewards_mint.to_account_info(),
+            },
+            signer_seeds,
+        ),
+        default_schedule.per_vesting_amount * (default_schedule.number_of_schedules as u64),
+    )?;
 
     //add checks for making sure token vesting accounts are correct
     let expected_vesting_token_account =

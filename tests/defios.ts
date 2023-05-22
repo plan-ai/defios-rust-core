@@ -156,31 +156,6 @@ describe("defios", () => {
   }
 
   async function create_spl_token(repositoryCreator) {
-    // Creating rewards mint
-    const mintKeypair = web3.Keypair.generate();
-    const createAccountIx = web3.SystemProgram.createAccount({
-      programId: TOKEN_PROGRAM_ID,
-      fromPubkey: repositoryCreator.publicKey,
-      newAccountPubkey: mintKeypair.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        MintLayout.span
-      ),
-      space: MintLayout.span,
-    });
-
-    const initMintIx = createInitializeMintInstruction(
-      mintKeypair.publicKey,
-      9,
-      repositoryCreator.publicKey,
-      repositoryCreator.publicKey
-    );
-
-    const repositoryCreatorRewardsTokenAccount =
-      await getAssociatedTokenAddress(
-        mintKeypair.publicKey,
-        repositoryCreator.publicKey
-      );
-
     // Creating repository
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
@@ -188,43 +163,27 @@ describe("defios", () => {
       repositoryCreator.publicKey.toBuffer(),
     ]);
 
+    // Creating rewards mint
+    const [mintKeypair] = await get_pda_from_seeds([
+      Buffer.from("Miners"),
+      Buffer.from("MinerC"),
+      repositoryAccount.toBuffer(),
+    ]);
+
     const [vestingAccount] = await get_pda_from_seeds([
       Buffer.from("vesting"),
-      mintKeypair.publicKey.toBuffer(),
+      mintKeypair.toBuffer(),
       repositoryAccount.toBuffer(),
     ]);
 
     const vestingTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       vestingAccount,
       true
     );
 
-    const createAssociatedTokenIx = createAssociatedTokenAccountInstruction(
-      repositoryCreator.publicKey,
-      vestingTokenAccount,
-      vestingAccount,
-      mintKeypair.publicKey
-    );
-
-    const mintTokensIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      vestingTokenAccount,
-      repositoryCreator.publicKey,
-      10 ** 4,
-      9,
-      []
-    );
-
-    const preInstructions = [
-      createAccountIx,
-      initMintIx,
-      createAssociatedTokenIx,
-      mintTokensIx,
-    ];
-
     const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       repositoryCreator.publicKey
     );
 
@@ -250,7 +209,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ];
   }
@@ -296,7 +254,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -312,15 +269,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
   });
 
@@ -340,7 +296,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -356,15 +311,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -390,7 +344,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -405,7 +359,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -434,7 +388,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -450,15 +403,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         defaultSchedule: defaultVestingSchedule,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc();
 
     const { issueIndex } = await program.account.repository.fetch(
@@ -489,7 +441,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -504,7 +456,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -516,50 +468,43 @@ describe("defios", () => {
     await program.account.issue.fetch(issueAccount);
 
     // Staking tokens on a issue
-    const transferAmount = 1000 * 10 ** 9;
-    const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
-      issueStakerKeypair.publicKey
-    );
-
-    const createIssueStakerTokenAccountIx =
-      createAssociatedTokenAccountInstruction(
-        issueStakerKeypair.publicKey,
-        issueStakerTokenAccount,
-        issueStakerKeypair.publicKey,
-        mintKeypair.publicKey
-      );
-
-    const mintToIssueStakerIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      issueStakerTokenAccount,
-      repositoryCreator.publicKey,
-      transferAmount,
-      9,
-      []
-    );
-
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
-      issueStakerKeypair.publicKey.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
     ]);
 
     await program.methods
-      .stakeIssue(new anchor.BN(transferAmount))
+      .unlockTokens(repositoryName)
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: repositoryVerifiedUser,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
       .accounts({
         issueAccount,
         repositoryAccount,
         issueTokenPoolAccount,
-        issueStaker: issueStakerKeypair.publicKey,
+        issueStaker: repositoryCreator.publicKey,
         issueStakerAccount,
-        issueStakerTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .preInstructions([createIssueStakerTokenAccountIx, mintToIssueStakerIx])
-      .signers([repositoryCreator, issueStakerKeypair])
+      .signers([repositoryCreator])
       .rpc();
   });
 
@@ -584,7 +529,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -601,15 +545,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc();
 
     const { issueIndex } = await program.account.repository.fetch(
@@ -652,7 +595,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -667,7 +610,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -679,50 +622,43 @@ describe("defios", () => {
     await program.account.issue.fetch(issueAccount);
 
     // Staking tokens on a issue
-    const transferAmount = 1000 * 10 ** 9;
-    const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
-      issueStakerKeypair.publicKey
-    );
-
-    const createIssueStakerTokenAccountIx =
-      createAssociatedTokenAccountInstruction(
-        issueStakerKeypair.publicKey,
-        issueStakerTokenAccount,
-        issueStakerKeypair.publicKey,
-        mintKeypair.publicKey
-      );
-
-    const mintToIssueStakerIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      issueStakerTokenAccount,
-      repositoryCreator.publicKey,
-      transferAmount,
-      9,
-      []
-    );
-
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
-      issueStakerKeypair.publicKey.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
     ]);
 
     await program.methods
-      .stakeIssue(new anchor.BN(transferAmount))
+      .unlockTokens(repositoryName)
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: repositoryVerifiedUser,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
       .accounts({
         issueAccount,
         repositoryAccount,
         issueTokenPoolAccount,
-        issueStaker: issueStakerKeypair.publicKey,
+        issueStaker: repositoryCreator.publicKey,
         issueStakerAccount,
-        issueStakerTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .preInstructions([createIssueStakerTokenAccountIx, mintToIssueStakerIx])
-      .signers([repositoryCreator, issueStakerKeypair])
+      .signers([repositoryCreator])
       .rpc();
 
     await program.methods
@@ -731,14 +667,14 @@ describe("defios", () => {
         issueAccount,
         repositoryAccount,
         issueTokenPoolAccount,
-        issueStaker: issueStakerKeypair.publicKey,
+        issueStaker: repositoryCreator.publicKey,
         issueStakerAccount,
-        issueStakerTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .signers([issueStakerKeypair])
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
   });
 
@@ -762,7 +698,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -778,15 +713,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc();
 
     const { issueIndex } = await program.account.repository.fetch(
@@ -810,7 +744,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -825,7 +759,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -837,52 +771,44 @@ describe("defios", () => {
     await program.account.issue.fetch(issueAccount);
 
     // Staking tokens on a issue
-    const transferAmount = 1000 * 10 ** 9;
-    const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
-      issueStakerKeypair.publicKey
-    );
-
-    const createIssueStakerTokenAccountIx =
-      createAssociatedTokenAccountInstruction(
-        issueStakerKeypair.publicKey,
-        issueStakerTokenAccount,
-        issueStakerKeypair.publicKey,
-        mintKeypair.publicKey
-      );
-
-    const mintToIssueStakerIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      issueStakerTokenAccount,
-      repositoryCreator.publicKey,
-      transferAmount,
-      9,
-      []
-    );
-
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
-      issueStakerKeypair.publicKey.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
     ]);
 
     await program.methods
-      .stakeIssue(new anchor.BN(transferAmount))
+      .unlockTokens(repositoryName)
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: repositoryVerifiedUser,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
       .accounts({
         issueAccount,
         repositoryAccount,
         issueTokenPoolAccount,
-        issueStaker: issueStakerKeypair.publicKey,
+        issueStaker: repositoryCreator.publicKey,
         issueStakerAccount,
-        issueStakerTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .preInstructions([createIssueStakerTokenAccountIx, mintToIssueStakerIx])
-      .signers([repositoryCreator, issueStakerKeypair])
+      .signers([repositoryCreator])
       .rpc();
-
     // Adding commit creator user
     const [commitVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
@@ -971,7 +897,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -987,15 +912,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1021,7 +945,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1036,7 +960,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1110,7 +1034,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -1126,15 +1049,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1160,7 +1082,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1175,7 +1097,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1263,7 +1185,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -1279,15 +1200,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1313,7 +1233,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1328,7 +1248,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1443,7 +1363,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -1459,15 +1378,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1493,7 +1411,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1508,7 +1426,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1554,10 +1472,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -1573,8 +1491,8 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID
+        rewardsMint: mintKeypair,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
@@ -1598,7 +1516,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -1614,15 +1531,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1648,7 +1564,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1663,7 +1579,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1709,10 +1625,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -1727,19 +1643,19 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID
+        rewardsMint: mintKeypair,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
-      const [pullRequestStakerAccount] = await get_pda_from_seeds([
-        Buffer.from("pullrestaker"), 
-        pullRequestMetadataAccount.toBuffer(), 
-        roadmapDataAdder.publicKey.toBuffer()
-      ])
+    const [pullRequestStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("pullrestaker"),
+      pullRequestMetadataAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
 
-      await program.methods
+    await program.methods
       .unlockTokens(repositoryName)
       .accounts({
         nameRouterAccount,
@@ -1750,13 +1666,13 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
-        tokenMint: mintKeypair.publicKey,
+        tokenMint: mintKeypair,
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: false });
 
-      await program.methods
+    await program.methods
       .stakePr(new anchor.BN(1))
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
@@ -1770,11 +1686,11 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         pullRequestStaker: roadmapDataAdder.publicKey,
         pullRequestStakerTokenAccount: repositoryCreatorTokenAccount,
-        pullRequestStakerAccount
+        pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: false });
@@ -1798,7 +1714,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -1814,15 +1729,14 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -1848,7 +1762,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -1863,7 +1777,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1909,10 +1823,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -1927,19 +1841,19 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID
+        rewardsMint: mintKeypair,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
-      const [pullRequestStakerAccount] = await get_pda_from_seeds([
-        Buffer.from("pullrestaker"), 
-        pullRequestMetadataAccount.toBuffer(), 
-        roadmapDataAdder.publicKey.toBuffer()
-      ])
+    const [pullRequestStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("pullrestaker"),
+      pullRequestMetadataAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
 
-      await program.methods
+    await program.methods
       .unlockTokens(repositoryName)
       .accounts({
         nameRouterAccount,
@@ -1950,13 +1864,13 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
-        tokenMint: mintKeypair.publicKey,
+        tokenMint: mintKeypair,
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: false });
 
-      await program.methods
+    await program.methods
       .stakePr(new anchor.BN(1))
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
@@ -1970,16 +1884,16 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         pullRequestStaker: roadmapDataAdder.publicKey,
         pullRequestStakerTokenAccount: repositoryCreatorTokenAccount,
-        pullRequestStakerAccount
+        pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: false });
 
-      await program.methods
+    await program.methods
       .unstakePr()
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
@@ -1993,11 +1907,11 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         pullRequestStaker: roadmapDataAdder.publicKey,
         pullRequestStakerTokenAccount: repositoryCreatorTokenAccount,
-        pullRequestStakerAccount
+        pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: false });
@@ -2021,7 +1935,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -2037,15 +1950,14 @@ describe("defios", () => {
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryCreatorTokenAccount,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -2071,7 +1983,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -2086,7 +1998,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -2132,10 +2044,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2148,7 +2060,7 @@ describe("defios", () => {
         pullRequestTokenAccount,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         pullRequestAddr: roadmapDataAdder.publicKey,
         repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
@@ -2221,7 +2133,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -2237,15 +2148,14 @@ describe("defios", () => {
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryCreatorTokenAccount,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -2271,7 +2181,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -2286,7 +2196,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -2332,10 +2242,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2350,7 +2260,7 @@ describe("defios", () => {
         repositoryAccount,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
@@ -2438,7 +2348,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -2455,15 +2364,14 @@ describe("defios", () => {
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryCreatorTokenAccount,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     await program.methods
@@ -2477,7 +2385,7 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
-        tokenMint: mintKeypair.publicKey,
+        tokenMint: mintKeypair,
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
@@ -2503,7 +2411,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
@@ -2519,15 +2426,14 @@ describe("defios", () => {
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryCreatorTokenAccount,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([roadmapDataAdder, mintKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     const issueCreatorKeypair = await create_keypair();
@@ -2553,7 +2459,7 @@ describe("defios", () => {
     ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueAccount,
       true
     );
@@ -2568,7 +2474,7 @@ describe("defios", () => {
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: roadmapDataAdder.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -2614,10 +2520,10 @@ describe("defios", () => {
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       pullRequestMetadataAccount,
       true
-    )
+    );
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2628,7 +2534,7 @@ describe("defios", () => {
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         pullRequestTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
         pullRequestAddr: roadmapDataAdder.publicKey,
@@ -2684,40 +2590,39 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       roadmapDataAdder.publicKey
     );
 
     // Staking tokens on a issue
     const issueStakerKeypair = await create_keypair();
-    const transferAmount = 1000 * 10 ** 9;
     const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       issueStakerKeypair.publicKey
-    );
-
-    const createIssueStakerTokenAccountIx =
-      createAssociatedTokenAccountInstruction(
-        issueStakerKeypair.publicKey,
-        issueStakerTokenAccount,
-        issueStakerKeypair.publicKey,
-        mintKeypair.publicKey
-      );
-
-    const mintToIssueStakerIx = createMintToCheckedInstruction(
-      mintKeypair.publicKey,
-      issueStakerTokenAccount,
-      roadmapDataAdder.publicKey,
-      transferAmount,
-      9,
-      []
     );
 
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
-      issueStakerKeypair.publicKey.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
     ]);
+
+    await program.methods
+      .unlockTokens(repositoryName)
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: false });
 
     await program.methods
       .stakeIssue(new anchor.BN(10))
@@ -2725,15 +2630,14 @@ describe("defios", () => {
         issueAccount,
         repositoryAccount,
         issueTokenPoolAccount,
-        issueStaker: issueStakerKeypair.publicKey,
+        issueStaker: roadmapDataAdder.publicKey,
         issueStakerAccount,
-        issueStakerTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .preInstructions([createIssueStakerTokenAccountIx, mintToIssueStakerIx])
-      .signers([roadmapDataAdder, issueStakerKeypair])
+      .signers([roadmapDataAdder])
       .rpc();
 
     await program.methods
@@ -2763,7 +2667,7 @@ describe("defios", () => {
         pullRequest: pullRequestMetadataAccount,
         pullRequestCreatorRewardAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         repositoryAccount,
         issueAccount: issueAccount,
         issueTokenPoolAccount,
@@ -2793,7 +2697,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -2809,26 +2712,25 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
       Buffer.from("is love life ?  "),
       Buffer.from("arewemadorinlove"),
-      mintKeypair.publicKey.toBuffer(),
+      mintKeypair.toBuffer(),
     ]);
 
     const communalTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       communal_account,
       true
     );
@@ -2840,7 +2742,7 @@ describe("defios", () => {
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
         systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
@@ -2864,7 +2766,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -2880,26 +2781,25 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
       Buffer.from("is love life ?  "),
       Buffer.from("arewemadorinlove"),
-      mintKeypair.publicKey.toBuffer(),
+      mintKeypair.toBuffer(),
     ]);
 
     const communalTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       communal_account,
       true
     );
@@ -2911,7 +2811,7 @@ describe("defios", () => {
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
         systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
@@ -2924,8 +2824,9 @@ describe("defios", () => {
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
+        repositoryAccount: repositoryAccount,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
         buyerTokenAccount: repositoryCreatorTokenAccount,
@@ -2950,7 +2851,6 @@ describe("defios", () => {
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-      preInstructions,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
@@ -2966,26 +2866,25 @@ describe("defios", () => {
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
         repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
       })
-      .preInstructions(preInstructions)
-      .signers([repositoryCreator, mintKeypair])
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
       Buffer.from("is love life ?  "),
       Buffer.from("arewemadorinlove"),
-      mintKeypair.publicKey.toBuffer(),
+      mintKeypair.toBuffer(),
     ]);
 
     const communalTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair.publicKey,
+      mintKeypair,
       communal_account,
       true
     );
@@ -2997,7 +2896,7 @@ describe("defios", () => {
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
         systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
@@ -3010,8 +2909,9 @@ describe("defios", () => {
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
+        repositoryAccount: repositoryAccount,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
         buyerTokenAccount: repositoryCreatorTokenAccount,
@@ -3025,7 +2925,8 @@ describe("defios", () => {
         seller: repositoryCreator.publicKey,
         communalDeposit: communal_account,
         communalTokenAccount: communalTokenAccount,
-        rewardsMint: mintKeypair.publicKey,
+        rewardsMint: mintKeypair,
+        repositoryAccount: repositoryAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
