@@ -2894,7 +2894,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .buyTokens(new anchor.BN(1))
+      .buyTokens(new anchor.BN(20_001), new anchor.BN(1))
       .accounts({
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
@@ -2979,7 +2979,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .buyTokens(new anchor.BN(1))
+      .buyTokens(new anchor.BN(20_001), new anchor.BN(1))
       .accounts({
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
@@ -2995,7 +2995,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .sellTokens(new anchor.BN(1))
+      .sellTokens(new anchor.BN(20_001), new anchor.BN(1))
       .accounts({
         seller: repositoryCreator.publicKey,
         communalDeposit: communal_account,

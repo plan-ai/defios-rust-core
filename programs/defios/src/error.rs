@@ -46,39 +46,43 @@ pub enum DefiOSError {
     #[msg("Roadmap end time before roadmap creation time")]
     RoadmapInvalidEndTime,
 
-    //6010
+    //6011
     #[msg("Can not add PR of somebody else's commits")]
     UnauthorizedPR,
 
-    // 6011
+    // 6012
     #[msg("Math overflow")]
     MathOverflow,
 
-    // 6012
+    // 6013
     #[msg("Token Mint mismatch")]
     MintMismatch,
 
-    // 6013
+    // 6014
     #[msg("Vesting contract has not reached release time")]
     VestingNotReachedRelease,
 
-    //6014
+    //6015
     #[msg("Pull request not yet accepted")]
     PullRequestNotYetAccepted,
 
-    //6015
+    //6016
     #[msg("You are not authorized to merge this pull request")]
     CanNotMergePullRequest,
 
-    //6016
+    //6017
     #[msg("Unauthorized smart contract Action")]
     UnauthorizedActionAttempted,
 
-    //6017
+    //6018
     #[msg("No money was staked on this issue, Still thanks for the support to the community")]
     NoMoneyStakedOnIssue,
 
-    // 6018
+    // 6019
     #[msg("Insufficient funds")]
     InsufficientFunds,
+
+    //6020
+    #[msg("Incorrect Inputs for buy/sell given")]
+    IncorrectMaths,
 }
