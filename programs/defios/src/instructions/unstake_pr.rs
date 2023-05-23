@@ -8,10 +8,7 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{
-    Issue, NameRouter, PRStaker, PullRequest,
-    PullRequestUnstaked, VerifiedUser,
-};
+use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestUnstaked, VerifiedUser};
 #[derive(Accounts)]
 pub struct UnStakePR<'info> {
     ///CHECK: Check done using other constraints

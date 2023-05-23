@@ -70,7 +70,6 @@ pub struct UnlockTokens<'info> {
         mut,
         seeds = [
             b"vesting",
-            token_mint.key().as_ref(),
             repository_account.key().as_ref(),
         ],
         bump = vesting_account.bump
@@ -123,7 +122,6 @@ pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
     let repository_account_key = repository_account.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"vesting",
-        token_mint_key.as_ref(),
         repository_account_key.as_ref(),
         &[vesting_account.bump],
     ]];

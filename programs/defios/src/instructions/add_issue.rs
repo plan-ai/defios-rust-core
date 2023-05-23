@@ -84,9 +84,7 @@ pub struct AddIssue<'info> {
     )]
     pub issue_token_pool_account: UncheckedAccount<'info>,
 
-    #[account(
-        address = repository_account.rewards_mint,
-    )]
+    #[account(mut)]
     pub rewards_mint: Account<'info, Mint>,
 
     pub system_program: Program<'info, System>,

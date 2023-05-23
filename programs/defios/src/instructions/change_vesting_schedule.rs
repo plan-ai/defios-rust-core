@@ -11,11 +11,9 @@ pub struct AdminVestingScheduleShift<'info> {
     ///CHECK: This is not dangerous public key constraint is already set
     #[account(constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
-    #[account(constraint=repository_account.vesting_schedule.eq(&vesting_schedule.key()))]
+    #[account(mut)]
     pub repository_account: Account<'info, Repository>,
-    #[account(
-        constraint=repository_account.vesting_schedule.eq(&vesting_schedule.key())
-    )]
+    #[account(mut)]
     pub vesting_schedule: Account<'info, VestingSchedule>,
     pub system_program: Program<'info, System>,
 }

@@ -8,10 +8,7 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{
-    Issue, NameRouter, PRStaker, PullRequest,
-    PullRequestStaked, VerifiedUser,
-};
+use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestStaked, VerifiedUser};
 #[derive(Accounts)]
 #[instruction(transfer_amount:u64)]
 pub struct StakePR<'info> {

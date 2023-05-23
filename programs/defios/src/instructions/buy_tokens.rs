@@ -58,7 +58,7 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64) -> Result<()> {
         let bytes_data = &mut &**data;
         token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
     }
-    let [number_of_tokens,new_amount] = calculate_mint(token_supply, lamports_amount);
+    let [number_of_tokens, new_amount] = calculate_mint(token_supply, lamports_amount);
     let rewards_key = rewards_mint.key();
     //execute function to send native sol amount to communal deposits
     let ix = anchor_lang::solana_program::system_instruction::transfer(

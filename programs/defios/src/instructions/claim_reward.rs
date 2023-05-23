@@ -29,7 +29,7 @@ pub struct ClaimReward<'info> {
     /// CHECK: PDA check is done at the handler function
     #[account(mut)]
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
-    #[account(address = repository_account.rewards_mint)]
+    #[account(mut)]
     pub rewards_mint: Box<Account<'info, Mint>>,
 
     #[account(
