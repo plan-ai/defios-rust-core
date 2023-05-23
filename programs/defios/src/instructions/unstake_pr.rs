@@ -34,10 +34,7 @@ pub struct UnStakePR<'info> {
         bump = pull_request_verified_user.bump
     )]
     pub pull_request_verified_user: Box<Account<'info, VerifiedUser>>,
-    #[account(
-        mut,
-        address = pull_request_metadata_account.pull_request_token_account
-    )]
+    #[account(mut)]
     pub pull_request_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub pull_request_staker: Signer<'info>,

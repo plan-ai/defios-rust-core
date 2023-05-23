@@ -544,6 +544,7 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -698,6 +699,7 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -847,6 +849,7 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -2677,17 +2680,18 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
 
-      const [pullRequestStakerAccount] = await get_pda_from_seeds([
-        Buffer.from("pullrestaker"),
-        pullRequestMetadataAccount.toBuffer(),
-        roadmapDataAdder.publicKey.toBuffer(),
-      ]);
-      
-      await program.methods
+    const [pullRequestStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("pullrestaker"),
+      pullRequestMetadataAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
       .stakePr(new anchor.BN(1))
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,

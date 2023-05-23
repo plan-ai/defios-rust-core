@@ -35,16 +35,13 @@ pub struct StakePR<'info> {
         bump = pull_request_verified_user.bump
     )]
     pub pull_request_verified_user: Box<Account<'info, VerifiedUser>>,
-    #[account(
-        mut,
-        address = pull_request_metadata_account.pull_request_token_account
-    )]
-    pub pull_request_token_account: Account<'info, TokenAccount>,
+    ///CHECK: Handling of account is done in function
+    #[account(mut)]
+    pub pull_request_token_account: UncheckedAccount<'info>,
     #[account(mut)]
     pub pull_request_staker: Signer<'info>,
     #[account(
         mut,
-        constraint = pull_request_staker_token_account.mint.eq(&pull_request_token_account.mint),
         constraint = pull_request_staker_token_account.owner.eq(&pull_request_staker.key()),
         constraint = pull_request_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds
     )]
@@ -85,9 +82,11 @@ pub fn handler(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
     let pull_request_staker_token_account = &ctx.accounts.pull_request_staker_token_account;
     let pull_request_token_account = &ctx.accounts.pull_request_token_account;
     let rewards_mint = &ctx.accounts.rewards_mint;
+    let token_program = &ctx.accounts.token_program;
+    let system_program = &ctx.accounts.system_program;
+    let associated_token_program = &ctx.accounts.associated_token_program;
     let staked_at = Clock::get()?.unix_timestamp;
     let issue = &ctx.accounts.issue;
-
     require!(issue.closed_at.is_none(), DefiOSError::IssueClosedAlready);
 
     msg!(
@@ -96,10 +95,31 @@ pub fn handler(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
         rewards_mint.key().to_string()
     );
 
+    //Creating token account if empty
+    if pull_request_token_account.data_is_empty() {
+        create_associated_token_account(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: pull_request_staker.to_account_info(),
+                associated_token: pull_request_token_account.to_account_info(),
+                authority: pull_request_metadata_account.to_account_info(),
+                mint: rewards_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+
+    //checks coorect mint accounts sent
+    let expected_pull_reuquest_token_account =
+        get_associated_token_address(&pull_request_metadata_account.key(), &rewards_mint.key());
+
     let expected_staker_token_account =
         get_associated_token_address(&pull_request_staker.key(), &rewards_mint.key());
+
     require!(
-        expected_staker_token_account.eq(&pull_request_staker_token_account.key()),
+        expected_staker_token_account.eq(&pull_request_staker_token_account.key())
+            & expected_pull_reuquest_token_account.eq(&pull_request_token_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
