@@ -78,11 +78,11 @@ pub struct Repository {
     pub issue_index: u64,
     pub name_router: Pubkey,
     pub repository_creator: Pubkey,
-    pub rewards_mint: Pubkey,
+    pub rewards_mint: Option<Pubkey>,
     pub name: String,
     pub description: String,
     pub uri: String,
-    pub vesting_schedule: Pubkey,
+    pub vesting_schedule: Option<Pubkey>,
 }
 
 impl Repository {
@@ -440,7 +440,7 @@ pub struct IssueCreated {
 pub struct RepositoryCreated {
     pub repository_creator: Pubkey,
     pub repository_account: Pubkey,
-    pub rewards_mint: Pubkey,
+    pub rewards_mint: Option<Pubkey>,
     pub uri: String,
     pub name: String,
     pub description: String,

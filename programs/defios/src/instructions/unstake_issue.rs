@@ -45,7 +45,6 @@ pub struct UnstakeIssue<'info> {
 
     #[account(
         mut,
-        address = issue_account.issue_token_pool_account,
         constraint = issue_token_pool_account.amount >= issue_staker_account.staked_amount @ DefiOSError::InsufficientStakingFunds
     )]
     pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,

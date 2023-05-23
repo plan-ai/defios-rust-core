@@ -1,5 +1,6 @@
+use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
-use crate::helper::calculate_mint;
+use crate::helper::verify_calc_buy;
 use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -9,9 +10,9 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-#[instruction(solana_amount:u64)]
+#[instruction(lamports_amount:u64)]
 pub struct BuyToken<'info> {
-    #[account(mut,constraint = buyer.to_account_info().lamports() >= solana_amount @DefiOSError::InsufficientFunds)]
+    #[account(mut,constraint = buyer.to_account_info().lamports() >= lamports_amount @DefiOSError::InsufficientFunds)]
     pub buyer: Signer<'info>,
     #[account(mut,
         seeds = [
@@ -40,7 +41,7 @@ pub struct BuyToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
+pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u64) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let buyer = &mut ctx.accounts.buyer;
     let communal_deposit = &mut ctx.accounts.communal_deposit;
@@ -58,13 +59,21 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
         let bytes_data = &mut &**data;
         token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
     }
-    let number_of_tokens = calculate_mint(token_supply, solana_amount);
+
+    require!(
+        (number_of_tokens as u128) < MAX_INT,
+        DefiOSError::MathOverflow
+    );
+    require!(
+        verify_calc_buy(token_supply, lamports_amount, number_of_tokens),
+        DefiOSError::IncorrectMaths
+    );
     let rewards_key = rewards_mint.key();
     //execute function to send native sol amount to communal deposits
     let ix = anchor_lang::solana_program::system_instruction::transfer(
         &buyer.key(),
         &communal_deposit.key(),
-        solana_amount,
+        lamports_amount,
     );
     anchor_lang::solana_program::program::invoke(
         &ix,
@@ -136,6 +145,6 @@ pub fn handler(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
         ),
         number_of_tokens,
     )?;
-
+    msg!("{}", number_of_tokens);
     Ok(())
 }

@@ -1,11 +1,6 @@
-use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token::{create as get_associated_token_address, AssociatedToken},
-    token::Token,
-};
-
 use crate::error::DefiOSError;
 use crate::state::{Issue, NameRouter, PullRequest, PullRequestAccepted, Repository, VerifiedUser};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[instruction(repo_name:String)]

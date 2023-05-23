@@ -1,5 +1,11 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::{
+    associated_token::{
+        create as create_associated_token_account, get_associated_token_address, AssociatedToken,
+        Create,
+    },
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
+};
 
 use crate::{
     error::DefiOSError,
@@ -13,7 +19,6 @@ pub struct StakeIssue<'info> {
     pub issue_staker: Signer<'info>,
     #[account(
         mut,
-        constraint = issue_staker_token_account.mint.eq(&issue_token_pool_account.mint),
         constraint = issue_staker_token_account.owner.eq(&issue_staker.key()),
         constraint = issue_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds
     )]
@@ -41,9 +46,9 @@ pub struct StakeIssue<'info> {
         bump = issue_account.bump
     )]
     pub issue_account: Box<Account<'info, Issue>>,
-
-    #[account(mut, address = issue_account.issue_token_pool_account)]
-    pub issue_token_pool_account: Account<'info, TokenAccount>,
+    ///CHECK: Handling of account is done in function
+    #[account(mut)]
+    pub issue_token_pool_account: UncheckedAccount<'info>,
 
     #[account(
         init,
@@ -54,9 +59,9 @@ pub struct StakeIssue<'info> {
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
 
-    #[account(constraint = rewards_mint.key().eq(&issue_token_pool_account.mint))]
+    #[account(mut)]
     pub rewards_mint: Account<'info, Mint>,
-
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
 }
@@ -68,6 +73,9 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     let issue_staker_token_account = &ctx.accounts.issue_staker_token_account;
     let issue_token_pool_account = &ctx.accounts.issue_token_pool_account;
     let rewards_mint = &ctx.accounts.rewards_mint;
+    let token_program = &ctx.accounts.token_program;
+    let system_program = &ctx.accounts.system_program;
+    let associated_token_program = &ctx.accounts.associated_token_program;
     let staked_at = Clock::get()?.unix_timestamp;
 
     require!(
@@ -79,6 +87,33 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         "Staking {} including decimals of token {}",
         transfer_amount,
         rewards_mint.key().to_string()
+    );
+
+    //Creating token account if empty
+    if issue_token_pool_account.data_is_empty() {
+        create_associated_token_account(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: issue_staker.to_account_info(),
+                associated_token: issue_token_pool_account.to_account_info(),
+                authority: issue_account.to_account_info(),
+                mint: rewards_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+
+    //checks coorect mint accounts sent
+    let expected_issue_token_pool_account =
+        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
+
+    let expected_issue_staker_token_account =
+        get_associated_token_address(&issue_staker.key(), &rewards_mint.key());
+    require!(
+        expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
+            & expected_issue_staker_token_account.eq(&issue_staker_token_account.key()),
+        DefiOSError::TokenAccountMismatch
     );
 
     transfer(

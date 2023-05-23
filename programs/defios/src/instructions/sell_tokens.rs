@@ -1,5 +1,6 @@
+use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
-use crate::helper::calculate_burn;
+use crate::helper::verify_calc_sell;
 use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -9,7 +10,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-#[instruction(number_of_tokens:u64)]
+#[instruction(lamports_amount:u64,number_of_tokens:u64)]
 pub struct SellToken<'info> {
     #[account(mut)]
     pub seller: Signer<'info>,
@@ -39,7 +40,7 @@ pub struct SellToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
+pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: u64) -> Result<()> {
     let rewards_mint = &ctx.accounts.rewards_mint;
     let token_program = &ctx.accounts.token_program;
     let communal_deposit = &mut ctx.accounts.communal_deposit;
@@ -55,9 +56,15 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
         let bytes_data = &mut &**data;
         token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
     }
-    //get amount of solana to transfer
-    let solana_amount = calculate_burn(token_supply, number_of_tokens);
 
+    require!(
+        (number_of_tokens as u128) < MAX_INT,
+        DefiOSError::MathOverflow
+    );
+    require!(
+        verify_calc_sell(token_supply, lamports_amount, number_of_tokens),
+        DefiOSError::IncorrectMaths
+    );
     //transfers spl token to communal token account
     transfer(
         CpiContext::new(
@@ -97,8 +104,8 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
 
     //execute function to send native sol amount to seller
     let communal_info = &communal_deposit.to_account_info();
-    **communal_info.try_borrow_mut_lamports()? -= solana_amount;
-    **seller.try_borrow_mut_lamports()? += solana_amount;
+    **communal_info.try_borrow_mut_lamports()? -= lamports_amount;
+    **seller.try_borrow_mut_lamports()? += lamports_amount;
 
     Ok(())
 }

@@ -1,17 +1,11 @@
+use crate::error::DefiOSError;
+use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestUnstaked, VerifiedUser};
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{
-        create as create_associated_token_account, get_associated_token_address, AssociatedToken,
-        Create,
-    },
+    associated_token::AssociatedToken,
     token::{close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer},
 };
 
-use crate::error::DefiOSError;
-use crate::state::{
-    Commit, Issue, IssueStaker, NameRouter, PRStaker, PullRequest, PullRequestSent,
-    PullRequestUnstaked, VerifiedUser,
-};
 #[derive(Accounts)]
 pub struct UnStakePR<'info> {
     ///CHECK: Check done using other constraints
@@ -37,10 +31,7 @@ pub struct UnStakePR<'info> {
         bump = pull_request_verified_user.bump
     )]
     pub pull_request_verified_user: Box<Account<'info, VerifiedUser>>,
-    #[account(
-        mut,
-        address = pull_request_metadata_account.pull_request_token_account
-    )]
+    #[account(mut)]
     pub pull_request_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub pull_request_staker: Signer<'info>,

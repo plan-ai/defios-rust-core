@@ -4,13 +4,13 @@ use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    token::{transfer, Mint, Token, TokenAccount, Transfer},
+    token::{Mint, Token},
 };
+
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key
-    #[account(mut, signer)]
-    //constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
+    #[account(mut, signer,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,

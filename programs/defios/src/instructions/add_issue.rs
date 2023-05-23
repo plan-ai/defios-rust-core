@@ -1,9 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{
-        create as create_associated_token_account, get_associated_token_address, AssociatedToken,
-        Create,
-    },
+    associated_token::{create as create_associated_token_account, AssociatedToken, Create},
     token::{Mint, Token},
 };
 
@@ -84,9 +81,7 @@ pub struct AddIssue<'info> {
     )]
     pub issue_token_pool_account: UncheckedAccount<'info>,
 
-    #[account(
-        address = repository_account.rewards_mint,
-    )]
+    #[account(mut)]
     pub rewards_mint: Account<'info, Mint>,
 
     pub system_program: Program<'info, System>,
