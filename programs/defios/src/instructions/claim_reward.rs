@@ -90,12 +90,9 @@ pub struct ClaimReward<'info> {
     )]
     pub issue_account: Box<Account<'info, Issue>>,
 
-    #[account(mut, address = issue_account.issue_token_pool_account)]
+    #[account(mut)]
     pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,
-    #[account(
-        mut,
-        address = pull_request.pull_request_token_account
-    )]
+    #[account(mut)]
     pub pull_request_token_account: Account<'info, TokenAccount>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -135,12 +132,18 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let expected_issue_token_pool_account =
         get_associated_token_address(&issue_account.key(), &rewards_mint.key());
 
+    let expected_pull_reuquest_token_account =
+        get_associated_token_address(&pull_request.key(), &rewards_mint.key());
+
     let expected_pull_request_creator_reward_account =
         get_associated_token_address(&pull_request_creator.key(), &rewards_mint.key());
+
     require!(
         expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
             && expected_pull_request_creator_reward_account
-                .eq(&pull_request_creator_reward_account.key()),
+                .eq(&pull_request_creator_reward_account.key()) && 
+                expected_pull_reuquest_token_account
+                .eq(&pull_request_token_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 

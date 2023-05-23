@@ -2,10 +2,7 @@ use crate::constants::AUTHORIZED_PUBLIC_KEY;
 use crate::error::DefiOSError;
 use crate::state::{Repository, Schedule, VestingSchedule, VestingScheduleChanged};
 use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token::{create as get_associated_token_address, AssociatedToken},
-    token::Token,
-};
+
 #[derive(Accounts)]
 pub struct AdminVestingScheduleShift<'info> {
     ///CHECK: This is not dangerous public key constraint is already set

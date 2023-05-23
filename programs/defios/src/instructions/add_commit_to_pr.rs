@@ -1,10 +1,6 @@
 use crate::error::DefiOSError;
 use crate::state::{AddCommitToPR, Commit, NameRouter, PullRequest, VerifiedUser};
 use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token::{create as get_associated_token_address, AssociatedToken},
-    token::Token,
-};
 
 #[derive(Accounts)]
 pub struct AddCommitToPullRequest<'info> {

@@ -4,8 +4,9 @@ use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    token::{transfer, Mint, Token, TokenAccount, Transfer},
+    token::{Mint, Token},
 };
+
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key

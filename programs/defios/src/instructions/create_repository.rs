@@ -142,9 +142,9 @@ pub fn handler(
         Some(rewards_mint) => {
             match vesting_account {
                 Some(vesting_account) => {
-                    match (vesting_token_account) {
+                    match vesting_token_account {
                         Some(vesting_token_account) => {
-                            match (repository_creator_token_account) {
+                            match repository_creator_token_account {
                                 Some(repository_creator_token_account) => {
                                     //creates vesting token account if empty
                                     if vesting_token_account.data_is_empty() {

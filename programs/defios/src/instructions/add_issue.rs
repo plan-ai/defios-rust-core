@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{
-        create as create_associated_token_account, get_associated_token_address, AssociatedToken,
+        create as create_associated_token_account, AssociatedToken,
         Create,
     },
     token::{Mint, Token},

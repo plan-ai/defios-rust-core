@@ -92,7 +92,6 @@ pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
     let repository_account = &ctx.accounts.repository_account;
     let token_program = &ctx.accounts.token_program;
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
-    let token_mint = &ctx.accounts.token_mint;
     let vesting_token_account = &ctx.accounts.vesting_token_account;
     let rewards_mint = &ctx.accounts.token_mint;
     let current_timestamp = Clock::get()?.unix_timestamp;
@@ -118,7 +117,6 @@ pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
         DefiOSError::VestingNotReachedRelease
     );
 
-    let token_mint_key = token_mint.key();
     let repository_account_key = repository_account.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"vesting",
