@@ -1,5 +1,5 @@
 use crate::error::DefiOSError;
-use crate::helper::calculate_burn;
+use crate::helper::calculate_cost;
 use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -56,7 +56,7 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
         token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
     }
     //get amount of solana to transfer
-    let solana_amount = calculate_burn(token_supply, number_of_tokens);
+    let lamports_amount = calculate_cost(token_supply, number_of_tokens);
 
     //transfers spl token to communal token account
     transfer(
@@ -97,8 +97,8 @@ pub fn handler(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {
 
     //execute function to send native sol amount to seller
     let communal_info = &communal_deposit.to_account_info();
-    **communal_info.try_borrow_mut_lamports()? -= solana_amount;
-    **seller.try_borrow_mut_lamports()? += solana_amount;
+    **communal_info.try_borrow_mut_lamports()? -= lamports_amount;
+    **seller.try_borrow_mut_lamports()? += lamports_amount;
 
     Ok(())
 }

@@ -131,8 +131,8 @@ pub mod defios {
         create_communal_account::handler(ctx)
     }
 
-    pub fn buy_tokens(ctx: Context<BuyToken>, solana_amount: u64) -> Result<()> {
-        buy_tokens::handler(ctx, solana_amount)
+    pub fn buy_tokens(ctx: Context<BuyToken>, lamports_amount: u64) -> Result<()> {
+        buy_tokens::handler(ctx, lamports_amount)
     }
 
     pub fn sell_tokens(ctx: Context<SellToken>, number_of_tokens: u64) -> Result<()> {

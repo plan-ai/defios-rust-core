@@ -92,6 +92,11 @@ pub struct ClaimReward<'info> {
 
     #[account(mut, address = issue_account.issue_token_pool_account)]
     pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,
+    #[account(
+        mut,
+        address = pull_request.pull_request_token_account
+    )]
+    pub pull_request_token_account: Account<'info, TokenAccount>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
@@ -107,7 +112,8 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let associated_token_program = &ctx.accounts.associated_token_program;
     let system_program = &ctx.accounts.system_program;
     let token_program = &ctx.accounts.token_program;
-    let pull_request = &ctx.accounts.pull_request;
+    let pull_request = &mut ctx.accounts.pull_request;
+    let pull_request_token_account = &mut ctx.accounts.pull_request_token_account;
 
     //Creating token account if empty
     if pull_request_creator_reward_account.data_is_empty() {
@@ -148,6 +154,8 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let issue_index_str = issue_account.index.to_string();
     let repository_account_key = repository_account.key();
     let issue_creator_key = issue_account.issue_creator.key();
+    let pull_request_creator_key = pull_request_creator.key();
+    let issue_key = issue_account.key();
 
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"issue",
@@ -157,22 +165,49 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         &[issue_account.bump],
     ]];
 
-    let token_balance = issue_token_pool_account.amount;
+    let pull_request_signer_seeds: &[&[&[u8]]] = &[&[
+        b"pullrequestadded",
+        issue_key.as_ref(),
+        pull_request_creator_key.as_ref(),
+        &[pull_request.bump],
+    ]];
 
-    require!(token_balance > 0, DefiOSError::NoMoneyStakedOnIssue);
+    let issue_token_balance = issue_token_pool_account.amount;
+    let pull_request_token_balance = pull_request_token_account.amount;
+    require!(
+        (issue_token_balance + pull_request_token_balance) > 0,
+        DefiOSError::NoMoneyStakedOnIssue
+    );
 
-    transfer(
-        CpiContext::new_with_signer(
-            token_program.to_account_info(),
-            Transfer {
-                from: issue_token_pool_account.to_account_info(),
-                to: pull_request_creator_reward_account.to_account_info(),
-                authority: issue_account.to_account_info(),
-            },
-            signer_seeds,
-        ),
-        token_balance,
-    )?;
+    if issue_token_balance > 0 {
+        transfer(
+            CpiContext::new_with_signer(
+                token_program.to_account_info(),
+                Transfer {
+                    from: issue_token_pool_account.to_account_info(),
+                    to: pull_request_creator_reward_account.to_account_info(),
+                    authority: issue_account.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            issue_token_balance,
+        )?;
+    };
+
+    if pull_request_token_balance > 0 {
+        transfer(
+            CpiContext::new_with_signer(
+                token_program.to_account_info(),
+                Transfer {
+                    from: pull_request_token_account.to_account_info(),
+                    to: pull_request_creator_reward_account.to_account_info(),
+                    authority: pull_request.to_account_info(),
+                },
+                pull_request_signer_seeds,
+            ),
+            pull_request_token_balance,
+        )?;
+    };
 
     Ok(())
 }

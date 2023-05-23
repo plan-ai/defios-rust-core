@@ -9,7 +9,7 @@ use anchor_spl::{
 
 use crate::error::DefiOSError;
 use crate::state::{
-    Commit, Issue, IssueStaker, NameRouter, PRStaker, PullRequest, PullRequestSent,
+    Issue, NameRouter, PRStaker, PullRequest,
     PullRequestUnstaked, VerifiedUser,
 };
 #[derive(Accounts)]
