@@ -1,11 +1,11 @@
+use crate::error::DefiOSError;
+use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestUnstaked, VerifiedUser};
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::{AssociatedToken},
+    associated_token::AssociatedToken,
     token::{close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer},
 };
 
-use crate::error::DefiOSError;
-use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestUnstaked, VerifiedUser};
 #[derive(Accounts)]
 pub struct UnStakePR<'info> {
     ///CHECK: Check done using other constraints

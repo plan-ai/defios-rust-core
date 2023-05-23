@@ -141,9 +141,8 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     require!(
         expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
             && expected_pull_request_creator_reward_account
-                .eq(&pull_request_creator_reward_account.key()) && 
-                expected_pull_reuquest_token_account
-                .eq(&pull_request_token_account.key()),
+                .eq(&pull_request_creator_reward_account.key())
+            && expected_pull_reuquest_token_account.eq(&pull_request_token_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
