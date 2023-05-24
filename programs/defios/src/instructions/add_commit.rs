@@ -111,6 +111,7 @@ pub fn handler(
     commit_account.metadata_uri = metadata_uri;
     commit_account.created_at = created_at as u64;
     commit_account.commit_creator = ctx.accounts.commit_creator.key();
+    commit_account.issue = issue_account.key();
 
     issue_account.commit_index = issue_account.commit_index.saturating_add(1);
 

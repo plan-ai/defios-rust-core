@@ -12,7 +12,8 @@ pub struct AddPullRequest<'info> {
     pub pull_request_addr: Signer<'info>,
     #[account(mut)]
     pub issue: Account<'info, Issue>,
-    #[account(constraint = pull_request_addr.key().eq(&commit.commit_creator) @ DefiOSError::UnauthorizedPR)]
+    #[account(constraint = pull_request_addr.key().eq(&commit.commit_creator) @ DefiOSError::UnauthorizedPR,
+              constraint = issue.key().eq(&commit.issue))]
     pub commit: Account<'info, Commit>,
     #[account(
         init,
