@@ -55,6 +55,16 @@ describe("defios", () => {
   const objectiveEndUnix = new anchor.BN(1735603200);
   const objectiveStartUnix = new anchor.BN(1704067200);
   const pull_request_metadata_uri = "https://github.com/defi-os/Issues";
+  const new_schedule = [
+    {
+      releaseTime: new anchor.BN(1),
+      amount: new anchor.BN(1),
+    },
+    {
+      releaseTime: new anchor.BN(1),
+      amount: new anchor.BN(1),
+    },
+  ];
   //helper functions
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
@@ -3364,6 +3374,63 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
+      .rpc({ skipPreflight: false });
+  });
+  it("Change vesting schedule", async () => {
+    //generates key pairs and airdrops solana to them
+    const repositoryCreator = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      repositoryCreator.publicKey
+    );
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      defaultVestingSchedule,
+    ] = await create_spl_token(repositoryCreator);
+
+    await program.methods
+      .createRepository(
+        repositoryName,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios"
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
+
+    const [vestingSchedule] = await get_pda_from_seeds([
+      Buffer.from("vesting"),
+      repositoryAccount.toBuffer(),
+    ]);
+
+    await program.methods
+      .changeVestingSchedule(new_schedule)
+      .accounts({
+        repositoryAccount: repositoryAccount,
+        systemProgram: web3.SystemProgram.programId,
+        authority: repositoryCreator.publicKey,
+        vestingSchedule: vestingSchedule,
+      })
+      .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
   });
 });
