@@ -65,7 +65,9 @@ describe("defios", () => {
       amount: new anchor.BN(1),
     },
   ];
-  //helper functions
+  const tokenName = "Hi!"
+  const tokenimage = "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg"
+  const tokenMetadata = "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg"
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
     await connection.confirmTransaction(
@@ -270,7 +272,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -312,7 +317,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        null,
+        null,
+        null
       )
       .accounts({
         nameRouterAccount,
@@ -354,7 +362,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -446,7 +457,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -589,7 +603,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -758,7 +775,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -958,7 +978,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1095,7 +1118,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1246,7 +1272,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1424,7 +1453,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1577,7 +1609,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1775,7 +1810,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -1996,7 +2034,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2194,7 +2235,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2409,7 +2453,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2472,7 +2519,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2789,7 +2839,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2858,7 +2911,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -2943,7 +2999,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -3052,7 +3111,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,
@@ -3083,7 +3145,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        null,
+        null,
+        null
       )
       .accounts({
         nameRouterAccount,
@@ -3399,7 +3464,10 @@ describe("defios", () => {
       .createRepository(
         repositoryName,
         "Open source revolution",
-        "https://github.com/sunguru98/defios"
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
       )
       .accounts({
         nameRouterAccount,

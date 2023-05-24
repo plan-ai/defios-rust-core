@@ -37,8 +37,11 @@ pub mod defios {
         name: String,
         description: String,
         uri: String,
+        token_name: Box<Option<String>>,
+        token_image: Box<Option<String>>,
+        token_metadata_uri: Box<Option<String>>
     ) -> Result<()> {
-        create_repository::handler(ctx, name, description, uri)
+        create_repository::handler(ctx, name, description, uri, token_name,token_image,token_metadata_uri)
     }
 
     pub fn add_issue(ctx: Context<AddIssue>, uri: String) -> Result<()> {
