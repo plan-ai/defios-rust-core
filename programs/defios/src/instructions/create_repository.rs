@@ -106,6 +106,9 @@ pub fn handler(
     name: String,
     description: String,
     uri: String,
+    token_name: Box<Option<String>>,
+    token_image : Box<Option<String>>,
+    token_metadata_uri: Box<Option<String>>
 ) -> Result<()> {
     let repository_account = &mut ctx.accounts.repository_account;
     let name_router_account = &ctx.accounts.name_router_account;
@@ -265,7 +268,10 @@ pub fn handler(
         uri: repository_account.uri.clone(),
         rewards_mint: rewards_mint_key,
         name: repository_account.name.clone(),
-        description: repository_account.description.clone()
+        description: repository_account.description.clone(),
+        token_name: *token_name,
+        token_image: *token_image,
+        token_metadata_uri: *token_metadata_uri
     });
     Ok(())
 }
