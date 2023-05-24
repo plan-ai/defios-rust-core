@@ -6,11 +6,15 @@ use anchor_lang::prelude::*;
 #[derive(Accounts)]
 pub struct AdminVestingScheduleShift<'info> {
     ///CHECK: This is not dangerous public key constraint is already set
-    #[account(constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted)]
+    #[account(mut,signer,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key()) @DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
     #[account(mut)]
     pub repository_account: Account<'info, Repository>,
-    #[account(mut)]
+    #[account(mut, seeds = [
+        b"vesting",
+        repository_account.key().as_ref()
+    ],
+    bump = vesting_schedule.bump)]
     pub vesting_schedule: Account<'info, VestingSchedule>,
     pub system_program: Program<'info, System>,
 }
