@@ -370,6 +370,8 @@ pub struct PullRequestSent {
     pub sent_by: Pubkey,
     pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
+    pub issue: Pubkey,
+    pub pull_request: Pubkey,
 }
 
 #[event]
@@ -446,7 +448,7 @@ pub struct RepositoryCreated {
     pub description: String,
     pub token_name: Option<String>,
     pub token_image: Option<String>,
-    pub token_metadata_uri: Option<String>
+    pub token_metadata_uri: Option<String>,
 }
 
 #[event]

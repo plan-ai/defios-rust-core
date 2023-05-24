@@ -107,8 +107,8 @@ pub fn handler(
     description: String,
     uri: String,
     token_name: Box<Option<String>>,
-    token_image : Box<Option<String>>,
-    token_metadata_uri: Box<Option<String>>
+    token_image: Box<Option<String>>,
+    token_metadata_uri: Box<Option<String>>,
 ) -> Result<()> {
     let repository_account = &mut ctx.accounts.repository_account;
     let name_router_account = &ctx.accounts.name_router_account;

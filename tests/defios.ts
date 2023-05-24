@@ -65,9 +65,11 @@ describe("defios", () => {
       amount: new anchor.BN(1),
     },
   ];
-  const tokenName = "Hi!"
-  const tokenimage = "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg"
-  const tokenMetadata = "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg"
+  const tokenName = "Hi!";
+  const tokenimage =
+    "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
+  const tokenMetadata =
+    "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
     await connection.confirmTransaction(

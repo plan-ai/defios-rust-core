@@ -103,7 +103,9 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     emit!(PullRequestSent {
         sent_by: pull_request_addr.key(),
         commits: vec![commit.key()],
-        metadata_uri: metadata_uri
+        metadata_uri: metadata_uri,
+        issue: issue.key(),
+        pull_request: pull_request_metadata_account.key()
     });
 
     Ok(())
