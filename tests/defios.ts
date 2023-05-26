@@ -1570,7 +1570,6 @@ describe("defios", () => {
       .accounts({
         pullRequestVerifiedUser: verifiedUserAccount,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         pullRequestTokenAccount,
@@ -1582,6 +1581,9 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
@@ -1726,7 +1728,6 @@ describe("defios", () => {
       .accounts({
         pullRequestVerifiedUser: verifiedUserAccount,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         pullRequestTokenAccount,
@@ -1737,6 +1738,9 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
@@ -1927,7 +1931,6 @@ describe("defios", () => {
       .accounts({
         pullRequestVerifiedUser: verifiedUserAccount,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         pullRequestTokenAccount,
@@ -1938,6 +1941,9 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
@@ -2146,26 +2152,6 @@ describe("defios", () => {
       true
     );
 
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        commit: commitAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true });
-
     // Adding a commit
     const treeHash2 = sha256("Tree hash 2").slice(0, 8);
     const commitHash2 = sha256("Commit hash 2").slice(0, 8);
@@ -2193,6 +2179,28 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .signers([roadmapDataAdder])
+      .rpc({ skipPreflight: true });
+
+    await program.methods
+      .addPr(pull_request_metadata_uri)
+      .accounts({
+        pullRequestVerifiedUser: verifiedUserAccount,
+        issue: issueAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        nameRouterAccount,
+        pullRequestTokenAccount,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rewardsMint: mintKeypair,
+        pullRequestAddr: roadmapDataAdder.publicKey,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
@@ -2347,26 +2355,6 @@ describe("defios", () => {
       true
     );
 
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        commit: commitAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true });
-
     // Adding a commit
     const treeHash2 = sha256("Tree hash 2").slice(0, 8);
     const commitHash2 = sha256("Commit hash 2").slice(0, 8);
@@ -2398,16 +2386,25 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .addCommitToPr()
+      .addPr(pull_request_metadata_uri)
       .accounts({
-        commitVerifiedUser: verifiedUserAccount,
-        commitAddr: roadmapDataAdder.publicKey,
-        commit: commitAccount2,
+        pullRequestVerifiedUser: verifiedUserAccount,
+        issue: issueAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
+        pullRequestTokenAccount,
+        pullRequestAddr: roadmapDataAdder.publicKey,
+        repositoryAccount,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+        { pubkey: commitAccount2, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
@@ -2631,26 +2628,6 @@ describe("defios", () => {
       true
     );
 
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        commit: commitAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        rewardsMint: mintKeypair,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true });
-
     // Adding a commit
     const treeHash2 = sha256("Tree hash 2").slice(0, 8);
     const commitHash2 = sha256("Commit hash 2").slice(0, 8);
@@ -2682,16 +2659,25 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .addCommitToPr()
+      .addPr(pull_request_metadata_uri)
       .accounts({
-        commitVerifiedUser: verifiedUserAccount,
-        commitAddr: roadmapDataAdder.publicKey,
-        commit: commitAccount2,
+        pullRequestVerifiedUser: verifiedUserAccount,
+        issue: issueAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
+        pullRequestTokenAccount,
+        rewardsMint: mintKeypair,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        pullRequestAddr: roadmapDataAdder.publicKey,
+        repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+        { pubkey: commitAccount2, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
 
@@ -3257,26 +3243,6 @@ describe("defios", () => {
       true
     );
 
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount2,
-        issue: issueAccount,
-        commit: commitAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        rewardsMint: mintKeypair,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestAddr: repositoryCreator2.publicKey,
-        repositoryAccount: repositoryAccount2,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true });
-
     // Adding a commit
     const treeHash2 = sha256("Tree hash 2").slice(0, 8);
     const commitHash2 = sha256("Commit hash 2").slice(0, 8);
@@ -3308,16 +3274,25 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .addCommitToPr()
+      .addPr(pull_request_metadata_uri)
       .accounts({
-        commitVerifiedUser: verifiedUserAccount2,
-        commitAddr: repositoryCreator2.publicKey,
-        commit: commitAccount2,
+        pullRequestVerifiedUser: verifiedUserAccount2,
+        issue: issueAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
+        pullRequestTokenAccount,
+        rewardsMint: mintKeypair,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        pullRequestAddr: repositoryCreator2.publicKey,
+        repositoryAccount: repositoryAccount2,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+        { pubkey: commitAccount2, isWritable: true, isSigner: false },
+      ])
       .signers([repositoryCreator2])
       .rpc({ skipPreflight: true });
 

@@ -12,9 +12,6 @@ pub struct AddPullRequest<'info> {
     pub pull_request_addr: Signer<'info>,
     #[account(mut)]
     pub issue: Account<'info, Issue>,
-    #[account(constraint = pull_request_addr.key().eq(&commit.commit_creator) @ DefiOSError::UnauthorizedPR,
-              constraint = issue.key().eq(&commit.issue))]
-    pub commit: Account<'info, Commit>,
     #[account(
         init,
         payer = pull_request_addr,
@@ -66,7 +63,6 @@ pub struct AddPullRequest<'info> {
 pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()> {
     let pull_request_addr = &ctx.accounts.pull_request_addr;
     let issue = &ctx.accounts.issue;
-    let commit = &ctx.accounts.commit;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
     let rewards_mint = &ctx.accounts.rewards_mint;
     let associated_token_program = &ctx.accounts.associated_token_program;
@@ -96,14 +92,25 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
 
     pull_request_metadata_account.bump = *ctx.bumps.get("pull_request_metadata_account").unwrap();
     pull_request_metadata_account.sent_by = pull_request_addr.key();
-    pull_request_metadata_account.commits = vec![commit.key()];
     pull_request_metadata_account.metadata_uri = metadata_uri.clone();
     pull_request_metadata_account.accepted = false;
     pull_request_metadata_account.pull_request_token_account = pull_request_token_account.key();
+    pull_request_metadata_account.commits = vec![];
+
+    let mut commit: Account<Commit>;
+    for account in ctx.remaining_accounts.to_vec().iter() {
+        commit = Account::try_from(account)?;
+        require!(
+            pull_request_addr.key().eq(&commit.commit_creator) & issue.key().eq(&commit.issue),
+            DefiOSError::UnauthorizedPR
+        );
+        pull_request_metadata_account.commits.push(commit.key());
+        msg!("Jadoo");
+    }
 
     emit!(PullRequestSent {
         sent_by: pull_request_addr.key(),
-        commits: vec![commit.key()],
+        commits: pull_request_metadata_account.commits.clone(),
         metadata_uri: metadata_uri,
         issue: issue.key(),
         pull_request: pull_request_metadata_account.key()
