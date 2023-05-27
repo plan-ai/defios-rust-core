@@ -14,10 +14,14 @@ import {
   MintLayout,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-
+import { Metaplex } from "@metaplex-foundation/js";
 import sha256 from "sha256";
 import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
 import { min } from "bn.js";
+import {
+  Metadata,
+  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
+} from "@metaplex-foundation/mpl-token-metadata";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -30,7 +34,7 @@ describe("defios", () => {
   } = program;
 
   const { web3 } = anchor;
-
+  const metaplex = Metaplex.make(connection);
   //global variables for tests
   const signatureVersion = 1;
   const signingName = "defios.com";
@@ -66,10 +70,12 @@ describe("defios", () => {
     },
   ];
   const tokenName = "Hi!";
-  const tokenimage =
-    "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
+  const tokenimage = "BRR";
   const tokenMetadata =
     "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
+  const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  );
   async function create_keypair() {
     const keypair = web3.Keypair.generate();
     await connection.confirmTransaction(
@@ -92,6 +98,18 @@ describe("defios", () => {
     );
   }
 
+  async function get_metadata_account(mintKeypair) {
+    return (
+      await anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintKeypair.toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      )
+    )[0];
+  }
   //main testsuite code
   async function create_name_router() {
     //generating keypair and airdropping solana to it
@@ -270,6 +288,8 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
+
     await program.methods
       .createRepository(
         repositoryName,
@@ -291,9 +311,11 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
   });
 
   it("Creates a repository without new spl token", async () => {
@@ -336,6 +358,8 @@ describe("defios", () => {
         vestingAccount: null,
         vestingTokenAccount: null,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: null,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -360,6 +384,8 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
+
     await program.methods
       .createRepository(
         repositoryName,
@@ -381,6 +407,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -455,6 +483,8 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
+
     await program.methods
       .createRepository(
         repositoryName,
@@ -476,6 +506,8 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: metadataAddress,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -601,6 +633,7 @@ describe("defios", () => {
     ] = await create_spl_token(repositoryCreator);
 
     // Creating repository
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -622,6 +655,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: metadataAddress,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -772,6 +807,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -794,6 +830,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -975,6 +1013,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -997,6 +1036,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1116,6 +1157,7 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -1137,6 +1179,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1270,6 +1314,7 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -1291,6 +1336,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1450,6 +1497,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -1472,6 +1520,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1609,6 +1659,7 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -1630,6 +1681,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1811,7 +1864,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
-
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -1833,6 +1886,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2038,6 +2093,7 @@ describe("defios", () => {
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
 
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -2059,6 +2115,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2240,7 +2298,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
-
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -2262,6 +2320,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2447,7 +2507,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
-
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -2470,6 +2530,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: metadataAddress,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2513,6 +2575,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(roadmapDataAdder);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -2535,6 +2598,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2822,6 +2887,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -2844,6 +2910,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -2894,6 +2962,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -2916,6 +2985,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -2982,6 +3053,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -3004,6 +3076,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3094,7 +3168,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
-
+    const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
         repositoryName,
@@ -3116,6 +3190,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: metadataAddress,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3150,6 +3226,8 @@ describe("defios", () => {
         vestingAccount: null,
         vestingTokenAccount: null,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: null,
       })
       .signers([repositoryCreator2])
       .rpc({ skipPreflight: false });
@@ -3436,6 +3514,7 @@ describe("defios", () => {
       vestingAccount,
       defaultVestingSchedule,
     ] = await create_spl_token(repositoryCreator);
+    const metadataAddress = await get_metadata_account(mintKeypair);
 
     await program.methods
       .createRepository(
@@ -3458,6 +3537,8 @@ describe("defios", () => {
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        metadata: metadataAddress,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });

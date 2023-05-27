@@ -105,7 +105,6 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
             DefiOSError::UnauthorizedPR
         );
         pull_request_metadata_account.commits.push(commit.key());
-        msg!("Jadoo");
     }
 
     emit!(PullRequestSent {
