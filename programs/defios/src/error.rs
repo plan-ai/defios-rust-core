@@ -85,4 +85,8 @@ pub enum DefiOSError {
     //6020
     #[msg("Incorrect Inputs for buy/sell given")]
     IncorrectMaths,
+
+    //6021
+    #[msg("Incorrect Metadata account provided")]
+    IncorrectMetadataAccount,
 }

@@ -8,9 +8,13 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    metadata::Metadata,
     token,
     token::{Mint, Token},
 };
+use mpl_token_metadata;
+use mpl_token_metadata::{instruction as token_instruction, pda::find_metadata_account};
+use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
@@ -84,7 +88,10 @@ pub struct CreateRepository<'info> {
         ],
         bump = default_schedule.bump,
     )]
-    pub default_schedule: Account<'info, DefaultVestingSchedule>,
+    pub default_schedule: Box<Account<'info, DefaultVestingSchedule>>,
+    /// CHECK: We're about to create this with Metaplex
+    #[account(mut)]
+    pub metadata: Option<UncheckedAccount<'info>>,
     #[account(
         init,
         payer = repository_creator,
@@ -99,6 +106,7 @@ pub struct CreateRepository<'info> {
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
+    pub token_metadata_program: Program<'info, Metadata>,
 }
 
 pub fn handler(
@@ -107,7 +115,7 @@ pub fn handler(
     description: String,
     uri: String,
     token_name: Box<Option<String>>,
-    token_image: Box<Option<String>>,
+    token_symbol: Box<Option<String>>,
     token_metadata_uri: Box<Option<String>>,
 ) -> Result<()> {
     let repository_account = &mut ctx.accounts.repository_account;
@@ -122,6 +130,7 @@ pub fn handler(
     let associated_token_program = &ctx.accounts.associated_token_program;
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
+    let metadata = &mut ctx.accounts.metadata;
     //logs repository and spl token creation
     msg!(
         "Creating repository of name: {} Repository address: {}",
@@ -149,102 +158,178 @@ pub fn handler(
                         Some(vesting_token_account) => {
                             match repository_creator_token_account {
                                 Some(repository_creator_token_account) => {
-                                    //creates vesting token account if empty
-                                    if vesting_token_account.data_is_empty() {
-                                        create(CpiContext::new(
-                                            associated_token_program.to_account_info(),
-                                            Create {
-                                                payer: repository_creator.to_account_info(),
-                                                associated_token: vesting_token_account
-                                                    .to_account_info(),
-                                                authority: vesting_account.to_account_info(),
-                                                mint: rewards_mint.to_account_info(),
-                                                system_program: system_program.to_account_info(),
-                                                token_program: token_program.to_account_info(),
-                                            },
-                                        ))?;
+                                    match metadata {
+                                        Some(metadata) => {
+                                            require!(
+                                                metadata.key().eq(&(find_metadata_account(
+                                                    &rewards_mint.key()
+                                                )
+                                                .0)),
+                                                DefiOSError::IncorrectMetadataAccount
+                                            );
+                                            // Unpack token data
+                                            let name: String;
+                                            let uri: String;
+                                            let symbol: String;
+                                            match *token_name {
+                                                Some(ref token_name) => {
+                                                    name = token_name.clone().to_string();
+                                                }
+                                                None => {
+                                                    name = "".to_string();
+                                                }
+                                            };
+                                            match *token_symbol {
+                                                Some(ref token_symbol) => {
+                                                    symbol = token_symbol.clone().to_string();
+                                                }
+                                                None => {
+                                                    symbol = "".to_string();
+                                                }
+                                            };
+                                            match *token_metadata_uri {
+                                                Some(ref token_metadata_uri) => {
+                                                    uri = token_metadata_uri.clone().to_string();
+                                                }
+                                                None => {
+                                                    uri = "".to_string();
+                                                }
+                                            };
+
+                                            // Create vesting token account if empty
+                                            if vesting_token_account.data_is_empty() {
+                                                create(CpiContext::new(
+                                                    associated_token_program.to_account_info(),
+                                                    Create {
+                                                        payer: repository_creator.to_account_info(),
+                                                        associated_token: vesting_token_account
+                                                            .to_account_info(),
+                                                        authority: vesting_account
+                                                            .to_account_info(),
+                                                        mint: rewards_mint.to_account_info(),
+                                                        system_program: system_program
+                                                            .to_account_info(),
+                                                        token_program: token_program
+                                                            .to_account_info(),
+                                                    },
+                                                ))?;
+                                            }
+
+                                            // Create repository token account if empty
+                                            if repository_creator_token_account.data_is_empty() {
+                                                create(CpiContext::new(
+                                                    associated_token_program.to_account_info(),
+                                                    Create {
+                                                        payer: repository_creator.to_account_info(),
+                                                        associated_token:
+                                                            repository_creator_token_account
+                                                                .to_account_info(),
+                                                        authority: repository_creator
+                                                            .to_account_info(),
+                                                        mint: rewards_mint.to_account_info(),
+                                                        system_program: system_program
+                                                            .to_account_info(),
+                                                        token_program: token_program
+                                                            .to_account_info(),
+                                                    },
+                                                ))?;
+                                            }
+
+                                            // Add checks to ensure token vesting accounts are correct
+                                            let expected_vesting_token_account =
+                                                get_associated_token_address(
+                                                    &vesting_account.key(),
+                                                    &rewards_mint.key(),
+                                                );
+                                            let expected_repository_token_pool_account =
+                                                get_associated_token_address(
+                                                    &repository_creator.key(),
+                                                    &rewards_mint.key(),
+                                                );
+                                            require!(
+                                                expected_vesting_token_account.eq(&vesting_token_account.key())
+                                                    && expected_repository_token_pool_account.eq(&repository_creator_token_account.key()),
+                                                DefiOSError::TokenAccountMismatch
+                                            );
+
+                                            let bump = *ctx.bumps.get("rewards_mint").unwrap();
+
+                                            let signer_seeds: &[&[&[u8]]] = &[&[
+                                                b"Miners",
+                                                b"MinerC",
+                                                repository_account_key.as_ref(),
+                                                &[bump],
+                                            ]];
+
+                                            token::mint_to(
+                                                CpiContext::new_with_signer(
+                                                    ctx.accounts.token_program.to_account_info(),
+                                                    token::MintTo {
+                                                        mint: rewards_mint.to_account_info(),
+                                                        to: vesting_token_account.to_account_info(),
+                                                        authority: rewards_mint.to_account_info(),
+                                                    },
+                                                    signer_seeds,
+                                                ),
+                                                default_schedule.per_vesting_amount
+                                                    * (default_schedule.number_of_schedules as u64),
+                                            )?;
+
+                                            invoke_signed(
+                                                &token_instruction::create_metadata_accounts_v3(
+                                                    mpl_token_metadata::id(), // program_id
+                                                    metadata.key(),           // metadata_account
+                                                    rewards_mint.key(),       // mint
+                                                    rewards_mint.key(),       // mint_authority
+                                                    repository_creator.key(), // payer
+                                                    rewards_mint.key(),       // update_authority
+                                                    name,                     // name
+                                                    symbol,                   // symbol
+                                                    uri,                      // uri
+                                                    None,                     // creators
+                                                    0,     // seller_fee_basis_points
+                                                    false, // update_authority_is_signer
+                                                    true,  // is_mutable
+                                                    None,  // collection
+                                                    None,  // uses
+                                                    None,  // collection_details
+                                                ),
+                                                &[
+                                                    metadata.to_account_info(),           // Metadata account
+                                                    rewards_mint.to_account_info(), // Mint account
+                                                    rewards_mint.to_account_info(), // Mint authority
+                                                    repository_creator.to_account_info(), // Payer
+                                                    rewards_mint.to_account_info(), // Update authority
+                                                    system_program.to_account_info(), // System program
+                                                ],
+                                                signer_seeds,
+                                            )?;
+
+                                            // Add data to token vesting account
+                                            vesting_account.bump =
+                                                *ctx.bumps.get("vesting_account").unwrap();
+                                            vesting_account.destination_address =
+                                                repository_creator_token_account.key();
+                                            vesting_account.mint_address = rewards_mint.key();
+                                            vesting_account.schedules = vec![];
+
+                                            // Add schedules to vesting
+                                            let mut release_time = u64::from_ne_bytes(
+                                                Clock::get()?.unix_timestamp.to_ne_bytes(),
+                                            );
+                                            for _i in 0..default_schedule.number_of_schedules {
+                                                vesting_account.schedules.push(Schedule {
+                                                    release_time: release_time,
+                                                    amount: default_schedule.per_vesting_amount,
+                                                });
+                                                release_time += default_schedule.unix_change;
+                                            }
+
+                                            rewards_mint_key = Some(rewards_mint.key());
+                                            vesting_schedule_key = Some(vesting_account.key());
+                                        }
+                                        None => {}
                                     }
-
-                                    //creates repository token account if empty
-                                    if repository_creator_token_account.data_is_empty() {
-                                        create(CpiContext::new(
-                                            associated_token_program.to_account_info(),
-                                            Create {
-                                                payer: repository_creator.to_account_info(),
-                                                associated_token: repository_creator_token_account
-                                                    .to_account_info(),
-                                                authority: repository_creator.to_account_info(),
-                                                mint: rewards_mint.to_account_info(),
-                                                system_program: system_program.to_account_info(),
-                                                token_program: token_program.to_account_info(),
-                                            },
-                                        ))?;
-                                    }
-
-                                    let bump = *ctx.bumps.get("rewards_mint").unwrap();
-
-                                    let signer_seeds: &[&[&[u8]]] = &[&[
-                                        b"Miners",
-                                        b"MinerC",
-                                        repository_account_key.as_ref(),
-                                        &[bump],
-                                    ]];
-
-                                    token::mint_to(
-                                        CpiContext::new_with_signer(
-                                            ctx.accounts.token_program.to_account_info(),
-                                            token::MintTo {
-                                                mint: rewards_mint.to_account_info(),
-                                                to: vesting_token_account.to_account_info(),
-                                                authority: rewards_mint.to_account_info(),
-                                            },
-                                            signer_seeds,
-                                        ),
-                                        default_schedule.per_vesting_amount
-                                            * (default_schedule.number_of_schedules as u64),
-                                    )?;
-
-                                    //add checks for making sure token vesting accounts are correct
-                                    let expected_vesting_token_account =
-                                        get_associated_token_address(
-                                            &vesting_account.key(),
-                                            &rewards_mint.key(),
-                                        );
-                                    let expected_repository_token_pool_account =
-                                        get_associated_token_address(
-                                            &repository_creator.key(),
-                                            &rewards_mint.key(),
-                                        );
-                                    require!(
-                                        expected_vesting_token_account
-                                            .eq(&vesting_token_account.key())
-                                            && expected_repository_token_pool_account
-                                                .eq(&repository_creator_token_account.key()),
-                                        DefiOSError::TokenAccountMismatch
-                                    );
-
-                                    //add data to token vesting account
-                                    vesting_account.bump =
-                                        *ctx.bumps.get("vesting_account").unwrap();
-                                    vesting_account.destination_address =
-                                        repository_creator_token_account.key();
-                                    vesting_account.mint_address = rewards_mint.key();
-                                    vesting_account.schedules = vec![];
-
-                                    //adding schedules to vesting
-                                    let mut release_time = u64::from_ne_bytes(
-                                        Clock::get()?.unix_timestamp.to_ne_bytes(),
-                                    );
-                                    for _i in 0..default_schedule.number_of_schedules {
-                                        vesting_account.schedules.push(Schedule {
-                                            release_time: release_time,
-                                            amount: default_schedule.per_vesting_amount,
-                                        });
-                                        release_time += default_schedule.unix_change;
-                                    }
-
-                                    rewards_mint_key = Some(rewards_mint.key());
-                                    vesting_schedule_key = Some(vesting_account.key())
                                 }
                                 None => {}
                             }
@@ -270,7 +355,7 @@ pub fn handler(
         name: repository_account.name.clone(),
         description: repository_account.description.clone(),
         token_name: *token_name,
-        token_image: *token_image,
+        token_symbol: *token_symbol,
         token_metadata_uri: *token_metadata_uri
     });
     Ok(())
