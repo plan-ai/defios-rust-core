@@ -447,7 +447,7 @@ pub struct RepositoryCreated {
     pub name: String,
     pub description: String,
     pub token_name: Option<String>,
-    pub token_image: Option<String>,
+    pub token_symbol: Option<String>,
     pub token_metadata_uri: Option<String>,
 }
 
