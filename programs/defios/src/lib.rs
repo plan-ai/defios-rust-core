@@ -183,4 +183,8 @@ pub mod defios {
     pub fn unstake_pr(ctx: Context<UnStakePR>) -> Result<()> {
         unstake_pr::handler(ctx)
     }
+
+    pub fn swap(ctx: Context<SwapToken>, token_amount_1: u64, token_amount_2: u64) -> Result<()> {
+        swap::handler(ctx, token_amount_1, token_amount_2)
+    }
 }
