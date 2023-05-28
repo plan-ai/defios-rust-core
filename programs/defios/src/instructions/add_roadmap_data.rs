@@ -73,15 +73,12 @@ pub fn handler(
     let mut objective: Account<Objective>;
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
-        require!(
-            metadata_account
-                .roadmap_creator
-                .eq(&objective.objective_creator_id),
-            DefiOSError::CantAddObjectiveToSomebodiesRoadmap
-        );
-        match (objective.objective_end_unix) {
+
+        match objective.objective_end_unix {
             Some(child_objective_end_unix) => {
-                if child_objective_end_unix > roadmap_creation_unix {
+                if child_objective_end_unix > roadmap_creation_unix
+                    && objective.objective_creator_id.eq(&roadmap_data_adder.key())
+                {
                     metadata_account.root_objective_ids.push(objective.key());
                 }
             }

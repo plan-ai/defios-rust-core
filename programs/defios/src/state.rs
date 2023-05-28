@@ -382,8 +382,9 @@ pub struct AddCommitToPR {
 
 #[event]
 pub struct AddChildObjectiveEvent {
-    pub parent_account: Pubkey,
+    pub parent_objective_account: Pubkey,
     pub added_by: Pubkey,
+    pub objectives: Vec<Pubkey>,
 }
 
 #[event]
