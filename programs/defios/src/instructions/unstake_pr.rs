@@ -77,7 +77,7 @@ pub fn handler(ctx: Context<UnStakePR>) -> Result<()> {
     let pull_request_addr = &ctx.accounts.pull_request_addr;
     let pull_request_metadata_account = &ctx.accounts.pull_request_metadata_account;
 
-    require!(issue.closed_at.is_none(), DefiOSError::IssueClosedAlready);
+    require!(!pull_request_metadata_account.accepted, DefiOSError::PullRequestClosedAlready);
 
     let issue_key = issue.key().clone();
     let pull_request_addr_key = pull_request_addr.key().clone();
