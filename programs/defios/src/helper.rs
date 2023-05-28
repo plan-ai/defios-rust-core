@@ -1,4 +1,5 @@
 //helper functions
+#[inline(always)]
 pub fn calculate_buy_amount(token_supply: u64, token_amount: u64) -> u128 {
     let new_token_amount = token_amount as u128;
     let new_token_supply = token_supply as u128;
@@ -6,6 +7,7 @@ pub fn calculate_buy_amount(token_supply: u64, token_amount: u64) -> u128 {
     value
 }
 
+#[inline(always)]
 pub fn calculate_sell_amount(token_supply: u64, token_amount: u64) -> u128 {
     let new_token_amount = token_amount as u128;
     let new_token_supply = token_supply as u128;
