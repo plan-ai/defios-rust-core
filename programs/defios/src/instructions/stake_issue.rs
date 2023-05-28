@@ -51,7 +51,7 @@ pub struct StakeIssue<'info> {
     pub issue_token_pool_account: UncheckedAccount<'info>,
 
     #[account(
-        init,
+        init_if_needed,
         payer = issue_staker,
         space = IssueStaker::size(),
         seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref()],
@@ -129,8 +129,8 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     )?;
 
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
-    issue_staker_account.staked_amount = transfer_amount;
-    issue_staker_account.staked_at = staked_at as u64;
+    issue_staker_account.staked_amount += transfer_amount;
+    issue_staker_account.staked_at.push(staked_at as u64);
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
     issue_staker_account.issue_staker_token_account = issue_token_pool_account.key();

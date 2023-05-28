@@ -61,7 +61,7 @@ pub struct StakePR<'info> {
     )]
     pub router_creator: SystemAccount<'info>,
     #[account(
-        init,
+        init_if_needed,
         payer = pull_request_staker,
         space = PRStaker::size(),
         seeds = [b"pullrestaker", pull_request_metadata_account.key().as_ref(), pull_request_staker.key().as_ref()],
@@ -136,8 +136,8 @@ pub fn handler(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
     )?;
 
     pull_request_staker_account.bump = *ctx.bumps.get("pull_request_staker_account").unwrap();
-    pull_request_staker_account.staked_amount = transfer_amount;
-    pull_request_staker_account.staked_at = staked_at as u64;
+    pull_request_staker_account.staked_amount += transfer_amount;
+    pull_request_staker_account.staked_at.push(staked_at as u64);
     pull_request_staker_account.pr_staker = pull_request_staker.key();
     pull_request_staker_account.pr = pull_request_metadata_account.key();
     pull_request_staker_account.pr_staker_token_account = pull_request_staker_token_account.key();

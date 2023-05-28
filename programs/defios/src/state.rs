@@ -227,7 +227,7 @@ impl Commit {
 pub struct IssueStaker {
     pub bump: u8,
     pub staked_amount: u64,
-    pub staked_at: u64,
+    pub staked_at: Vec<u64>,
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
     pub issue_staker_token_account: Pubkey,
@@ -238,7 +238,7 @@ impl IssueStaker {
         8 + // discriminator
             1 + // bump
             8 + // staked_amount
-            8 + // staked_at
+            240 + // staked_at
             32 + // issue_staker
             32 + // issue
             32 // issue_staker_token_account
@@ -250,7 +250,7 @@ impl IssueStaker {
 pub struct PRStaker {
     pub bump: u8,
     pub staked_amount: u64,
-    pub staked_at: u64,
+    pub staked_at: Vec<u64>,
     pub pr_staker: Pubkey,
     pub pr: Pubkey,
     pub pr_staker_token_account: Pubkey,
@@ -261,7 +261,7 @@ impl PRStaker {
         8 + // discriminator
             1 + // bump
             8 + // staked_amount
-            8 + // staked_at
+            240 + // staked_at
             32 + // pr_staker
             32 + // pr
             32 // pr_staker_token_account
