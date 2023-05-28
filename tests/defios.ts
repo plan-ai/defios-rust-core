@@ -1281,14 +1281,16 @@ describe("defios", () => {
       .addChildObjective()
       .accounts({
         nameRouterAccount,
-        objectiveAccount: objectiveAccount,
         roadmapMetadataAccount: metadataAccount,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
-        parentAccount: null,
+        parentObjectiveAccount: null,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: objectiveAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
@@ -1465,14 +1467,16 @@ describe("defios", () => {
       .addChildObjective()
       .accounts({
         nameRouterAccount,
-        objectiveAccount: objectiveAccount2,
         roadmapMetadataAccount: null,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
-        parentAccount: objectiveAccount,
+        parentObjectiveAccount: objectiveAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: objectiveAccount, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
