@@ -94,4 +94,7 @@ pub enum DefiOSError {
     #[msg("Cannot unstake for a closed pull request")]
     PullRequestClosedAlready,
 
+    //6023
+    #[msg("Unauthorized objective addition")]
+    CantAddObjectiveToSomebodiesRoadmap,
 }

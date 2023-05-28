@@ -10,10 +10,8 @@ pub struct AddChildObjective<'info> {
     pub child_objective_adder: Signer<'info>,
     #[account(mut)]
     pub roadmap_metadata_account: Option<Account<'info, RoadMapMetaDataStore>>,
-    #[account(mut)]
-    pub objective_account: Account<'info, Objective>,
     #[account[mut]]
-    pub parent_account: Option<Account<'info, Objective>>,
+    pub parent_objective_account: Option<Account<'info, Objective>>,
     #[account(
         seeds = [
             objective_verified_user.user_name.as_bytes(),
@@ -43,37 +41,69 @@ pub struct AddChildObjective<'info> {
 
 pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
     let roadmap_metadata_account = &mut ctx.accounts.roadmap_metadata_account;
-    let objective_account = &mut ctx.accounts.objective_account;
-    let parent_account = &mut ctx.accounts.parent_account;
+    let parent_objective_account = &mut ctx.accounts.parent_objective_account;
     let child_objective_adder = &mut ctx.accounts.child_objective_adder;
+    let current_unix = Clock::get()?.unix_timestamp;
 
+    let mut objective: Account<Objective>;
     match roadmap_metadata_account {
-        Some(i) => {
-            i.number_of_objectives = i.number_of_objectives.saturating_add(1);
-            i.root_objective_ids.push(objective_account.key());
-            msg!(
-                "Adding objective to roadmap, objective: {}, roadmap:{}",
-                objective_account.key(),
-                i.key()
-            );
+        Some(roadmap_metadata_account) => {
+            for account in ctx.remaining_accounts.to_vec().iter() {
+                objective = Account::try_from(account)?;
+
+                match objective.objective_end_unix {
+                    Some(child_objective_end_unix) => {
+                        if child_objective_end_unix > roadmap_metadata_account.roadmap_creation_unix
+                            && objective.objective_creator_id.eq(&child_objective_adder.key())
+                        {
+                            roadmap_metadata_account
+                                .root_objective_ids
+                                .push(objective.key());
+                        }
+                    }
+                    None => {
+                        roadmap_metadata_account
+                            .root_objective_ids
+                            .push(objective.key());
+                    }
+                }
+            }
 
             emit!(AddChildObjectiveEvent {
-                parent_account: i.key(),
-                added_by: child_objective_adder.key()
+                parent_objective_account: roadmap_metadata_account.key(),
+                added_by: child_objective_adder.key(),
+                objectives: roadmap_metadata_account.root_objective_ids.clone()
             });
         }
-        None => match parent_account {
-            Some(i) => {
-                i.children_objective_keys.push(objective_account.key());
-                msg!(
-                    "Adding objective to roadmap, objective: {}, roadmap:{}",
-                    objective_account.key(),
-                    i.key()
-                );
+        None => match parent_objective_account {
+            Some(parent_objective_account) => {
+                for account in ctx.remaining_accounts.to_vec().iter() {
+                    objective = Account::try_from(account)?;
+
+                    match objective.objective_end_unix {
+                        Some(child_objective_end_unix) => {
+                            if child_objective_end_unix > current_unix
+                                && objective
+                                    .objective_creator_id
+                                    .eq(&child_objective_adder.key())
+                            {
+                                parent_objective_account
+                                    .children_objective_keys
+                                    .push(objective.key());
+                            }
+                        }
+                        None => {
+                            parent_objective_account
+                                .children_objective_keys
+                                .push(objective.key());
+                        }
+                    }
+                }
 
                 emit!(AddChildObjectiveEvent {
-                    parent_account: i.key(),
-                    added_by: child_objective_adder.key()
+                    parent_objective_account: parent_objective_account.key(),
+                    added_by: child_objective_adder.key(),
+                    objectives: parent_objective_account.children_objective_keys.clone()
                 });
             }
             None => {

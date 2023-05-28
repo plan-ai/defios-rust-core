@@ -6,10 +6,6 @@ use anchor_lang::prelude::*;
 pub struct AddCommitToPullRequest<'info> {
     #[account(mut)]
     pub commit_addr: Signer<'info>,
-    #[account(constraint = commit_addr.key() == commit.commit_creator @DefiOSError::UnauthorizedActionAttempted,
-        constraint = commit_addr.key() == pull_request_metadata_account.sent_by@DefiOSError::UnauthorizedActionAttempted
-    )]
-    pub commit: Account<'info, Commit>,
     #[account(mut)]
     pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
@@ -41,19 +37,23 @@ pub struct AddCommitToPullRequest<'info> {
 
 pub fn handler(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
     let commit_addr = &ctx.accounts.commit_addr;
-    let commit = &ctx.accounts.commit;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
 
-    msg!(
-        "Adding commit {} to pull request {}",
-        commit.key(),
-        pull_request_metadata_account.key()
-    );
-
-    pull_request_metadata_account.commits.push(commit.key());
+    let mut commit: Account<Commit>;
+    for account in ctx.remaining_accounts.to_vec().iter() {
+        commit = Account::try_from(account)?;
+        require!(
+            pull_request_metadata_account
+                .sent_by
+                .eq(&commit.commit_creator)
+                & commit_addr.key().eq(&commit.commit_creator),
+            DefiOSError::UnauthorizedPR
+        );
+        pull_request_metadata_account.commits.push(commit.key());
+    }
 
     emit!(AddCommitToPR {
-        commit: commit.key(),
+        commit: pull_request_metadata_account.commits.clone(),
         by: commit_addr.key()
     });
 

@@ -272,7 +272,7 @@ impl PRStaker {
 pub struct RoadMapMetaDataStore {
     pub bump: u8,
     pub roadmap_title: String,
-    pub roadmap_creation_unix: u64,
+    pub roadmap_creation_unix: i64,
     pub roadmap_creator_id: Pubkey,
     pub roadmap_description_link: String,
     pub number_of_objectives: u64,
@@ -300,10 +300,10 @@ impl RoadMapMetaDataStore {
 pub struct Objective {
     pub bump: u8,
     pub objective_title: String,
-    pub objective_creation_unix: u64,
-    pub objective_creator_gh_id: Pubkey,
-    pub objective_start_unix: u64,
-    pub objective_end_unix: Option<u64>,
+    pub objective_creation_unix: i64,
+    pub objective_creator_id: Pubkey,
+    pub objective_start_unix: i64,
+    pub objective_end_unix: Option<i64>,
     pub objective_description_link: String,
     pub objective_state: ObjectiveState,
     pub children_objective_keys: Vec<Pubkey>,
@@ -321,7 +321,7 @@ impl Objective {
         16 + // objective_end_unix
         16 + // objective_start_unix
         640 + // children_objective_keys
-        32 +  //objective_creator_gh_id
+        32 +  //objective_creator_id
         32 + // objective_description_link 
         1 + //objective_state
         1 + //objective deliverable
@@ -376,26 +376,29 @@ pub struct PullRequestSent {
 
 #[event]
 pub struct AddCommitToPR {
-    pub commit: Pubkey,
+    pub commit: Vec<Pubkey>,
     pub by: Pubkey,
 }
 
 #[event]
 pub struct AddChildObjectiveEvent {
-    pub parent_account: Pubkey,
+    pub parent_objective_account: Pubkey,
     pub added_by: Pubkey,
+    pub objectives: Vec<Pubkey>,
 }
 
 #[event]
 pub struct AddObjectiveDataEvent {
     pub objective_title: String,
     pub objective_metadata_uri: String,
-    pub objective_start_unix: u64,
-    pub objective_creation_unix: u64,
-    pub objective_end_unix: Option<u64>,
+    pub objective_start_unix: i64,
+    pub objective_creation_unix: i64,
+    pub objective_end_unix: Option<i64>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_public_key: Pubkey,
     pub objective_issue: Pubkey,
+    pub objective_addr: Pubkey,
+    pub child_objectives: Vec<Pubkey>,
 }
 
 #[event]
@@ -404,6 +407,7 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_description_link: String,
     pub roadmap_creation_unix: u64,
     pub roadmap_creator: Pubkey,
+    pub root_objective_ids: Vec<Pubkey>,
 }
 
 #[event]
@@ -418,7 +422,7 @@ pub struct VerifiedUserAdded {
     pub name_router_account: Pubkey,
     pub verified_user_account: Pubkey,
     pub user_name: String,
-    pub user_pubkey: Pubkey
+    pub user_pubkey: Pubkey,
 }
 
 #[event]

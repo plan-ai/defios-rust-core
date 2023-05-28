@@ -55,13 +55,14 @@ pub fn handler(
     ctx: Context<AddObjective>,
     objective_id: String,
     objective_title: String,
-    objective_start_unix: u64,
-    objective_end_unix: Option<u64>,
+    objective_start_unix: i64,
+    objective_end_unix: Option<i64>,
     objective_description_link: String,
     objective_deliverable: ObjectiveDeliverable,
 ) -> Result<()> {
-    let objective_creation_unix = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
+    let objective_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
+    let objective_data_addr = &mut ctx.accounts.objective_data_addr;
     let objective_issue = &ctx.accounts.objective_issue;
     let objective_state = ObjectiveState::InProgress;
 
@@ -74,33 +75,55 @@ pub fn handler(
         }
         None => {}
     }
-    msg!(
-        "Adding objective: Title:{}, Description: {}",
-        objective_title,
-        objective_description_link
-    );
 
     metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
     metadata_account.objective_title = objective_title.clone();
     metadata_account.objective_start_unix = objective_start_unix;
     metadata_account.objective_end_unix = objective_end_unix;
-    metadata_account.objective_creation_unix = objective_creation_unix as u64;
-    metadata_account.objective_creator_gh_id = ctx.accounts.objective_data_addr.key();
+    metadata_account.objective_creation_unix = objective_creation_unix;
+    metadata_account.objective_creator_id = objective_data_addr.key();
     metadata_account.children_objective_keys = vec![];
     metadata_account.objective_description_link = objective_description_link.clone();
     metadata_account.objective_state = objective_state;
     metadata_account.objective_deliverable = objective_deliverable;
     metadata_account.objective_issue = objective_issue.key();
     metadata_account.objective_id = objective_id;
+
+    let mut objective: Account<Objective>;
+    for account in ctx.remaining_accounts.to_vec().iter() {
+        objective = Account::try_from(account)?;
+
+        match objective.objective_end_unix {
+            Some(child_objective_end_unix) => {
+                if child_objective_end_unix > objective_creation_unix
+                    && objective
+                        .objective_creator_id
+                        .eq(&objective_data_addr.key())
+                {
+                    metadata_account
+                        .children_objective_keys
+                        .push(objective.key());
+                }
+            }
+            None => {
+                metadata_account
+                    .children_objective_keys
+                    .push(objective.key());
+            }
+        }
+    }
+
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,
         objective_start_unix: objective_start_unix,
-        objective_creation_unix: objective_creation_unix as u64,
+        objective_creation_unix: objective_creation_unix,
         objective_end_unix: objective_end_unix,
         objective_deliverable: objective_deliverable,
         objective_public_key: metadata_account.key(),
-        objective_issue: objective_issue.key()
+        objective_issue: objective_issue.key(),
+        objective_addr: objective_data_addr.key(),
+        child_objectives: metadata_account.children_objective_keys.clone()
     });
 
     Ok(())
