@@ -80,6 +80,7 @@ pub fn handler(
         name_router_account: name_router_account.key(),
         verified_user_account: verified_user_account.key(),
         user_name: verified_user_account.user_name.clone(),
+        user_pubkey: user_pubkey
     });
     Ok(())
 }

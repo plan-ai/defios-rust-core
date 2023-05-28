@@ -418,6 +418,7 @@ pub struct VerifiedUserAdded {
     pub name_router_account: Pubkey,
     pub verified_user_account: Pubkey,
     pub user_name: String,
+    pub user_pubkey: Pubkey
 }
 
 #[event]
