@@ -95,8 +95,8 @@ pub mod defios {
         ctx: Context<AddObjective>,
         objective_id: String,
         objective_title: String,
-        objective_start_unix: u64,
-        objective_end_unix: Option<u64>,
+        objective_start_unix: i64,
+        objective_end_unix: Option<i64>,
         objective_description_link: String,
         objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {

@@ -4,7 +4,7 @@ skip-lint = false
 [programs.localnet]
 defios = "CAbANVD3AMTTmtadvkgKi4w2deSknK74eN7ej1Y3BskS"
 [programs.devnet]
-defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
+defios = "CAbANVD3AMTTmtadvkgKi4w2deSknK74eN7ej1Y3BskS"
 [programs.testnet]
 defios = "2oxTU2juQFMKqAhWNWFmU8Boxi39DwnEy8Nxt1xzHz5p"
 [programs.mainnet]

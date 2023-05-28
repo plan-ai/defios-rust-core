@@ -2267,12 +2267,14 @@ describe("defios", () => {
       .accounts({
         commitVerifiedUser: verifiedUserAccount,
         commitAddr: roadmapDataAdder.publicKey,
-        commit: commitAccount2,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
+      .remainingAccounts([
+        { pubkey: commitAccount2, isWritable: true, isSigner: false },
+      ])
       .signers([roadmapDataAdder])
       .rpc({ skipPreflight: true });
   });
