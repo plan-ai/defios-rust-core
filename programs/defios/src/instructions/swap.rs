@@ -1,5 +1,5 @@
-use crate::helper::verify_swap;
 use crate::error::DefiOSError;
+use crate::helper::verify_swap;
 use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -118,7 +118,7 @@ pub fn handler(ctx: Context<SwapToken>, token_amount_1: u64, token_amount_2: u64
     );
     //checks values were correctly calculated
     require!(
-        verify_swap(token_supply1,token_supply2,token_amount_1,token_amount_2),
+        verify_swap(token_supply1, token_supply2, token_amount_1, token_amount_2),
         DefiOSError::IncorrectMaths
     );
     //calculated seeds of communal deposts
