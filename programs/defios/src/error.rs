@@ -89,4 +89,9 @@ pub enum DefiOSError {
     //6021
     #[msg("Incorrect Metadata account provided")]
     IncorrectMetadataAccount,
+
+    // 6022
+    #[msg("Cannot unstake for a closed pull request")]
+    PullRequestClosedAlready,
+
 }

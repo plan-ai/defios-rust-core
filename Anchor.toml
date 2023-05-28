@@ -14,8 +14,8 @@ defios = "DEfiSZGJjNT5MShHgkFRCkiPEdRtzhcUdegzTP8t3SMR"
 url = "https://damp-ancient-forest.solana-devnet.discover.quiknode.pro/4c38979f4ca8eca0840486c9d5f3f23a986c9cd2/"
 
 [provider]
-cluster = "testnet"
-wallet = "/home/tanmay/DefiOSRustCore/defios-rust-core/my_solana_wallet/keypair.json"
+cluster = "localnet"
+wallet = "/home/tanmay/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/defios.ts"
