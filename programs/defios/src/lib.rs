@@ -167,20 +167,15 @@ pub mod defios {
         set_default_schedule::handler(ctx, number_of_schedules, per_vesting_amount, unix_change)
     }
 
-    pub fn create_spl_token(
-        ctx: Context<MintNft>,
-        metadata_title: String,
-        metadata_symbol: String,
-        metadata_uri: String,
-    ) -> Result<()> {
-        create_spl_token::handler(ctx, metadata_title, metadata_symbol, metadata_uri)
-    }
-
     pub fn stake_pr(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
         stake_pr::handler(ctx, transfer_amount)
     }
 
     pub fn unstake_pr(ctx: Context<UnStakePR>) -> Result<()> {
         unstake_pr::handler(ctx)
+    }
+
+    pub fn swap(ctx: Context<SwapToken>, token_amount_1: u64, token_amount_2: u64) -> Result<()> {
+        swap::handler(ctx, token_amount_1, token_amount_2)
     }
 }

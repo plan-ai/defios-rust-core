@@ -54,7 +54,9 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
                 match objective.objective_end_unix {
                     Some(child_objective_end_unix) => {
                         if child_objective_end_unix > roadmap_metadata_account.roadmap_creation_unix
-                            && objective.objective_creator_id.eq(&child_objective_adder.key())
+                            && objective
+                                .objective_creator_id
+                                .eq(&child_objective_adder.key())
                         {
                             roadmap_metadata_account
                                 .root_objective_ids
