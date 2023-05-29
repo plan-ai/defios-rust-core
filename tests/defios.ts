@@ -215,7 +215,7 @@ describe("defios", () => {
 
     const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
       mint,
-      repositoryCreator.publicKey,
+      repositoryCreator.publicKey
     );
 
     const [defaultVestingSchedule] = await get_pda_from_seeds([
@@ -3025,7 +3025,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .buyTokens(new anchor.BN(20_001), new anchor.BN(1))
+      .buyTokens(new anchor.BN(1), new anchor.BN(1))
       .accounts({
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
@@ -3036,6 +3036,7 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
         buyerTokenAccount: repositoryCreatorTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3116,23 +3117,24 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .buyTokens(new anchor.BN(20_001), new anchor.BN(1))
+      .unlockTokens(repositoryName)
       .accounts({
-        buyer: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
-        communalTokenAccount: communalTokenAccount,
-        rewardsMint: mintKeypair,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        repositoryAccount: repositoryAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        buyerTokenAccount: repositoryCreatorTokenAccount,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .sellTokens(new anchor.BN(20_001), new anchor.BN(1))
+      .sellTokens(new anchor.BN(0), new anchor.BN(1))
       .accounts({
         seller: repositoryCreator.publicKey,
         communalDeposit: communal_account,
@@ -3143,9 +3145,10 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
         sellerTokenAccount: repositoryCreatorTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
   });
 
   it("Custom SPL Token integration test", async () => {
@@ -3730,7 +3733,7 @@ describe("defios", () => {
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
 
-      await program.methods
+    await program.methods
       .createCommunalAccount()
       .accounts({
         authority: repositoryCreator2.publicKey,
@@ -3743,11 +3746,11 @@ describe("defios", () => {
       })
       .signers([repositoryCreator2])
       .rpc({ skipPreflight: true });
-    
+
     const tokenAccount2 = await getAssociatedTokenAddress(
       mintKeypair2,
       repositoryCreator.publicKey
-    )
+    );
 
     await program.methods
       .swap(new anchor.BN(15), new anchor.BN(25))
