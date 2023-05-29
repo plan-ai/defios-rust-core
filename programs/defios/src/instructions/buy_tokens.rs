@@ -1,7 +1,7 @@
 use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_buy;
-use crate::state::{CommunalAccount, Repository};
+use crate::state::{CommunalAccount, Repository, DefaultVestingSchedule};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
@@ -37,6 +37,14 @@ pub struct BuyToken<'info> {
     repository_account.key().as_ref()],
     bump)]
     pub rewards_mint: Account<'info, Mint>,
+    #[account(seeds = [
+        b"isGodReal?",
+        b"DoULoveMe?",
+        b"SweetChick"
+    ],
+    bump=default_schedule.bump,
+    )]
+    pub default_schedule: Account<'info, DefaultVestingSchedule>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
@@ -51,7 +59,9 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let repository_account = &ctx.accounts.repository_account;
+    let default_schedule = &ctx.accounts.default_schedule;
 
+    let total = (default_schedule.number_of_schedules as u64) * default_schedule.per_vesting_amount;
     let token_supply: u64;
     {
         let account_info = &rewards_mint.to_account_info();
@@ -65,7 +75,7 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_buy(token_supply, lamports_amount, number_of_tokens),
+        verify_calc_buy(token_supply-total, lamports_amount, number_of_tokens),
         DefiOSError::IncorrectMaths
     );
     let rewards_key = rewards_mint.key();
