@@ -13,10 +13,10 @@ pub fn calculate_sell_amount(token_supply: u64, token_amount: u64) -> u128 {
     let new_token_supply = token_supply as u128;
     let first_value = 2 * new_token_supply * new_token_amount;
     let second_value = u128::pow(new_token_amount, 2);
-    if second_value>first_value{
-        return 0
-    }else{
-        return first_value-second_value
+    if second_value > first_value {
+        return 0;
+    } else {
+        return first_value - second_value;
     }
 }
 

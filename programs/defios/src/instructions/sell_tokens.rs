@@ -1,7 +1,7 @@
 use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_sell;
-use crate::state::{CommunalAccount, Repository,DefaultVestingSchedule};
+use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -72,7 +72,7 @@ pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: 
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_sell(token_supply-total, lamports_amount, number_of_tokens),
+        verify_calc_sell(token_supply - total, lamports_amount, number_of_tokens),
         DefiOSError::IncorrectMaths
     );
     //transfers spl token to communal token account

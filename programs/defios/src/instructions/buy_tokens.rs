@@ -1,7 +1,7 @@
 use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_buy;
-use crate::state::{CommunalAccount, Repository, DefaultVestingSchedule};
+use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
@@ -75,7 +75,7 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_buy(token_supply-total, lamports_amount, number_of_tokens),
+        verify_calc_buy(token_supply - total, lamports_amount, number_of_tokens),
         DefiOSError::IncorrectMaths
     );
     let rewards_key = rewards_mint.key();
