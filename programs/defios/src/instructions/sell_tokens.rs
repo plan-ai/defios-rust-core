@@ -1,7 +1,7 @@
 use crate::constants::MAX_INT;
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_sell;
-use crate::state::{CommunalAccount, Repository,DefaultVestingSchedule};
+use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -58,21 +58,17 @@ pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: 
     let default_schedule = &ctx.accounts.default_schedule;
 
     let total = (default_schedule.number_of_schedules as u64) * default_schedule.per_vesting_amount;
-    //get supply of token
-    let token_supply: u64;
-    {
-        let account_info = &rewards_mint.to_account_info();
-        let data = &*account_info.try_borrow_data()?;
-        let bytes_data = &mut &**data;
-        token_supply = Mint::try_deserialize_unchecked(bytes_data).unwrap().supply;
-    }
+    let token_supply = rewards_mint.supply;
+    let modified_token_supply: u64 =
+        (token_supply - total) / (u64::pow(10, rewards_mint.decimals.into()));
+    let modified_tokens: u64 = number_of_tokens / (u64::pow(10, rewards_mint.decimals.into()));
 
     require!(
         (number_of_tokens as u128) < MAX_INT,
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_sell(token_supply-total, lamports_amount, number_of_tokens),
+        verify_calc_sell(modified_token_supply, lamports_amount, modified_tokens),
         DefiOSError::IncorrectMaths
     );
     //transfers spl token to communal token account
