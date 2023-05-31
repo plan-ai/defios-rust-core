@@ -152,8 +152,10 @@ pub fn handler(
     let mut vesting_schedule_key: Option<Pubkey> = None;
     match rewards_mint {
         Some(rewards_mint) => {
+            rewards_mint_key = Some(rewards_mint.key());
             match vesting_account {
                 Some(vesting_account) => {
+                    vesting_schedule_key = Some(vesting_account.key());
                     match vesting_token_account {
                         Some(vesting_token_account) => {
                             match repository_creator_token_account {
@@ -324,9 +326,6 @@ pub fn handler(
                                                 });
                                                 release_time += default_schedule.unix_change;
                                             }
-
-                                            rewards_mint_key = Some(rewards_mint.key());
-                                            vesting_schedule_key = Some(vesting_account.key());
                                         }
                                         None => {}
                                     }
@@ -356,7 +355,8 @@ pub fn handler(
         description: repository_account.description.clone(),
         token_name: *token_name,
         token_symbol: *token_symbol,
-        token_metadata_uri: *token_metadata_uri
+        token_metadata_uri: *token_metadata_uri,
+        vesting_account: vesting_schedule_key
     });
     Ok(())
 }

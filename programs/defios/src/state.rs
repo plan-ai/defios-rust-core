@@ -454,6 +454,7 @@ pub struct RepositoryCreated {
     pub token_name: Option<String>,
     pub token_symbol: Option<String>,
     pub token_metadata_uri: Option<String>,
+    pub vesting_account: Option<Pubkey>,
 }
 
 #[event]
