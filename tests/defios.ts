@@ -225,7 +225,11 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .setDefaultSchedule(4, new anchor.BN(2500), new anchor.BN(1000))
+      .setDefaultSchedule(
+        4,
+        new anchor.BN(2500 * 10 ** 9),
+        new anchor.BN(10 ** 7)
+      )
       .accounts({
         authority: repositoryCreator.publicKey,
         defaultSchedule: defaultVestingSchedule,
@@ -3025,7 +3029,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .buyTokens(new anchor.BN(1), new anchor.BN(1))
+      .buyTokens(new anchor.BN(1), new anchor.BN(10 ** 9))
       .accounts({
         buyer: repositoryCreator.publicKey,
         communalDeposit: communal_account,
@@ -3039,7 +3043,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
+      .rpc({ skipPreflight: true });
   });
 
   it("Sends a sell transaction", async () => {
@@ -3134,7 +3138,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .sellTokens(new anchor.BN(0), new anchor.BN(1))
+      .sellTokens(new anchor.BN(0), new anchor.BN(10 ** 9))
       .accounts({
         seller: repositoryCreator.publicKey,
         communalDeposit: communal_account,
