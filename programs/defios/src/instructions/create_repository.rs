@@ -96,7 +96,7 @@ pub struct CreateRepository<'info> {
         init,
         payer = repository_creator,
         mint::authority = rewards_mint,
-        mint::decimals = 9,
+        mint::decimals = 0,
         seeds = [b"Miners",
         b"MinerC",
         repository_account.key().as_ref()],
