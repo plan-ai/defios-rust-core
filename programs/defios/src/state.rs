@@ -408,6 +408,7 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_creation_unix: u64,
     pub roadmap_creator: Pubkey,
     pub root_objective_ids: Vec<Pubkey>,
+    pub roadmap_outlook: RoadmapOutlook
 }
 
 #[event]

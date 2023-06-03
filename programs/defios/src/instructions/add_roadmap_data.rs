@@ -80,10 +80,12 @@ pub fn handler(
                     && objective.objective_creator_id.eq(&roadmap_data_adder.key())
                 {
                     metadata_account.root_objective_ids.push(objective.key());
+                    metadata_account.number_of_objectives = metadata_account.number_of_objectives.saturating_add(1);
                 }
             }
             None => {
                 metadata_account.root_objective_ids.push(objective.key());
+                metadata_account.number_of_objectives = metadata_account.number_of_objectives.saturating_add(1);
             }
         }
     }
@@ -92,7 +94,8 @@ pub fn handler(
         roadmap_description_link: roadmap_description_link,
         roadmap_creation_unix: roadmap_creation_unix as u64,
         roadmap_creator: roadmap_data_adder.key(),
-        root_objective_ids: metadata_account.root_objective_ids.clone()
+        root_objective_ids: metadata_account.root_objective_ids.clone(),
+        roadmap_outlook: roadmap_outlook
     });
 
     Ok(())
