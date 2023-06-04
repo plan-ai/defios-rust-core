@@ -17,7 +17,7 @@ use mpl_token_metadata::{instruction as token_instruction, pda::find_metadata_ac
 use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
-#[instruction(name: String)]
+#[instruction(id: String)]
 pub struct CreateRepository<'info> {
     #[account(
         mut,
@@ -57,7 +57,7 @@ pub struct CreateRepository<'info> {
         payer = repository_creator,
         seeds = [
             b"repository",
-            name.as_bytes(),
+            id.as_bytes(),
             repository_creator.key().as_ref(),
         ],
         bump
@@ -111,7 +111,7 @@ pub struct CreateRepository<'info> {
 
 pub fn handler(
     ctx: Context<CreateRepository>,
-    name: String,
+    id: String,
     description: String,
     uri: String,
     token_name: Box<Option<String>>,
@@ -133,8 +133,8 @@ pub fn handler(
     let metadata = &mut ctx.accounts.metadata;
     //logs repository and spl token creation
     msg!(
-        "Creating repository of name: {} Repository address: {}",
-        &name,
+        "Creating repository of id: {} Repository address: {}",
+        &id,
         repository_account.key().to_string()
     );
 
@@ -142,7 +142,7 @@ pub fn handler(
     repository_account.bump = *ctx.bumps.get("repository_account").unwrap();
     repository_account.name_router = name_router_account.key();
     repository_account.repository_creator = repository_verified_user.user_pubkey.key();
-    repository_account.name = name;
+    repository_account.id = id;
     repository_account.description = description;
     repository_account.uri = uri;
     repository_account.issue_index = 0;
@@ -351,7 +351,7 @@ pub fn handler(
         repository_account: repository_account.key(),
         uri: repository_account.uri.clone(),
         rewards_mint: rewards_mint_key,
-        name: repository_account.name.clone(),
+        id: repository_account.id.clone(),
         description: repository_account.description.clone(),
         token_name: *token_name,
         token_symbol: *token_symbol,

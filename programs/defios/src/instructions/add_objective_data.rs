@@ -29,7 +29,7 @@ pub struct AddObjective<'info> {
         mut,
         seeds = [
             b"repository",
-            repository_account.name.as_bytes(),
+            repository_account.id.as_bytes(),
             repository_account.repository_creator.key().as_ref(),
         ],
         bump = repository_account.bump
