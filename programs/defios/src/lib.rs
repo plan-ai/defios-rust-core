@@ -81,12 +81,14 @@ pub mod defios {
         ctx: Context<AddMetadata>,
         roadmap_title: String,
         roadmap_description_link: String,
+        roadmap_image_url: String,
         roadmap_outlook: RoadmapOutlook,
     ) -> Result<()> {
         add_roadmap_data::handler(
             ctx,
             roadmap_title,
             roadmap_description_link,
+            roadmap_image_url,
             roadmap_outlook,
         )
     }
