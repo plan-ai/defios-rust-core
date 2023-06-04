@@ -401,6 +401,7 @@ pub struct AddObjectiveDataEvent {
     pub objective_issue: Pubkey,
     pub objective_addr: Pubkey,
     pub child_objectives: Vec<Pubkey>,
+    pub objective: Pubkey
 }
 
 #[event]
