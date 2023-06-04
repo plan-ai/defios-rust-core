@@ -79,7 +79,7 @@ pub struct Repository {
     pub name_router: Pubkey,
     pub repository_creator: Pubkey,
     pub rewards_mint: Option<Pubkey>,
-    pub name: String,
+    pub id: String,
     pub description: String,
     pub uri: String,
     pub vesting_schedule: Option<Pubkey>,
@@ -94,7 +94,7 @@ impl Repository {
             32 + // repository_creator
             32 + // rewards_mint
             4 +
-            32 + // name
+            50 + // id
             4 +
             100 + // description
             4 +
@@ -457,7 +457,7 @@ pub struct RepositoryCreated {
     pub repository_account: Pubkey,
     pub rewards_mint: Option<Pubkey>,
     pub uri: String,
-    pub name: String,
+    pub id: String,
     pub description: String,
     pub token_name: Option<String>,
     pub token_symbol: Option<String>,
