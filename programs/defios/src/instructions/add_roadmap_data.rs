@@ -1,6 +1,7 @@
 use crate::error::DefiOSError;
 use crate::state::{
-    AddRoadmapDataEvent, NameRouter, Objective, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser, Repository
+    AddRoadmapDataEvent, NameRouter, Objective, Repository, RoadMapMetaDataStore, RoadmapOutlook,
+    VerifiedUser,
 };
 use anchor_lang::prelude::*;
 
@@ -86,6 +87,10 @@ pub fn handler(
     let mut objective: Account<Objective>;
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
+
+        if objective.objective_repository.key() != repository_account.key() {
+            continue;
+        };
 
         match objective.objective_end_unix {
             Some(child_objective_end_unix) => {

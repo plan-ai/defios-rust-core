@@ -279,7 +279,7 @@ pub struct RoadMapMetaDataStore {
     pub roadmap_creator: Pubkey,
     pub roadmap_outlook: RoadmapOutlook,
     pub roadmap_image_url: String,
-    pub roadmap_repository: Pubkey
+    pub roadmap_repository: Pubkey,
 }
 
 impl RoadMapMetaDataStore {
@@ -312,7 +312,7 @@ pub struct Objective {
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_issue: Pubkey,
     pub objective_id: String,
-    pub objective_repository: Pubkey
+    pub objective_repository: Pubkey,
 }
 
 impl Objective {
@@ -415,7 +415,7 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_outlook: RoadmapOutlook,
     pub roadmap_image_url: String,
     pub roadmap: Pubkey,
-    pub roadmap_repository: Pubkey
+    pub roadmap_repository: Pubkey,
 }
 
 #[event]

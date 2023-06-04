@@ -6,7 +6,7 @@ use anchor_spl::{
 
 use crate::{
     error::DefiOSError,
-    state::{ Repository, VestingSchedule},
+    state::{Repository, VestingSchedule},
 };
 
 #[derive(Accounts)]

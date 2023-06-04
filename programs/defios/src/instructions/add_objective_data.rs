@@ -1,7 +1,7 @@
 use crate::error::DefiOSError;
 use crate::state::{
-    AddObjectiveDataEvent, Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState, Repository,
-    VerifiedUser,
+    AddObjectiveDataEvent, Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState,
+    Repository, VerifiedUser,
 };
 use anchor_lang::prelude::*;
 
@@ -100,10 +100,14 @@ pub fn handler(
     metadata_account.objective_issue = objective_issue.key();
     metadata_account.objective_id = objective_id;
     metadata_account.objective_repository = repository_account.key();
-    
+
     let mut objective: Account<Objective>;
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
+
+        if objective.objective_repository.key() != repository_account.key() {
+            continue;
+        };
 
         match objective.objective_end_unix {
             Some(child_objective_end_unix) => {
