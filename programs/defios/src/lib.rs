@@ -34,7 +34,7 @@ pub mod defios {
 
     pub fn create_repository(
         ctx: Context<CreateRepository>,
-        name: String,
+        id: String,
         description: String,
         uri: String,
         token_name: Box<Option<String>>,
@@ -43,7 +43,7 @@ pub mod defios {
     ) -> Result<()> {
         create_repository::handler(
             ctx,
-            name,
+            id,
             description,
             uri,
             token_name,
@@ -125,8 +125,8 @@ pub mod defios {
         add_commit_to_pr::handler(ctx)
     }
 
-    pub fn unlock_tokens(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
-        unlock_tokens::handler(ctx, repo_name)
+    pub fn unlock_tokens(ctx: Context<UnlockTokens>) -> Result<()> {
+        unlock_tokens::handler(ctx)
     }
 
     pub fn accept_pr(ctx: Context<AcceptPullRequest>, repo_name: String) -> Result<()> {
