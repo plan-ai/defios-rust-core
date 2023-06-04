@@ -1,12 +1,12 @@
 use crate::error::DefiOSError;
 use crate::state::{
-    AddRoadmapDataEvent, NameRouter, Objective, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser,
+    AddRoadmapDataEvent, NameRouter, Objective, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser, Repository
 };
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct AddMetadata<'info> {
-    #[account(mut)]
+    #[account(mut, address = repository_account.repository_creator.key())]
     pub roadmap_data_adder: Signer<'info>,
     #[account(
         init,
@@ -20,6 +20,16 @@ pub struct AddMetadata<'info> {
         bump
     )]
     pub metadata_account: Account<'info, RoadMapMetaDataStore>,
+    #[account(
+        mut,
+        seeds = [
+            b"repository",
+            repository_account.name.as_bytes(),
+            repository_account.repository_creator.key().as_ref(),
+        ],
+        bump = repository_account.bump
+    )]
+    pub repository_account: Account<'info, Repository>,
     #[account(
         seeds = [
             roadmap_verified_user.user_name.as_bytes(),
@@ -56,6 +66,7 @@ pub fn handler(
     let roadmap_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
     let roadmap_data_adder = &mut ctx.accounts.roadmap_data_adder;
+    let repository_account = &ctx.accounts.repository_account;
     msg!(
         "Adding roadmap: Title:{}, Description: {}",
         roadmap_title,
@@ -70,6 +81,7 @@ pub fn handler(
     metadata_account.root_objective_ids = vec![];
     metadata_account.roadmap_outlook = roadmap_outlook;
     metadata_account.roadmap_image_url = roadmap_image_url.clone();
+    metadata_account.roadmap_repository = repository_account.key().clone();
 
     let mut objective: Account<Objective>;
     for account in ctx.remaining_accounts.to_vec().iter() {
@@ -96,7 +108,8 @@ pub fn handler(
         root_objective_ids: metadata_account.root_objective_ids.clone(),
         roadmap_outlook: roadmap_outlook,
         roadmap_image_url: roadmap_image_url,
-        roadmap: metadata_account.key()
+        roadmap: metadata_account.key(),
+        roadmap_repository: repository_account.key()
     });
 
     Ok(())
