@@ -33,7 +33,7 @@ pub struct UnlockTokens<'info> {
     #[account(
         seeds = [
             b"repository",
-            repo_name.as_bytes(),
+            repository_account.id.as_bytes(),
             repository_creator.key().as_ref(),
         ],
         bump=repository_account.bump
@@ -60,7 +60,7 @@ pub struct UnlockTokens<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<UnlockTokens>, repo_name: String) -> Result<()> {
+pub fn handler(ctx: Context<UnlockTokens>) -> Result<()> {
     let vesting_account = &mut ctx.accounts.vesting_account;
     let repository_creator = &mut ctx.accounts.repository_creator;
     let repository_account = &ctx.accounts.repository_account;
