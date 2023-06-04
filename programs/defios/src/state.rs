@@ -275,10 +275,10 @@ pub struct RoadMapMetaDataStore {
     pub roadmap_creation_unix: i64,
     pub roadmap_creator_id: Pubkey,
     pub roadmap_description_link: String,
-    pub number_of_objectives: u64,
     pub root_objective_ids: Vec<Pubkey>,
     pub roadmap_creator: Pubkey,
     pub roadmap_outlook: RoadmapOutlook,
+    pub roadmap_image_url: String,
 }
 
 impl RoadMapMetaDataStore {
@@ -288,11 +288,11 @@ impl RoadMapMetaDataStore {
         50 + // roadmap_title
         16 + // roadmap_creation_unix
         32 + //roadmap_creator_id
-        8 + // number_of_objectives
         640 + // root_objective_ids
-        32 + // roadmap_description_link    
+        64 + // roadmap_description_link    
         32 +//roadmap_creator
-        1 //roadmap_outlook
+        1 + //roadmap_outlook
+        64 //roadmap_image_url
     }
 }
 
@@ -399,6 +399,7 @@ pub struct AddObjectiveDataEvent {
     pub objective_issue: Pubkey,
     pub objective_addr: Pubkey,
     pub child_objectives: Vec<Pubkey>,
+    pub objective: Pubkey
 }
 
 #[event]
@@ -408,7 +409,9 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_creation_unix: u64,
     pub roadmap_creator: Pubkey,
     pub root_objective_ids: Vec<Pubkey>,
-    pub roadmap_outlook: RoadmapOutlook
+    pub roadmap_outlook: RoadmapOutlook,
+    pub roadmap_image_url: String,
+    pub roadmap: Pubkey,
 }
 
 #[event]

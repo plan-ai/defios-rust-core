@@ -50,6 +50,7 @@ pub fn handler(
     ctx: Context<AddMetadata>,
     roadmap_title: String,
     roadmap_description_link: String,
+    roadmap_image_url: String,
     roadmap_outlook: RoadmapOutlook,
 ) -> Result<()> {
     let roadmap_creation_unix = Clock::get()?.unix_timestamp;
@@ -64,11 +65,11 @@ pub fn handler(
     metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
     metadata_account.roadmap_title = roadmap_title.clone();
     metadata_account.roadmap_description_link = roadmap_description_link.clone();
-    metadata_account.number_of_objectives = 0 as u64;
     metadata_account.roadmap_creation_unix = roadmap_creation_unix;
     metadata_account.roadmap_creator = roadmap_data_adder.key();
     metadata_account.root_objective_ids = vec![];
     metadata_account.roadmap_outlook = roadmap_outlook;
+    metadata_account.roadmap_image_url = roadmap_image_url.clone();
 
     let mut objective: Account<Objective>;
     for account in ctx.remaining_accounts.to_vec().iter() {
@@ -80,12 +81,10 @@ pub fn handler(
                     && objective.objective_creator_id.eq(&roadmap_data_adder.key())
                 {
                     metadata_account.root_objective_ids.push(objective.key());
-                    metadata_account.number_of_objectives = metadata_account.number_of_objectives.saturating_add(1);
                 }
             }
             None => {
                 metadata_account.root_objective_ids.push(objective.key());
-                metadata_account.number_of_objectives = metadata_account.number_of_objectives.saturating_add(1);
             }
         }
     }
@@ -95,7 +94,9 @@ pub fn handler(
         roadmap_creation_unix: roadmap_creation_unix as u64,
         roadmap_creator: roadmap_data_adder.key(),
         root_objective_ids: metadata_account.root_objective_ids.clone(),
-        roadmap_outlook: roadmap_outlook
+        roadmap_outlook: roadmap_outlook,
+        roadmap_image_url: roadmap_image_url,
+        roadmap: metadata_account.key()
     });
 
     Ok(())

@@ -123,7 +123,8 @@ pub fn handler(
         objective_public_key: metadata_account.key(),
         objective_issue: objective_issue.key(),
         objective_addr: objective_data_addr.key(),
-        child_objectives: metadata_account.children_objective_keys.clone()
+        child_objectives: metadata_account.children_objective_keys.clone(),
+        objective: metadata_account.key()
     });
 
     Ok(())
