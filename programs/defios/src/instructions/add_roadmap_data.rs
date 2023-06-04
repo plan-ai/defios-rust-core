@@ -65,7 +65,6 @@ pub fn handler(
     metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
     metadata_account.roadmap_title = roadmap_title.clone();
     metadata_account.roadmap_description_link = roadmap_description_link.clone();
-    metadata_account.number_of_objectives = 0 as u64;
     metadata_account.roadmap_creation_unix = roadmap_creation_unix;
     metadata_account.roadmap_creator = roadmap_data_adder.key();
     metadata_account.root_objective_ids = vec![];
@@ -82,14 +81,10 @@ pub fn handler(
                     && objective.objective_creator_id.eq(&roadmap_data_adder.key())
                 {
                     metadata_account.root_objective_ids.push(objective.key());
-                    metadata_account.number_of_objectives =
-                        metadata_account.number_of_objectives.saturating_add(1);
                 }
             }
             None => {
                 metadata_account.root_objective_ids.push(objective.key());
-                metadata_account.number_of_objectives =
-                    metadata_account.number_of_objectives.saturating_add(1);
             }
         }
     }

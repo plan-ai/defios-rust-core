@@ -275,7 +275,6 @@ pub struct RoadMapMetaDataStore {
     pub roadmap_creation_unix: i64,
     pub roadmap_creator_id: Pubkey,
     pub roadmap_description_link: String,
-    pub number_of_objectives: u64,
     pub root_objective_ids: Vec<Pubkey>,
     pub roadmap_creator: Pubkey,
     pub roadmap_outlook: RoadmapOutlook,
@@ -289,7 +288,6 @@ impl RoadMapMetaDataStore {
         50 + // roadmap_title
         16 + // roadmap_creation_unix
         32 + //roadmap_creator_id
-        8 + // number_of_objectives
         640 + // root_objective_ids
         64 + // roadmap_description_link    
         32 +//roadmap_creator
