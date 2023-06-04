@@ -1,5 +1,5 @@
 use crate::error::DefiOSError;
-use crate::state::{Issue, NameRouter, PullRequest, PullRequestAccepted, Repository, VerifiedUser};
+use crate::state::{Issue, PullRequest, PullRequestAccepted, Repository};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -7,19 +7,10 @@ use anchor_lang::prelude::*;
 pub struct AcceptPullRequest<'info> {
     #[account(
         mut,
-        address = repository_verified_user.user_pubkey @ DefiOSError::UnauthorizedUser,
+        address = repository_account.repository_creator.key() @ DefiOSError::UnauthorizedUser,
     )]
     pub repository_creator: Signer<'info>,
-    #[account(
-        seeds = [
-            repository_verified_user.user_name.as_bytes(),
-            repository_creator.key().as_ref(),
-            name_router_account.key().as_ref()
-        ],
-        bump = repository_verified_user.bump
-    )]
-    pub repository_verified_user: Account<'info, VerifiedUser>,
-    #[account(mut)]
+    #[account(mut, address = pull_request_metadata_account.sent_by)]
     pub pull_request_addr: SystemAccount<'info>,
     #[account(
         seeds = [
@@ -42,29 +33,6 @@ pub struct AcceptPullRequest<'info> {
         bump=pull_request_metadata_account.bump
     )]
     pub pull_request_metadata_account: Account<'info, PullRequest>,
-    #[account(
-        seeds = [
-            pull_request_verified_user.user_name.as_bytes(),
-            pull_request_addr.key().as_ref(),
-            name_router_account.key().as_ref()
-        ],
-        bump = pull_request_verified_user.bump
-    )]
-    pub pull_request_verified_user: Account<'info, VerifiedUser>,
-    #[account(
-        address = pull_request_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 

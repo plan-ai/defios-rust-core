@@ -576,12 +576,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -737,12 +734,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -893,12 +887,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -1810,12 +1801,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -2015,12 +2003,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -2477,15 +2462,11 @@ describe("defios", () => {
     await program.methods
       .acceptPr(repositoryName)
       .accounts({
-        nameRouterAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
         pullRequestAddr: roadmapDataAdder.publicKey,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestMetadataAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryAccount,
         issue: issueAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -2545,12 +2526,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -2773,12 +2751,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -2836,15 +2811,11 @@ describe("defios", () => {
     await program.methods
       .acceptPr(repositoryName)
       .accounts({
-        nameRouterAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
         pullRequestAddr: roadmapDataAdder.publicKey,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestMetadataAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
         repositoryAccount,
         issue: issueAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -3119,12 +3090,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -3404,12 +3372,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -3467,15 +3432,11 @@ describe("defios", () => {
     await program.methods
       .acceptPr(repositoryName)
       .accounts({
-        nameRouterAccount,
-        repositoryVerifiedUser: verifiedUserAccount2,
         pullRequestAddr: repositoryCreator2.publicKey,
-        pullRequestVerifiedUser: verifiedUserAccount2,
         pullRequestMetadataAccount,
         repositoryCreator: repositoryCreator2.publicKey,
         repositoryAccount: repositoryAccount2,
         issue: issueAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
@@ -3662,12 +3623,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         tokenMint: mintKeypair,
@@ -3679,12 +3637,9 @@ describe("defios", () => {
     await program.methods
       .unlockTokens(repositoryName)
       .accounts({
-        nameRouterAccount,
         repositoryAccount: repositoryAccount2,
         repositoryCreatorTokenAccount: repositoryCreatorTokenAccount2,
         repositoryCreator: repositoryCreator2.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount2,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount2,
         tokenMint: mintKeypair2,

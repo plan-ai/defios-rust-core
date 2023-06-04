@@ -1,6 +1,6 @@
 use crate::{
     error::DefiOSError,
-    state::{Issue, NameRouter, PullRequest, Repository, VerifiedUser},
+    state::{Issue, PullRequest, Repository},
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -22,7 +22,7 @@ pub struct ClaimReward<'info> {
     pub pull_request: Account<'info, PullRequest>,
     #[account(
         mut,
-        constraint = pull_request_creator.key().eq(&pull_request_verified_user.user_pubkey) @ DefiOSError::UnauthorizedUser,
+        constraint = pull_request_creator.key().eq(&pull_request.sent_by) @ DefiOSError::UnauthorizedUser,
     )]
     pub pull_request_creator: Signer<'info>,
 
@@ -31,32 +31,6 @@ pub struct ClaimReward<'info> {
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
     #[account(mut)]
     pub rewards_mint: Box<Account<'info, Mint>>,
-
-    #[account(
-        mut,
-        address = name_router_account.router_creator @ DefiOSError::UnauthorizedUser,
-    )]
-    pub router_creator: SystemAccount<'info>,
-
-    #[account(
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Box<Account<'info, NameRouter>>,
-
-    #[account(
-        seeds = [
-            pull_request_verified_user.user_name.as_bytes(),
-            pull_request_creator.key().as_ref(),
-            name_router_account.key().as_ref(),
-        ],
-        bump = pull_request_verified_user.bump,
-    )]
-    pub pull_request_verified_user: Box<Account<'info, VerifiedUser>>,
 
     #[account(
         address = repository_account.repository_creator

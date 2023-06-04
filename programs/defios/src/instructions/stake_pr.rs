@@ -8,12 +8,12 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{Issue, NameRouter, PRStaker, PullRequest, PullRequestStaked, VerifiedUser};
+use crate::state::{Issue, PRStaker, PullRequest, PullRequestStaked};
 #[derive(Accounts)]
 #[instruction(transfer_amount:u64)]
 pub struct StakePR<'info> {
     ///CHECK: Check done using other constraints
-    #[account(mut)]
+    #[account(mut, address = pull_request_metadata_account.sent_by)]
     pub pull_request_addr: AccountInfo<'info>,
     #[account(mut)]
     pub issue: Account<'info, Issue>,
@@ -26,15 +26,6 @@ pub struct StakePR<'info> {
         bump
     )]
     pub pull_request_metadata_account: Account<'info, PullRequest>,
-    #[account(
-        seeds = [
-            pull_request_verified_user.user_name.as_bytes(),
-            pull_request_addr.key().as_ref(),
-            name_router_account.key().as_ref()
-        ],
-        bump = pull_request_verified_user.bump
-    )]
-    pub pull_request_verified_user: Box<Account<'info, VerifiedUser>>,
     ///CHECK: Handling of account is done in function
     #[account(mut)]
     pub pull_request_token_account: UncheckedAccount<'info>,
@@ -46,20 +37,6 @@ pub struct StakePR<'info> {
         constraint = pull_request_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds
     )]
     pub pull_request_staker_token_account: Box<Account<'info, TokenAccount>>,
-    #[account(
-        address = pull_request_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Box<Account<'info, NameRouter>>,
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
     #[account(
         init_if_needed,
         payer = pull_request_staker,
