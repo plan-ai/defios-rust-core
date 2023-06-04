@@ -6,7 +6,7 @@ use anchor_spl::{
 
 use crate::{
     error::DefiOSError,
-    state::{NameRouter, Repository, VerifiedUser, VestingSchedule},
+    state::{Repository, VestingSchedule},
 };
 
 #[derive(Accounts)]
@@ -14,35 +14,9 @@ use crate::{
 pub struct UnlockTokens<'info> {
     #[account(
         mut,
-        address = repository_verified_user.user_pubkey @ DefiOSError::UnauthorizedUser,
+        address = repository_account.repository_creator.key() @ DefiOSError::UnauthorizedUser,
     )]
     pub repository_creator: Signer<'info>,
-
-    #[account(
-        seeds = [
-            repository_verified_user.user_name.as_bytes(),
-            repository_creator.key().as_ref(),
-            name_router_account.key().as_ref()
-        ],
-        bump = repository_verified_user.bump
-    )]
-    pub repository_verified_user: Box<Account<'info, VerifiedUser>>,
-
-    #[account(
-        address = repository_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Box<Account<'info, NameRouter>>,
-
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
 
     #[account(
         mut,

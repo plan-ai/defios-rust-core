@@ -51,6 +51,12 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
             for account in ctx.remaining_accounts.to_vec().iter() {
                 objective = Account::try_from(account)?;
 
+                if objective.objective_repository.key()
+                    != roadmap_metadata_account.roadmap_repository.key()
+                {
+                    continue;
+                };
+
                 match objective.objective_end_unix {
                     Some(child_objective_end_unix) => {
                         if child_objective_end_unix > roadmap_metadata_account.roadmap_creation_unix
@@ -81,6 +87,12 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
             Some(parent_objective_account) => {
                 for account in ctx.remaining_accounts.to_vec().iter() {
                     objective = Account::try_from(account)?;
+
+                    if objective.objective_repository.key()
+                        != parent_objective_account.objective_repository.key()
+                    {
+                        continue;
+                    };
 
                     match objective.objective_end_unix {
                         Some(child_objective_end_unix) => {
