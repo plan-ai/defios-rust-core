@@ -34,7 +34,7 @@ pub struct StakeIssue<'info> {
         ],
         bump = repository_account.bump
     )]
-    pub repository_account: Box<Account<'info, Repository>>,
+    pub repository_account: Account<'info, Repository>,
 
     #[account(
         seeds = [
@@ -45,7 +45,7 @@ pub struct StakeIssue<'info> {
         ],
         bump = issue_account.bump
     )]
-    pub issue_account: Box<Account<'info, Issue>>,
+    pub issue_account: Account<'info, Issue>,
     ///CHECK: Handling of account is done in function
     #[account(mut)]
     pub issue_token_pool_account: UncheckedAccount<'info>,

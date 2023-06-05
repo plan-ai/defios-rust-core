@@ -10,7 +10,6 @@ use crate::{
 };
 
 #[derive(Accounts)]
-#[instruction(repo_name:String)]
 pub struct UnlockTokens<'info> {
     #[account(
         mut,
