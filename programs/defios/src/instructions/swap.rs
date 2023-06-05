@@ -22,7 +22,7 @@ pub struct SwapToken<'info> {
         ],
     bump
     )]
-    pub communal_deposit1: Box<Account<'info, CommunalAccount>>,
+    pub communal_deposit1: Account<'info, CommunalAccount>,
     #[account(mut,constraint = communal_token_account.mint==rewards_mint1.key())]
     pub communal_token_account: Box<Account<'info, TokenAccount>>,
     #[account(mut,constraint = buyer_token_account1.amount >= token_amount_1,constraint = buyer_token_account1.mint==rewards_mint1.key())]
