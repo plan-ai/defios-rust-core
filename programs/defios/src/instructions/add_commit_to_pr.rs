@@ -1,5 +1,5 @@
 use crate::error::DefiOSError;
-use crate::state::{AddCommitToPR, Commit, NameRouter, PullRequest, VerifiedUser};
+use crate::state::{AddCommitToPR, Commit, PullRequest};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
