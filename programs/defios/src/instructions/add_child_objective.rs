@@ -1,7 +1,5 @@
 use crate::error::DefiOSError;
-use crate::state::{
-    AddChildObjectiveEvent, NameRouter, Objective, RoadMapMetaDataStore, VerifiedUser,
-};
+use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -12,30 +10,6 @@ pub struct AddChildObjective<'info> {
     pub roadmap_metadata_account: Option<Account<'info, RoadMapMetaDataStore>>,
     #[account[mut]]
     pub parent_objective_account: Option<Account<'info, Objective>>,
-    #[account(
-        seeds = [
-            objective_verified_user.user_name.as_bytes(),
-            child_objective_adder.key().as_ref(),
-            name_router_account.key().as_ref()
-        ],
-        bump = objective_verified_user.bump
-    )]
-    pub objective_verified_user: Account<'info, VerifiedUser>,
-
-    #[account(
-        address = objective_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 

@@ -18,7 +18,7 @@ pub struct UnstakeIssue<'info> {
         constraint = issue_staker_token_account.mint.eq(&issue_token_pool_account.mint),
         constraint = issue_staker_token_account.owner.eq(&issue_staker.key()),
     )]
-    pub issue_staker_token_account: Box<Account<'info, TokenAccount>>,
+    pub issue_staker_token_account: Account<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -41,13 +41,13 @@ pub struct UnstakeIssue<'info> {
         ],
         bump = issue_account.bump
     )]
-    pub issue_account: Box<Account<'info, Issue>>,
+    pub issue_account: Account<'info, Issue>,
 
     #[account(
         mut,
         constraint = issue_token_pool_account.amount >= issue_staker_account.staked_amount @ DefiOSError::InsufficientStakingFunds
     )]
-    pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,
+    pub issue_token_pool_account: Account<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -59,12 +59,12 @@ pub struct UnstakeIssue<'info> {
         ],
         bump = issue_staker_account.bump
     )]
-    pub issue_staker_account: Box<Account<'info, IssueStaker>>,
+    pub issue_staker_account: Account<'info, IssueStaker>,
 
     #[account(
         constraint = rewards_mint.key().eq(&issue_token_pool_account.mint)
     )]
-    pub rewards_mint: Box<Account<'info, Mint>>,
+    pub rewards_mint: Account<'info, Mint>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,

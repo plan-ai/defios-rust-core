@@ -6,22 +6,11 @@ import * as ed from "@noble/ed25519";
 import { PublicKey } from "@saberhq/solana-contrib";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
-  createAssociatedTokenAccount,
-  createAssociatedTokenAccountInstruction,
-  createInitializeMintInstruction,
-  createMintToCheckedInstruction,
   getAssociatedTokenAddress,
-  MintLayout,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
 import sha256 from "sha256";
-import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
-import { min } from "bn.js";
-import {
-  Metadata,
-  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
-} from "@metaplex-foundation/mpl-token-metadata";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -42,15 +31,9 @@ describe("defios", () => {
   const userPubkey = new PublicKey(
     "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
   );
-  const repositoryName = "defios";
-  const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-    units: 1000000,
-  });
-
-  const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-    microLamports: 1,
-  });
+  const repositoryId = "12";
   const roadmapTitle = "Test Roadmap";
+  const roadmapImageUrl = "https://github.com/defi-os/Issues";
   const roadmapDescription = "https://github.com/defi-os/Issues";
   const roadmapOutlook = { next2: {} };
   const objectiveDeliverable = { tooling: {} };
@@ -191,7 +174,7 @@ describe("defios", () => {
     // Creating repository
     const [repositoryAccount] = await get_pda_from_seeds([
       Buffer.from("repository"),
-      Buffer.from(repositoryName),
+      Buffer.from(repositoryId),
       repositoryCreator.publicKey.toBuffer(),
     ]);
 
@@ -292,7 +275,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -339,7 +322,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         null,
@@ -388,7 +371,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -427,7 +410,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -466,7 +449,6 @@ describe("defios", () => {
       await create_name_router();
     const repositoryCreator = await create_keypair();
     const issueCreatorKeypair = await create_keypair();
-    const issueStakerKeypair = await create_keypair();
     const [repositoryVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
@@ -487,7 +469,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -517,13 +499,6 @@ describe("defios", () => {
     );
 
     // Adding issue creator user
-    const issueCreatorUserName: string = "abhibasu";
-    const issueCreatorMessage = Uint8Array.from(
-      Buffer.from(
-        `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
-      )
-    );
-
     const [issueVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
@@ -531,7 +506,7 @@ describe("defios", () => {
     );
 
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -574,7 +549,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -610,7 +585,6 @@ describe("defios", () => {
       await create_name_router();
     const repositoryCreator = await create_keypair();
     const issueCreatorKeypair = await create_keypair();
-    const issueStakerKeypair = await create_keypair();
 
     // Adding repository creator user
     const [repositoryVerifiedUser] = await create_verified_user(
@@ -633,7 +607,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -662,26 +636,6 @@ describe("defios", () => {
       repositoryAccount
     );
 
-    // Adding issue creator user
-    const issueCreatorUserName: string = "abhibasu";
-    const issueCreatorMessage = Uint8Array.from(
-      Buffer.from(
-        `DefiOS(${issueCreatorUserName}, ${issueCreatorKeypair.publicKey.toString()})`
-      )
-    );
-
-    const issueCreatorSignature = await ed.sign(
-      issueCreatorMessage,
-      routerCreatorKeypair.secretKey.slice(0, 32)
-    );
-
-    const createED25519IxIssueCreator =
-      web3.Ed25519Program.createInstructionWithPublicKey({
-        message: issueCreatorMessage,
-        publicKey: routerCreatorKeypair.publicKey.toBytes(),
-        signature: issueCreatorSignature,
-      });
-
     const [issueVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
@@ -689,7 +643,7 @@ describe("defios", () => {
     );
 
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -732,7 +686,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -782,7 +736,6 @@ describe("defios", () => {
   it("Adds a commit to an issue", async () => {
     const repositoryCreator = await create_keypair();
     const issueCreatorKeypair = await create_keypair();
-    const issueStakerKeypair = await create_keypair();
     const commitCreatorKeypair = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
       await create_name_router();
@@ -805,7 +758,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -842,7 +795,7 @@ describe("defios", () => {
     );
 
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -877,43 +830,6 @@ describe("defios", () => {
 
     await program.account.issue.fetch(issueAccount);
 
-    // Staking tokens on a issue
-    const [issueStakerAccount] = await get_pda_from_seeds([
-      Buffer.from("issuestaker"),
-      issueAccount.toBuffer(),
-      repositoryCreator.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .unlockTokens(repositoryName)
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount,
-        issueTokenPoolAccount,
-        issueStaker: repositoryCreator.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .signers([repositoryCreator])
-      .rpc();
     // Adding commit creator user
     const [commitVerifiedUser] = await create_verified_user(
       routerCreatorKeypair,
@@ -962,22 +878,63 @@ describe("defios", () => {
       nameRouterAccount,
       roadmapDataAdder.publicKey
     );
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      defaultVestingSchedule,
+    ] = await create_spl_token(roadmapDataAdder);
 
-    //adds logs to keypair
-
+    const metadataAddress = await get_metadata_account(mintKeypair);
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
       verifiedUserAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
+
     await program.methods
-      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .createRepository(
+        repositoryId,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+      })
+      .signers([roadmapDataAdder])
+      .rpc();
+
+    await program.methods
+      .addRoadmapData(
+        roadmapTitle,
+        roadmapDescription,
+        roadmapImageUrl,
+        roadmapOutlook
+      )
       .accounts({
         nameRouterAccount,
         metadataAccount,
         roadmapDataAdder: roadmapDataAdder.publicKey,
         roadmapVerifiedUser: verifiedUserAccount,
         routerCreator: routerCreatorKeypair.publicKey,
+        repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -1008,7 +965,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1047,7 +1004,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -1086,13 +1043,19 @@ describe("defios", () => {
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
-      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .addRoadmapData(
+        roadmapTitle,
+        roadmapDescription,
+        roadmapImageUrl,
+        roadmapOutlook
+      )
       .accounts({
         nameRouterAccount,
         metadataAccount,
         roadmapDataAdder: roadmapDataAdder.publicKey,
         roadmapVerifiedUser: verifiedUserAccount,
         routerCreator: routerCreatorKeypair.publicKey,
+        repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -1120,6 +1083,7 @@ describe("defios", () => {
         metadataAccount: objectiveAccount,
         objectiveDataAddr: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
+        repositoryAccount: repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
@@ -1151,7 +1115,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1190,7 +1154,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -1229,12 +1193,18 @@ describe("defios", () => {
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
-      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .addRoadmapData(
+        roadmapTitle,
+        roadmapDescription,
+        roadmapImageUrl,
+        roadmapOutlook
+      )
       .accounts({
         nameRouterAccount,
         metadataAccount,
         roadmapDataAdder: roadmapDataAdder.publicKey,
         roadmapVerifiedUser: verifiedUserAccount,
+        repositoryAccount: repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
@@ -1263,6 +1233,7 @@ describe("defios", () => {
         objectiveDataAddr: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         routerCreator: routerCreatorKeypair.publicKey,
+        repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -1271,12 +1242,10 @@ describe("defios", () => {
     await program.methods
       .addChildObjective()
       .accounts({
-        nameRouterAccount,
         roadmapMetadataAccount: metadataAccount,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         parentObjectiveAccount: null,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .remainingAccounts([
@@ -1310,7 +1279,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1349,7 +1318,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -1388,13 +1357,19 @@ describe("defios", () => {
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
-      .addRoadmapData(roadmapTitle, roadmapDescription, roadmapOutlook)
+      .addRoadmapData(
+        roadmapTitle,
+        roadmapDescription,
+        roadmapImageUrl,
+        roadmapOutlook
+      )
       .accounts({
         nameRouterAccount,
         metadataAccount,
         roadmapDataAdder: roadmapDataAdder.publicKey,
         roadmapVerifiedUser: verifiedUserAccount,
         routerCreator: routerCreatorKeypair.publicKey,
+        repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -1422,6 +1397,7 @@ describe("defios", () => {
         objectiveDataAddr: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         routerCreator: routerCreatorKeypair.publicKey,
+        repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -1448,6 +1424,7 @@ describe("defios", () => {
         metadataAccount: objectiveAccount2,
         objectiveDataAddr: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
+        repositoryAccount: repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
@@ -1457,12 +1434,10 @@ describe("defios", () => {
     await program.methods
       .addChildObjective()
       .accounts({
-        nameRouterAccount,
         roadmapMetadataAccount: null,
         childObjectiveAdder: roadmapDataAdder.publicKey,
         objectiveVerifiedUser: verifiedUserAccount,
         parentObjectiveAccount: objectiveAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .remainingAccounts([
@@ -1496,7 +1471,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1535,7 +1510,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -1657,7 +1632,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1696,7 +1671,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -1799,7 +1774,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -1817,13 +1792,8 @@ describe("defios", () => {
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestTokenAccount,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         rewardsMint: mintKeypair,
@@ -1859,7 +1829,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -1898,7 +1868,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -2001,7 +1971,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -2019,13 +1989,8 @@ describe("defios", () => {
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestTokenAccount,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         rewardsMint: mintKeypair,
@@ -2042,13 +2007,8 @@ describe("defios", () => {
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestTokenAccount,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         rewardsMint: mintKeypair,
@@ -2085,7 +2045,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -2124,7 +2084,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -2254,11 +2214,8 @@ describe("defios", () => {
     await program.methods
       .addCommitToPr()
       .accounts({
-        commitVerifiedUser: verifiedUserAccount,
         commitAddr: roadmapDataAdder.publicKey,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .remainingAccounts([
@@ -2292,7 +2249,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -2331,7 +2288,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -2460,7 +2417,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .acceptPr(repositoryName)
+      .acceptPr(repositoryId)
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         pullRequestMetadataAccount,
@@ -2497,7 +2454,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -2524,7 +2481,7 @@ describe("defios", () => {
       .rpc();
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -2563,7 +2520,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -2602,7 +2559,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -2735,13 +2692,6 @@ describe("defios", () => {
       roadmapDataAdder.publicKey
     );
 
-    // Staking tokens on a issue
-    const issueStakerKeypair = await create_keypair();
-    const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueStakerKeypair.publicKey
-    );
-
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
@@ -2749,7 +2699,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -2790,13 +2740,8 @@ describe("defios", () => {
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         issue: issueAccount,
-        commit: commitAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequestTokenAccount,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         rewardsMint: mintKeypair,
@@ -2809,7 +2754,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .acceptPr(repositoryName)
+      .acceptPr(repositoryId)
       .accounts({
         pullRequestAddr: roadmapDataAdder.publicKey,
         pullRequestMetadataAccount,
@@ -2824,10 +2769,7 @@ describe("defios", () => {
     await program.methods
       .claimReward()
       .accounts({
-        nameRouterAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
         pullRequestCreator: roadmapDataAdder.publicKey,
-        pullRequestVerifiedUser: verifiedUserAccount,
         pullRequest: pullRequestMetadataAccount,
         pullRequestCreatorRewardAccount,
         repositoryCreator: roadmapDataAdder.publicKey,
@@ -2836,7 +2778,6 @@ describe("defios", () => {
         issueAccount: issueAccount,
         issueTokenPoolAccount,
         issueCreator: issueCreatorKeypair.publicKey,
-        routerCreator: routerCreatorKeypair.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
         pullRequestTokenAccount: pullRequestTokenAccount,
@@ -2868,7 +2809,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -2943,7 +2884,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3035,7 +2976,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3088,7 +3029,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: true });
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -3148,7 +3089,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3184,7 +3125,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         null,
@@ -3223,7 +3164,7 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryName}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
@@ -3370,7 +3311,7 @@ describe("defios", () => {
     ]);
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -3430,7 +3371,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .acceptPr(repositoryName)
+      .acceptPr(repositoryId)
       .accounts({
         pullRequestAddr: repositoryCreator2.publicKey,
         pullRequestMetadataAccount,
@@ -3488,7 +3429,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3558,7 +3499,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3595,7 +3536,7 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryName,
+        repositoryId,
         "Open source revolution",
         "https://github.com/sunguru98/defios",
         tokenName,
@@ -3621,7 +3562,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount,
         repositoryCreatorTokenAccount,
@@ -3635,7 +3576,7 @@ describe("defios", () => {
       .rpc({ skipPreflight: false });
 
     await program.methods
-      .unlockTokens(repositoryName)
+      .unlockTokens()
       .accounts({
         repositoryAccount: repositoryAccount2,
         repositoryCreatorTokenAccount: repositoryCreatorTokenAccount2,

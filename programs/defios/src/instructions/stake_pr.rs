@@ -36,7 +36,7 @@ pub struct StakePR<'info> {
         constraint = pull_request_staker_token_account.owner.eq(&pull_request_staker.key()),
         constraint = pull_request_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds
     )]
-    pub pull_request_staker_token_account: Box<Account<'info, TokenAccount>>,
+    pub pull_request_staker_token_account: Account<'info, TokenAccount>,
     #[account(
         init_if_needed,
         payer = pull_request_staker,
@@ -44,7 +44,7 @@ pub struct StakePR<'info> {
         seeds = [b"pullrestaker", pull_request_metadata_account.key().as_ref(), pull_request_staker.key().as_ref()],
         bump
     )]
-    pub pull_request_staker_account: Box<Account<'info, PRStaker>>,
+    pub pull_request_staker_account: Account<'info, PRStaker>,
     #[account(mut)]
     pub rewards_mint: Account<'info, Mint>,
     pub system_program: Program<'info, System>,

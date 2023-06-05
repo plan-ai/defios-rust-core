@@ -30,8 +30,7 @@ pub struct ClaimReward<'info> {
     #[account(mut)]
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
     #[account(mut)]
-    pub rewards_mint: Box<Account<'info, Mint>>,
-
+    pub rewards_mint: Account<'info, Mint>,
     #[account(
         address = repository_account.repository_creator
     )]
@@ -50,7 +49,7 @@ pub struct ClaimReward<'info> {
         ],
         bump = repository_account.bump
     )]
-    pub repository_account: Box<Account<'info, Repository>>,
+    pub repository_account: Account<'info, Repository>,
 
     #[account(
         mut,
