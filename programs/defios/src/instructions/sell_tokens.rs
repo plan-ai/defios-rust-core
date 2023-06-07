@@ -10,7 +10,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-#[instruction(lamports_amount:u64,number_of_tokens:u64)]
+#[instruction(usdc_amount:u64,number_of_tokens:u64)]
 pub struct SellToken<'info> {
     #[account(mut)]
     pub seller: Signer<'info>,
@@ -48,7 +48,7 @@ pub struct SellToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: u64) -> Result<()> {
+pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64) -> Result<()> {
     let rewards_mint = &ctx.accounts.rewards_mint;
     let token_program = &ctx.accounts.token_program;
     let communal_deposit = &mut ctx.accounts.communal_deposit;
@@ -68,7 +68,7 @@ pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: 
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_sell(modified_token_supply, lamports_amount, modified_tokens),
+        verify_calc_sell(modified_token_supply, usdc_amount, modified_tokens),
         DefiOSError::IncorrectMaths
     );
     //transfers spl token to communal token account
@@ -110,8 +110,8 @@ pub fn handler(ctx: Context<SellToken>, lamports_amount: u64, number_of_tokens: 
 
     //execute function to send native sol amount to seller
     let communal_info = &communal_deposit.to_account_info();
-    **communal_info.try_borrow_mut_lamports()? -= lamports_amount;
-    **seller.try_borrow_mut_lamports()? += lamports_amount;
+    **communal_info.try_borrow_mut_lamports()? -= usdc_amount;
+    **seller.try_borrow_mut_lamports()? += usdc_amount;
 
     Ok(())
 }

@@ -4,8 +4,8 @@ use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    mint::USDC,
     token::{Mint, Token},
-    mint::USDC
 };
 
 #[derive(Accounts)]
@@ -33,7 +33,7 @@ pub struct RegisterCommunalAccount<'info> {
     pub communal_usdc_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
     #[account(address=USDC)]
-    pub usdc_mint: Account<'info,Mint>,
+    pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -72,7 +72,7 @@ pub fn handler(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
         DefiOSError::TokenAccountMismatch
     );
 
-    //creates communal token account for new spl token
+    //creates communal token account for usdc
     if communal_usdc_account.data_is_empty() {
         create(CpiContext::new(
             associated_token_program.to_account_info(),

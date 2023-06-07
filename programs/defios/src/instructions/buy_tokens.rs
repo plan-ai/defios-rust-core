@@ -5,14 +5,15 @@ use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    mint::USDC,
     token,
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
 #[derive(Accounts)]
-#[instruction(lamports_amount:u64)]
+#[instruction(usdc_amount:u64)]
 pub struct BuyToken<'info> {
-    #[account(mut,constraint = buyer.to_account_info().lamports() >= lamports_amount @DefiOSError::InsufficientFunds)]
+    #[account(mut,constraint = buyer.to_account_info().lamports() >= usdc_amount @DefiOSError::InsufficientFunds)]
     pub buyer: Signer<'info>,
     #[account(mut,
         seeds = [
@@ -24,11 +25,27 @@ pub struct BuyToken<'info> {
     bump
     )]
     pub communal_deposit: Account<'info, CommunalAccount>,
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint=communal_token_account.mint==rewards_mint.key(),
+        constraint = communal_token_account.owner == communal_deposit.key()
+    )]
     pub communal_token_account: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint=communal_usdc_account.mint==usdc_mint.key(),
+        constraint = communal_usdc_account.owner == communal_deposit.key()
+    )]
+    pub communal_usdc_account: Account<'info, TokenAccount>,
     ///CHECK: Check for this account done in function call
     #[account(mut)]
     pub buyer_token_account: AccountInfo<'info>,
+    #[account(
+        mut,
+        constraint=buyer_usdc_account.mint==usdc_mint.key(),
+        constraint = buyer_usdc_account.owner == buyer.key()
+    )]
+    pub buyer_usdc_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub repository_account: Account<'info, Repository>,
     pub token_program: Program<'info, Token>,
@@ -37,6 +54,8 @@ pub struct BuyToken<'info> {
     repository_account.key().as_ref()],
     bump)]
     pub rewards_mint: Account<'info, Mint>,
+    #[account(address=USDC)]
+    pub usdc_mint: Account<'info, Mint>,
     #[account(seeds = [
         b"isGodReal?",
         b"DoULoveMe?",
@@ -49,7 +68,7 @@ pub struct BuyToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u64) -> Result<()> {
+pub fn handler(ctx: Context<BuyToken>, usdc_amount: u64, number_of_tokens: u64) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let buyer = &mut ctx.accounts.buyer;
     let communal_deposit = &mut ctx.accounts.communal_deposit;
@@ -60,6 +79,8 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
     let associated_token_program = &ctx.accounts.associated_token_program;
     let repository_account = &ctx.accounts.repository_account;
     let default_schedule = &ctx.accounts.default_schedule;
+    let buyer_usdc_account = &mut ctx.accounts.buyer_usdc_account;
+    let communal_usdc_account = &mut ctx.accounts.communal_usdc_account;
 
     let total = (default_schedule.number_of_schedules as u64) * default_schedule.per_vesting_amount;
     let token_supply = rewards_mint.supply;
@@ -71,21 +92,10 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
         DefiOSError::MathOverflow
     );
     require!(
-        verify_calc_buy(modified_token_supply, lamports_amount, modified_tokens),
+        verify_calc_buy(modified_token_supply, usdc_amount, modified_tokens),
         DefiOSError::IncorrectMaths
     );
     let rewards_key = rewards_mint.key();
-    //execute function to send native sol amount to communal deposits
-    let ix = anchor_lang::solana_program::system_instruction::transfer(
-        &buyer.key(),
-        &communal_deposit.key(),
-        lamports_amount,
-    );
-    anchor_lang::solana_program::program::invoke(
-        &ix,
-        &[buyer.to_account_info(), communal_deposit.to_account_info()],
-    )?;
-
     //checks if buyer has token account else creates it
     if buyer_token_account.data_is_empty() {
         create(CpiContext::new(
@@ -100,13 +110,24 @@ pub fn handler(ctx: Context<BuyToken>, lamports_amount: u64, number_of_tokens: u
             },
         ))?;
     }
-
     let expected_buyer_token_account =
         get_associated_token_address(&buyer.key(), &rewards_mint.key());
     require!(
         expected_buyer_token_account.eq(&buyer_token_account.key()),
         DefiOSError::TokenAccountMismatch
     );
+    //execute function to send usdc to communal deposits
+    transfer(
+        CpiContext::new(
+            token_program.to_account_info(),
+            Transfer {
+                from: buyer_usdc_account.to_account_info(),
+                to: communal_usdc_account.to_account_info(),
+                authority: buyer.to_account_info(),
+            },
+        ),
+        usdc_amount,
+    )?;
 
     //mints required number of tokens
     let bump = *ctx.bumps.get("rewards_mint").unwrap();
