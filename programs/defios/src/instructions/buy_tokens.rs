@@ -47,23 +47,29 @@ pub struct BuyToken<'info> {
     )]
     pub buyer_usdc_account: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub repository_account: Account<'info, Repository>,
+    pub repository_account: Box<Account<'info, Repository>>,
     pub token_program: Program<'info, Token>,
-    #[account(mut,seeds = [b"Miners",
-    b"MinerC",
-    repository_account.key().as_ref()],
-    bump)]
+    #[account(
+        mut,
+        seeds = [
+            b"Miners",
+            b"MinerC",
+            repository_account.key().as_ref()
+        ],
+        bump
+    )]
     pub rewards_mint: Account<'info, Mint>,
     #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
-    #[account(seeds = [
-        b"isGodReal?",
-        b"DoULoveMe?",
-        b"SweetChick"
-    ],
-    bump=default_schedule.bump,
+    #[account(
+        seeds = [
+            b"isGodReal?",
+            b"DoULoveMe?",
+            b"SweetChick"
+        ],
+        bump=default_schedule.bump,
     )]
-    pub default_schedule: Account<'info, DefaultVestingSchedule>,
+    pub default_schedule: Box<Account<'info, DefaultVestingSchedule>>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }

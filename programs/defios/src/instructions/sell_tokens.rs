@@ -4,7 +4,8 @@ use crate::helper::verify_calc_sell;
 use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::AssociatedToken,
+    associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    mint::USDC,
     token,
     token::{transfer, Burn, Mint, Token, TokenAccount, Transfer},
 };
@@ -24,26 +25,52 @@ pub struct SellToken<'info> {
     bump
     )]
     pub communal_deposit: Account<'info, CommunalAccount>,
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = communal_token_account.mint==rewards_mint.key(),
+        constraint = communal_token_account.owner == communal_deposit.key()
+    )]
     pub communal_token_account: Account<'info, TokenAccount>,
-    #[account(mut, constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds)]
+    #[account(
+        mut,
+        constraint = communal_usdc_account.mint==usdc_mint.key(),
+        constraint = communal_usdc_account.owner == communal_deposit.key()
+    )]
+    pub communal_usdc_account: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint = seller_token_account.amount >= number_of_tokens@DefiOSError::InsufficientFunds,
+        constraint = seller_token_account.owner == seller.key(),
+        constraint = seller_token_account.mint == rewards_mint.key()
+    )]
     pub seller_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub repository_account: Account<'info, Repository>,
+    pub repository_account: Box<Account<'info, Repository>>,
+    ///CHECK: usdc account is setup in function
+    #[account(mut)]
+    pub seller_usdc_account: UncheckedAccount<'info>,
     pub token_program: Program<'info, Token>,
-    #[account(mut,seeds = [b"Miners",
-    b"MinerC",
-    repository_account.key().as_ref()],
-    bump)]
-    pub rewards_mint: Account<'info, Mint>,
-    #[account(seeds = [
-        b"isGodReal?",
-        b"DoULoveMe?",
-        b"SweetChick"
-    ],
-    bump=default_schedule.bump,
+    #[account(
+        mut,
+        seeds = [
+            b"Miners",
+            b"MinerC",
+            repository_account.key().as_ref()
+        ],
+        bump
     )]
-    pub default_schedule: Account<'info, DefaultVestingSchedule>,
+    pub rewards_mint: Account<'info, Mint>,
+    #[account(address=USDC)]
+    pub usdc_mint: Account<'info, Mint>,
+    #[account(
+        seeds = [
+            b"isGodReal?",
+            b"DoULoveMe?",
+            b"SweetChick"
+        ],
+        bump=default_schedule.bump,
+    )]
+    pub default_schedule: Box<Account<'info, DefaultVestingSchedule>>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
@@ -56,6 +83,11 @@ pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64)
     let seller = &mut ctx.accounts.seller;
     let seller_token_account = &mut ctx.accounts.seller_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
+    let seller_usdc_account = &mut ctx.accounts.seller_usdc_account;
+    let usdc_mint = &ctx.accounts.usdc_mint;
+    let communal_usdc_account = &mut ctx.accounts.communal_usdc_account;
+    let system_program = &ctx.accounts.system_program;
+    let associated_token_program = &ctx.accounts.associated_token_program;
 
     let total = (default_schedule.number_of_schedules as u64) * default_schedule.per_vesting_amount;
     let token_supply = rewards_mint.supply;
@@ -71,6 +103,27 @@ pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64)
         verify_calc_sell(modified_token_supply, usdc_amount, modified_tokens),
         DefiOSError::IncorrectMaths
     );
+    //checks is seller usdc account exists, else creates it
+    if seller_usdc_account.data_is_empty() {
+        create(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: seller.to_account_info(),
+                associated_token: seller_usdc_account.to_account_info(),
+                authority: seller.to_account_info(),
+                mint: usdc_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+    let expected_seller_usdc_account =
+        get_associated_token_address(&seller.key(), &usdc_mint.key());
+    require!(
+        expected_seller_usdc_account.eq(&seller_usdc_account.key()),
+        DefiOSError::TokenAccountMismatch
+    );
+
     //transfers spl token to communal token account
     transfer(
         CpiContext::new(
@@ -108,10 +161,28 @@ pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64)
     //Execute anchor's helper function to burn tokens
     token::burn(cpi_ctx, number_of_tokens)?;
 
-    //execute function to send native sol amount to seller
-    let communal_info = &communal_deposit.to_account_info();
-    **communal_info.try_borrow_mut_lamports()? -= usdc_amount;
-    **seller.try_borrow_mut_lamports()? += usdc_amount;
+    //execute function to send usdc to seller
+    let rewards_key = rewards_mint.key();
+    let communal_signer_seeds: &[&[&[u8]]] = &[&[
+        b"are_we_conscious",
+        b"is love life ?  ",
+        b"arewemadorinlove",
+        rewards_key.as_ref(),
+        &[communal_deposit.bump],
+    ]];
+
+    transfer(
+        CpiContext::new_with_signer(
+            token_program.to_account_info(),
+            Transfer {
+                from: communal_usdc_account.to_account_info(),
+                to: seller_usdc_account.to_account_info(),
+                authority: communal_deposit.to_account_info(),
+            },
+            communal_signer_seeds,
+        ),
+        usdc_amount,
+    )?;
 
     Ok(())
 }
