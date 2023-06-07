@@ -59,7 +59,7 @@ pub struct BuyToken<'info> {
         bump
     )]
     pub rewards_mint: Account<'info, Mint>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     #[account(
         seeds = [
