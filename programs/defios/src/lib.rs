@@ -146,18 +146,18 @@ pub mod defios {
 
     pub fn buy_tokens(
         ctx: Context<BuyToken>,
-        lamports_amount: u64,
+        usdc_amount: u64,
         number_of_tokens: u64,
     ) -> Result<()> {
-        buy_tokens::handler(ctx, lamports_amount, number_of_tokens)
+        buy_tokens::handler(ctx, usdc_amount, number_of_tokens)
     }
 
     pub fn sell_tokens(
         ctx: Context<SellToken>,
-        lamports_amount: u64,
+        usdc_amount: u64,
         number_of_tokens: u64,
     ) -> Result<()> {
-        sell_tokens::handler(ctx, lamports_amount, number_of_tokens)
+        sell_tokens::handler(ctx, usdc_amount, number_of_tokens)
     }
 
     pub fn set_default_schedule(

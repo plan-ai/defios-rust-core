@@ -4,6 +4,7 @@ use crate::state::CommunalAccount;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
+    mint::USDC,
     token::{Mint, Token},
 };
 
@@ -27,7 +28,12 @@ pub struct RegisterCommunalAccount<'info> {
     ///CHECK: This is handled in function body
     #[account(mut)]
     pub communal_token_account: UncheckedAccount<'info>,
+    ///CHECK: This is handled in function body
+    #[account(mut)]
+    pub communal_usdc_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
+    #[account(address=USDC)]
+    pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -41,7 +47,10 @@ pub fn handler(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let rewards_mint = &ctx.accounts.rewards_mint;
+    let communal_usdc_account = &ctx.accounts.communal_usdc_account;
+    let usdc_mint = &ctx.accounts.usdc_mint;
     communal_deposit.bump = *ctx.bumps.get("communal_deposit").unwrap();
+    //creates communal token account for new spl token
     if communal_token_account.data_is_empty() {
         create(CpiContext::new(
             associated_token_program.to_account_info(),
@@ -60,6 +69,28 @@ pub fn handler(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
         get_associated_token_address(&communal_deposit.key(), &rewards_mint.key());
     require!(
         expected_communal_token_account.eq(&communal_token_account.key()),
+        DefiOSError::TokenAccountMismatch
+    );
+
+    //creates communal token account for usdc
+    if communal_usdc_account.data_is_empty() {
+        create(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: authority.to_account_info(),
+                associated_token: communal_usdc_account.to_account_info(),
+                authority: communal_deposit.to_account_info(),
+                mint: usdc_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+
+    let expected_communal_usdc_account =
+        get_associated_token_address(&communal_deposit.key(), &usdc_mint.key());
+    require!(
+        expected_communal_usdc_account.eq(&communal_usdc_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
