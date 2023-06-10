@@ -8,6 +8,14 @@ pub fn calculate_buy_amount(token_supply: u64, token_amount: u64) -> u128 {
 }
 
 #[inline(always)]
+pub fn check_equal_buy(lamports: u128, ideal_lamports: u128) -> bool {
+    if lamports >= ideal_lamports && lamports - ideal_lamports <= 2 {
+        return true;
+    };
+    return false;
+}
+
+#[inline(always)]
 pub fn calculate_sell_amount(token_supply: u64, token_amount: u64) -> u128 {
     let new_token_amount = token_amount as u128;
     let new_token_supply = token_supply as u128;
@@ -23,10 +31,7 @@ pub fn calculate_sell_amount(token_supply: u64, token_amount: u64) -> u128 {
 //main check code functions
 pub fn verify_calc_buy(token_supply: u64, number_of_lamports: u64, token_amount: u64) -> bool {
     let value = calculate_buy_amount(token_supply, token_amount);
-    if (number_of_lamports as u128) == value {
-        return true;
-    };
-    return false;
+    check_equal_buy(number_of_lamports as u128, value)
 }
 
 pub fn verify_calc_sell(token_supply: u64, number_of_lamports: u64, token_amount: u64) -> bool {
