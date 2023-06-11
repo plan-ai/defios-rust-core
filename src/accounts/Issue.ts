@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link Issue}
@@ -15,18 +15,18 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type IssueArgs = {
-  bump: number
-  index: beet.bignum
-  issueCreator: web3.PublicKey
-  issueTokenPoolAccount: web3.PublicKey
-  repository: web3.PublicKey
-  commitIndex: beet.bignum
-  createdAt: beet.bignum
-  closedAt: beet.COption<beet.bignum>
-  uri: string
-}
+  bump: number;
+  index: beet.bignum;
+  issueCreator: web3.PublicKey;
+  issueTokenPoolAccount: web3.PublicKey;
+  repository: web3.PublicKey;
+  commitIndex: beet.bignum;
+  createdAt: beet.bignum;
+  closedAt: beet.COption<beet.bignum>;
+  uri: string;
+};
 
-export const issueDiscriminator = [171, 193, 204, 62, 63, 166, 106, 255]
+export const issueDiscriminator = [171, 193, 204, 62, 63, 166, 106, 255];
 /**
  * Holds the data for the {@link Issue} Account and provides de/serialization
  * functionality for that data
@@ -61,7 +61,7 @@ export class Issue implements IssueArgs {
       args.createdAt,
       args.closedAt,
       args.uri
-    )
+    );
   }
 
   /**
@@ -72,7 +72,7 @@ export class Issue implements IssueArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [Issue, number] {
-    return Issue.deserialize(accountInfo.data, offset)
+    return Issue.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -89,11 +89,11 @@ export class Issue implements IssueArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find Issue account at ${address}`)
+      throw new Error(`Unable to find Issue account at ${address}`);
     }
-    return Issue.fromAccountInfo(accountInfo, 0)[0]
+    return Issue.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -104,10 +104,10 @@ export class Issue implements IssueArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, issueBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, issueBeet);
   }
 
   /**
@@ -115,7 +115,7 @@ export class Issue implements IssueArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [Issue, number] {
-    return issueBeet.deserialize(buf, offset)
+    return issueBeet.deserialize(buf, offset);
   }
 
   /**
@@ -126,7 +126,7 @@ export class Issue implements IssueArgs {
     return issueBeet.serialize({
       accountDiscriminator: issueDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -137,11 +137,11 @@ export class Issue implements IssueArgs {
    * depends on them
    */
   static byteSize(args: IssueArgs) {
-    const instance = Issue.fromArgs(args)
+    const instance = Issue.fromArgs(args);
     return issueBeet.toFixedFromValue({
       accountDiscriminator: issueDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -160,7 +160,7 @@ export class Issue implements IssueArgs {
     return connection.getMinimumBalanceForRentExemption(
       Issue.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -171,44 +171,44 @@ export class Issue implements IssueArgs {
     return {
       bump: this.bump,
       index: (() => {
-        const x = <{ toNumber: () => number }>this.index
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.index;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       issueCreator: this.issueCreator.toBase58(),
       issueTokenPoolAccount: this.issueTokenPoolAccount.toBase58(),
       repository: this.repository.toBase58(),
       commitIndex: (() => {
-        const x = <{ toNumber: () => number }>this.commitIndex
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.commitIndex;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       createdAt: (() => {
-        const x = <{ toNumber: () => number }>this.createdAt
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.createdAt;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       closedAt: this.closedAt,
       uri: this.uri,
-    }
+    };
   }
 }
 
@@ -219,21 +219,21 @@ export class Issue implements IssueArgs {
 export const issueBeet = new beet.FixableBeetStruct<
   Issue,
   IssueArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['index', beet.u64],
-    ['issueCreator', beetSolana.publicKey],
-    ['issueTokenPoolAccount', beetSolana.publicKey],
-    ['repository', beetSolana.publicKey],
-    ['commitIndex', beet.u64],
-    ['createdAt', beet.u64],
-    ['closedAt', beet.coption(beet.u64)],
-    ['uri', beet.utf8String],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["index", beet.u64],
+    ["issueCreator", beetSolana.publicKey],
+    ["issueTokenPoolAccount", beetSolana.publicKey],
+    ["repository", beetSolana.publicKey],
+    ["commitIndex", beet.u64],
+    ["createdAt", beet.u64],
+    ["closedAt", beet.coption(beet.u64)],
+    ["uri", beet.utf8String],
   ],
   Issue.fromArgs,
-  'Issue'
-)
+  "Issue"
+);

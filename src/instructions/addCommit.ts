@@ -5,8 +5,8 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -14,10 +14,10 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type AddCommitInstructionArgs = {
-  commitHash: string
-  treeHash: string
-  metadataUri: string
-}
+  commitHash: string;
+  treeHash: string;
+  metadataUri: string;
+};
 /**
  * @category Instructions
  * @category AddCommit
@@ -25,17 +25,17 @@ export type AddCommitInstructionArgs = {
  */
 export const addCommitStruct = new beet.FixableBeetArgsStruct<
   AddCommitInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['commitHash', beet.utf8String],
-    ['treeHash', beet.utf8String],
-    ['metadataUri', beet.utf8String],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["commitHash", beet.utf8String],
+    ["treeHash", beet.utf8String],
+    ["metadataUri", beet.utf8String],
   ],
-  'AddCommitInstructionArgs'
-)
+  "AddCommitInstructionArgs"
+);
 /**
  * Accounts required by the _addCommit_ instruction
  *
@@ -53,22 +53,22 @@ export const addCommitStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddCommitInstructionAccounts = {
-  routerCreator: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  repositoryCreator: web3.PublicKey
-  issueCreator: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  issueAccount: web3.PublicKey
-  commitCreator: web3.PublicKey
-  commitVerifiedUser: web3.PublicKey
-  commitAccount: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  routerCreator: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  repositoryCreator: web3.PublicKey;
+  issueCreator: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  issueAccount: web3.PublicKey;
+  commitCreator: web3.PublicKey;
+  commitVerifiedUser: web3.PublicKey;
+  commitAccount: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addCommitInstructionDiscriminator = [
   204, 58, 170, 63, 60, 94, 236, 255,
-]
+];
 
 /**
  * Creates a _AddCommit_ instruction.
@@ -83,12 +83,12 @@ export const addCommitInstructionDiscriminator = [
 export function createAddCommitInstruction(
   accounts: AddCommitInstructionAccounts,
   args: AddCommitInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addCommitStruct.serialize({
     instructionDiscriminator: addCommitInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.routerCreator,
@@ -140,11 +140,11 @@ export function createAddCommitInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -152,6 +152,6 @@ export function createAddCommitInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

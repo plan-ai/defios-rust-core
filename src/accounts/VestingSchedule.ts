@@ -5,10 +5,10 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as web3 from '@solana/web3.js'
-import * as beet from '@metaplex-foundation/beet'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
-import { Schedule, scheduleBeet } from '../types/Schedule'
+import * as web3 from "@solana/web3.js";
+import * as beet from "@metaplex-foundation/beet";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
+import { Schedule, scheduleBeet } from "../types/Schedule";
 
 /**
  * Arguments used to create {@link VestingSchedule}
@@ -16,15 +16,15 @@ import { Schedule, scheduleBeet } from '../types/Schedule'
  * @category generated
  */
 export type VestingScheduleArgs = {
-  bump: number
-  destinationAddress: web3.PublicKey
-  mintAddress: web3.PublicKey
-  schedules: Schedule[]
-}
+  bump: number;
+  destinationAddress: web3.PublicKey;
+  mintAddress: web3.PublicKey;
+  schedules: Schedule[];
+};
 
 export const vestingScheduleDiscriminator = [
   130, 200, 173, 148, 39, 75, 243, 147,
-]
+];
 /**
  * Holds the data for the {@link VestingSchedule} Account and provides de/serialization
  * functionality for that data
@@ -49,7 +49,7 @@ export class VestingSchedule implements VestingScheduleArgs {
       args.destinationAddress,
       args.mintAddress,
       args.schedules
-    )
+    );
   }
 
   /**
@@ -60,7 +60,7 @@ export class VestingSchedule implements VestingScheduleArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [VestingSchedule, number] {
-    return VestingSchedule.deserialize(accountInfo.data, offset)
+    return VestingSchedule.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -77,11 +77,11 @@ export class VestingSchedule implements VestingScheduleArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find VestingSchedule account at ${address}`)
+      throw new Error(`Unable to find VestingSchedule account at ${address}`);
     }
-    return VestingSchedule.fromAccountInfo(accountInfo, 0)[0]
+    return VestingSchedule.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -92,10 +92,10 @@ export class VestingSchedule implements VestingScheduleArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, vestingScheduleBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, vestingScheduleBeet);
   }
 
   /**
@@ -103,7 +103,7 @@ export class VestingSchedule implements VestingScheduleArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [VestingSchedule, number] {
-    return vestingScheduleBeet.deserialize(buf, offset)
+    return vestingScheduleBeet.deserialize(buf, offset);
   }
 
   /**
@@ -114,7 +114,7 @@ export class VestingSchedule implements VestingScheduleArgs {
     return vestingScheduleBeet.serialize({
       accountDiscriminator: vestingScheduleDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -125,11 +125,11 @@ export class VestingSchedule implements VestingScheduleArgs {
    * depends on them
    */
   static byteSize(args: VestingScheduleArgs) {
-    const instance = VestingSchedule.fromArgs(args)
+    const instance = VestingSchedule.fromArgs(args);
     return vestingScheduleBeet.toFixedFromValue({
       accountDiscriminator: vestingScheduleDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -148,7 +148,7 @@ export class VestingSchedule implements VestingScheduleArgs {
     return connection.getMinimumBalanceForRentExemption(
       VestingSchedule.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -161,7 +161,7 @@ export class VestingSchedule implements VestingScheduleArgs {
       destinationAddress: this.destinationAddress.toBase58(),
       mintAddress: this.mintAddress.toBase58(),
       schedules: this.schedules,
-    }
+    };
   }
 }
 
@@ -172,16 +172,16 @@ export class VestingSchedule implements VestingScheduleArgs {
 export const vestingScheduleBeet = new beet.FixableBeetStruct<
   VestingSchedule,
   VestingScheduleArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['destinationAddress', beetSolana.publicKey],
-    ['mintAddress', beetSolana.publicKey],
-    ['schedules', beet.array(scheduleBeet)],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["destinationAddress", beetSolana.publicKey],
+    ["mintAddress", beetSolana.publicKey],
+    ["schedules", beet.array(scheduleBeet)],
   ],
   VestingSchedule.fromArgs,
-  'VestingSchedule'
-)
+  "VestingSchedule"
+);

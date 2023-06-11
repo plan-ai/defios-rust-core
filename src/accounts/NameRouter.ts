@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link NameRouter}
@@ -15,14 +15,14 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type NameRouterArgs = {
-  bump: number
-  signatureVersion: number
-  totalVerifiedUsers: beet.bignum
-  routerCreator: web3.PublicKey
-  signingDomain: string
-}
+  bump: number;
+  signatureVersion: number;
+  totalVerifiedUsers: beet.bignum;
+  routerCreator: web3.PublicKey;
+  signingDomain: string;
+};
 
-export const nameRouterDiscriminator = [76, 77, 45, 18, 122, 255, 171, 86]
+export const nameRouterDiscriminator = [76, 77, 45, 18, 122, 255, 171, 86];
 /**
  * Holds the data for the {@link NameRouter} Account and provides de/serialization
  * functionality for that data
@@ -49,7 +49,7 @@ export class NameRouter implements NameRouterArgs {
       args.totalVerifiedUsers,
       args.routerCreator,
       args.signingDomain
-    )
+    );
   }
 
   /**
@@ -60,7 +60,7 @@ export class NameRouter implements NameRouterArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [NameRouter, number] {
-    return NameRouter.deserialize(accountInfo.data, offset)
+    return NameRouter.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -77,11 +77,11 @@ export class NameRouter implements NameRouterArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find NameRouter account at ${address}`)
+      throw new Error(`Unable to find NameRouter account at ${address}`);
     }
-    return NameRouter.fromAccountInfo(accountInfo, 0)[0]
+    return NameRouter.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -92,10 +92,10 @@ export class NameRouter implements NameRouterArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, nameRouterBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, nameRouterBeet);
   }
 
   /**
@@ -103,7 +103,7 @@ export class NameRouter implements NameRouterArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [NameRouter, number] {
-    return nameRouterBeet.deserialize(buf, offset)
+    return nameRouterBeet.deserialize(buf, offset);
   }
 
   /**
@@ -114,7 +114,7 @@ export class NameRouter implements NameRouterArgs {
     return nameRouterBeet.serialize({
       accountDiscriminator: nameRouterDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -125,11 +125,11 @@ export class NameRouter implements NameRouterArgs {
    * depends on them
    */
   static byteSize(args: NameRouterArgs) {
-    const instance = NameRouter.fromArgs(args)
+    const instance = NameRouter.fromArgs(args);
     return nameRouterBeet.toFixedFromValue({
       accountDiscriminator: nameRouterDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -148,7 +148,7 @@ export class NameRouter implements NameRouterArgs {
     return connection.getMinimumBalanceForRentExemption(
       NameRouter.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -160,19 +160,19 @@ export class NameRouter implements NameRouterArgs {
       bump: this.bump,
       signatureVersion: this.signatureVersion,
       totalVerifiedUsers: (() => {
-        const x = <{ toNumber: () => number }>this.totalVerifiedUsers
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.totalVerifiedUsers;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       routerCreator: this.routerCreator.toBase58(),
       signingDomain: this.signingDomain,
-    }
+    };
   }
 }
 
@@ -183,17 +183,17 @@ export class NameRouter implements NameRouterArgs {
 export const nameRouterBeet = new beet.FixableBeetStruct<
   NameRouter,
   NameRouterArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['signatureVersion', beet.u8],
-    ['totalVerifiedUsers', beet.u64],
-    ['routerCreator', beetSolana.publicKey],
-    ['signingDomain', beet.utf8String],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["signatureVersion", beet.u8],
+    ["totalVerifiedUsers", beet.u64],
+    ["routerCreator", beetSolana.publicKey],
+    ["signingDomain", beet.utf8String],
   ],
   NameRouter.fromArgs,
-  'NameRouter'
-)
+  "NameRouter"
+);

@@ -5,10 +5,10 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
-import { RoadmapOutlook, roadmapOutlookBeet } from '../types/RoadmapOutlook'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
+import { RoadmapOutlook, roadmapOutlookBeet } from "../types/RoadmapOutlook";
 
 /**
  * Arguments used to create {@link RoadMapMetaDataStore}
@@ -16,21 +16,21 @@ import { RoadmapOutlook, roadmapOutlookBeet } from '../types/RoadmapOutlook'
  * @category generated
  */
 export type RoadMapMetaDataStoreArgs = {
-  bump: number
-  roadmapTitle: string
-  roadmapCreationUnix: beet.bignum
-  roadmapCreatorId: web3.PublicKey
-  roadmapDescriptionLink: string
-  rootObjectiveIds: web3.PublicKey[]
-  roadmapCreator: web3.PublicKey
-  roadmapOutlook: RoadmapOutlook
-  roadmapImageUrl: string
-  roadmapRepository: web3.PublicKey
-}
+  bump: number;
+  roadmapTitle: string;
+  roadmapCreationUnix: beet.bignum;
+  roadmapCreatorId: web3.PublicKey;
+  roadmapDescriptionLink: string;
+  rootObjectiveIds: web3.PublicKey[];
+  roadmapCreator: web3.PublicKey;
+  roadmapOutlook: RoadmapOutlook;
+  roadmapImageUrl: string;
+  roadmapRepository: web3.PublicKey;
+};
 
 export const roadMapMetaDataStoreDiscriminator = [
   12, 201, 20, 202, 152, 147, 166, 76,
-]
+];
 /**
  * Holds the data for the {@link RoadMapMetaDataStore} Account and provides de/serialization
  * functionality for that data
@@ -67,7 +67,7 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
       args.roadmapOutlook,
       args.roadmapImageUrl,
       args.roadmapRepository
-    )
+    );
   }
 
   /**
@@ -78,7 +78,7 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [RoadMapMetaDataStore, number] {
-    return RoadMapMetaDataStore.deserialize(accountInfo.data, offset)
+    return RoadMapMetaDataStore.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -95,13 +95,13 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
       throw new Error(
         `Unable to find RoadMapMetaDataStore account at ${address}`
-      )
+      );
     }
-    return RoadMapMetaDataStore.fromAccountInfo(accountInfo, 0)[0]
+    return RoadMapMetaDataStore.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -112,10 +112,13 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, roadMapMetaDataStoreBeet)
+    return beetSolana.GpaBuilder.fromStruct(
+      programId,
+      roadMapMetaDataStoreBeet
+    );
   }
 
   /**
@@ -123,7 +126,7 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [RoadMapMetaDataStore, number] {
-    return roadMapMetaDataStoreBeet.deserialize(buf, offset)
+    return roadMapMetaDataStoreBeet.deserialize(buf, offset);
   }
 
   /**
@@ -134,7 +137,7 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
     return roadMapMetaDataStoreBeet.serialize({
       accountDiscriminator: roadMapMetaDataStoreDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -145,11 +148,11 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
    * depends on them
    */
   static byteSize(args: RoadMapMetaDataStoreArgs) {
-    const instance = RoadMapMetaDataStore.fromArgs(args)
+    const instance = RoadMapMetaDataStore.fromArgs(args);
     return roadMapMetaDataStoreBeet.toFixedFromValue({
       accountDiscriminator: roadMapMetaDataStoreDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -168,7 +171,7 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
     return connection.getMinimumBalanceForRentExemption(
       RoadMapMetaDataStore.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -180,24 +183,24 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
       bump: this.bump,
       roadmapTitle: this.roadmapTitle,
       roadmapCreationUnix: (() => {
-        const x = <{ toNumber: () => number }>this.roadmapCreationUnix
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.roadmapCreationUnix;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       roadmapCreatorId: this.roadmapCreatorId.toBase58(),
       roadmapDescriptionLink: this.roadmapDescriptionLink,
       rootObjectiveIds: this.rootObjectiveIds,
       roadmapCreator: this.roadmapCreator.toBase58(),
-      roadmapOutlook: 'RoadmapOutlook.' + RoadmapOutlook[this.roadmapOutlook],
+      roadmapOutlook: "RoadmapOutlook." + RoadmapOutlook[this.roadmapOutlook],
       roadmapImageUrl: this.roadmapImageUrl,
       roadmapRepository: this.roadmapRepository.toBase58(),
-    }
+    };
   }
 }
 
@@ -208,22 +211,22 @@ export class RoadMapMetaDataStore implements RoadMapMetaDataStoreArgs {
 export const roadMapMetaDataStoreBeet = new beet.FixableBeetStruct<
   RoadMapMetaDataStore,
   RoadMapMetaDataStoreArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['roadmapTitle', beet.utf8String],
-    ['roadmapCreationUnix', beet.i64],
-    ['roadmapCreatorId', beetSolana.publicKey],
-    ['roadmapDescriptionLink', beet.utf8String],
-    ['rootObjectiveIds', beet.array(beetSolana.publicKey)],
-    ['roadmapCreator', beetSolana.publicKey],
-    ['roadmapOutlook', roadmapOutlookBeet],
-    ['roadmapImageUrl', beet.utf8String],
-    ['roadmapRepository', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["roadmapTitle", beet.utf8String],
+    ["roadmapCreationUnix", beet.i64],
+    ["roadmapCreatorId", beetSolana.publicKey],
+    ["roadmapDescriptionLink", beet.utf8String],
+    ["rootObjectiveIds", beet.array(beetSolana.publicKey)],
+    ["roadmapCreator", beetSolana.publicKey],
+    ["roadmapOutlook", roadmapOutlookBeet],
+    ["roadmapImageUrl", beet.utf8String],
+    ["roadmapRepository", beetSolana.publicKey],
   ],
   RoadMapMetaDataStore.fromArgs,
-  'RoadMapMetaDataStore'
-)
+  "RoadMapMetaDataStore"
+);

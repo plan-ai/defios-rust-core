@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as web3 from '@solana/web3.js'
-import * as beet from '@metaplex-foundation/beet'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as web3 from "@solana/web3.js";
+import * as beet from "@metaplex-foundation/beet";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link PullRequest}
@@ -15,15 +15,15 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type PullRequestArgs = {
-  bump: number
-  sentBy: web3.PublicKey
-  commits: web3.PublicKey[]
-  metadataUri: string
-  accepted: boolean
-  pullRequestTokenAccount: web3.PublicKey
-}
+  bump: number;
+  sentBy: web3.PublicKey;
+  commits: web3.PublicKey[];
+  metadataUri: string;
+  accepted: boolean;
+  pullRequestTokenAccount: web3.PublicKey;
+};
 
-export const pullRequestDiscriminator = [132, 101, 159, 13, 62, 206, 121, 132]
+export const pullRequestDiscriminator = [132, 101, 159, 13, 62, 206, 121, 132];
 /**
  * Holds the data for the {@link PullRequest} Account and provides de/serialization
  * functionality for that data
@@ -52,7 +52,7 @@ export class PullRequest implements PullRequestArgs {
       args.metadataUri,
       args.accepted,
       args.pullRequestTokenAccount
-    )
+    );
   }
 
   /**
@@ -63,7 +63,7 @@ export class PullRequest implements PullRequestArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [PullRequest, number] {
-    return PullRequest.deserialize(accountInfo.data, offset)
+    return PullRequest.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -80,11 +80,11 @@ export class PullRequest implements PullRequestArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find PullRequest account at ${address}`)
+      throw new Error(`Unable to find PullRequest account at ${address}`);
     }
-    return PullRequest.fromAccountInfo(accountInfo, 0)[0]
+    return PullRequest.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -95,10 +95,10 @@ export class PullRequest implements PullRequestArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, pullRequestBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, pullRequestBeet);
   }
 
   /**
@@ -106,7 +106,7 @@ export class PullRequest implements PullRequestArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [PullRequest, number] {
-    return pullRequestBeet.deserialize(buf, offset)
+    return pullRequestBeet.deserialize(buf, offset);
   }
 
   /**
@@ -117,7 +117,7 @@ export class PullRequest implements PullRequestArgs {
     return pullRequestBeet.serialize({
       accountDiscriminator: pullRequestDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -128,11 +128,11 @@ export class PullRequest implements PullRequestArgs {
    * depends on them
    */
   static byteSize(args: PullRequestArgs) {
-    const instance = PullRequest.fromArgs(args)
+    const instance = PullRequest.fromArgs(args);
     return pullRequestBeet.toFixedFromValue({
       accountDiscriminator: pullRequestDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -151,7 +151,7 @@ export class PullRequest implements PullRequestArgs {
     return connection.getMinimumBalanceForRentExemption(
       PullRequest.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -166,7 +166,7 @@ export class PullRequest implements PullRequestArgs {
       metadataUri: this.metadataUri,
       accepted: this.accepted,
       pullRequestTokenAccount: this.pullRequestTokenAccount.toBase58(),
-    }
+    };
   }
 }
 
@@ -177,18 +177,18 @@ export class PullRequest implements PullRequestArgs {
 export const pullRequestBeet = new beet.FixableBeetStruct<
   PullRequest,
   PullRequestArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['sentBy', beetSolana.publicKey],
-    ['commits', beet.array(beetSolana.publicKey)],
-    ['metadataUri', beet.utf8String],
-    ['accepted', beet.bool],
-    ['pullRequestTokenAccount', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["sentBy", beetSolana.publicKey],
+    ["commits", beet.array(beetSolana.publicKey)],
+    ["metadataUri", beet.utf8String],
+    ["accepted", beet.bool],
+    ["pullRequestTokenAccount", beetSolana.publicKey],
   ],
   PullRequest.fromArgs,
-  'PullRequest'
-)
+  "PullRequest"
+);

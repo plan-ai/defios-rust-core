@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link DefaultVestingSchedule}
@@ -15,15 +15,15 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type DefaultVestingScheduleArgs = {
-  bump: number
-  numberOfSchedules: number
-  perVestingAmount: beet.bignum
-  unixChange: beet.bignum
-}
+  bump: number;
+  numberOfSchedules: number;
+  perVestingAmount: beet.bignum;
+  unixChange: beet.bignum;
+};
 
 export const defaultVestingScheduleDiscriminator = [
   180, 124, 177, 89, 155, 137, 231, 25,
-]
+];
 /**
  * Holds the data for the {@link DefaultVestingSchedule} Account and provides de/serialization
  * functionality for that data
@@ -48,7 +48,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
       args.numberOfSchedules,
       args.perVestingAmount,
       args.unixChange
-    )
+    );
   }
 
   /**
@@ -59,7 +59,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [DefaultVestingSchedule, number] {
-    return DefaultVestingSchedule.deserialize(accountInfo.data, offset)
+    return DefaultVestingSchedule.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -76,13 +76,13 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
       throw new Error(
         `Unable to find DefaultVestingSchedule account at ${address}`
-      )
+      );
     }
-    return DefaultVestingSchedule.fromAccountInfo(accountInfo, 0)[0]
+    return DefaultVestingSchedule.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -93,13 +93,13 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
     return beetSolana.GpaBuilder.fromStruct(
       programId,
       defaultVestingScheduleBeet
-    )
+    );
   }
 
   /**
@@ -110,7 +110,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
     buf: Buffer,
     offset = 0
   ): [DefaultVestingSchedule, number] {
-    return defaultVestingScheduleBeet.deserialize(buf, offset)
+    return defaultVestingScheduleBeet.deserialize(buf, offset);
   }
 
   /**
@@ -121,7 +121,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
     return defaultVestingScheduleBeet.serialize({
       accountDiscriminator: defaultVestingScheduleDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -129,7 +129,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
    * {@link DefaultVestingSchedule}
    */
   static get byteSize() {
-    return defaultVestingScheduleBeet.byteSize
+    return defaultVestingScheduleBeet.byteSize;
   }
 
   /**
@@ -145,7 +145,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
     return connection.getMinimumBalanceForRentExemption(
       DefaultVestingSchedule.byteSize,
       commitment
-    )
+    );
   }
 
   /**
@@ -153,7 +153,7 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
    * hold {@link DefaultVestingSchedule} data.
    */
   static hasCorrectByteSize(buf: Buffer, offset = 0) {
-    return buf.byteLength - offset === DefaultVestingSchedule.byteSize
+    return buf.byteLength - offset === DefaultVestingSchedule.byteSize;
   }
 
   /**
@@ -165,28 +165,28 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
       bump: this.bump,
       numberOfSchedules: this.numberOfSchedules,
       perVestingAmount: (() => {
-        const x = <{ toNumber: () => number }>this.perVestingAmount
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.perVestingAmount;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       unixChange: (() => {
-        const x = <{ toNumber: () => number }>this.unixChange
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.unixChange;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
-    }
+    };
   }
 }
 
@@ -197,16 +197,16 @@ export class DefaultVestingSchedule implements DefaultVestingScheduleArgs {
 export const defaultVestingScheduleBeet = new beet.BeetStruct<
   DefaultVestingSchedule,
   DefaultVestingScheduleArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['numberOfSchedules', beet.u32],
-    ['perVestingAmount', beet.u64],
-    ['unixChange', beet.u64],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["numberOfSchedules", beet.u32],
+    ["perVestingAmount", beet.u64],
+    ["unixChange", beet.u64],
   ],
   DefaultVestingSchedule.fromArgs,
-  'DefaultVestingSchedule'
-)
+  "DefaultVestingSchedule"
+);

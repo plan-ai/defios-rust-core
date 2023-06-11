@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,11 +15,11 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export const createCommunalAccountStruct = new beet.BeetArgsStruct<{
-  instructionDiscriminator: number[] /* size: 8 */
+  instructionDiscriminator: number[] /* size: 8 */;
 }>(
-  [['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)]],
-  'CreateCommunalAccountInstructionArgs'
-)
+  [["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)]],
+  "CreateCommunalAccountInstructionArgs"
+);
 /**
  * Accounts required by the _createCommunalAccount_ instruction
  *
@@ -35,21 +35,21 @@ export const createCommunalAccountStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type CreateCommunalAccountInstructionAccounts = {
-  authority: web3.PublicKey
-  communalDeposit: web3.PublicKey
-  communalTokenAccount: web3.PublicKey
-  communalUsdcAccount: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  usdcMint: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  authority: web3.PublicKey;
+  communalDeposit: web3.PublicKey;
+  communalTokenAccount: web3.PublicKey;
+  communalUsdcAccount: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  usdcMint: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const createCommunalAccountInstructionDiscriminator = [
   31, 227, 231, 9, 46, 189, 225, 12,
-]
+];
 
 /**
  * Creates a _CreateCommunalAccount_ instruction.
@@ -61,11 +61,11 @@ export const createCommunalAccountInstructionDiscriminator = [
  */
 export function createCreateCommunalAccountInstruction(
   accounts: CreateCommunalAccountInstructionAccounts,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = createCommunalAccountStruct.serialize({
     instructionDiscriminator: createCommunalAccountInstructionDiscriminator,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.authority,
@@ -112,11 +112,11 @@ export function createCreateCommunalAccountInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -124,6 +124,6 @@ export function createCreateCommunalAccountInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

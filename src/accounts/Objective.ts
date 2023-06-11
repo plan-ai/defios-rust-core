@@ -5,14 +5,14 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
-import { ObjectiveState, objectiveStateBeet } from '../types/ObjectiveState'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
+import { ObjectiveState, objectiveStateBeet } from "../types/ObjectiveState";
 import {
   ObjectiveDeliverable,
   objectiveDeliverableBeet,
-} from '../types/ObjectiveDeliverable'
+} from "../types/ObjectiveDeliverable";
 
 /**
  * Arguments used to create {@link Objective}
@@ -20,22 +20,22 @@ import {
  * @category generated
  */
 export type ObjectiveArgs = {
-  bump: number
-  objectiveTitle: string
-  objectiveCreationUnix: beet.bignum
-  objectiveCreatorId: web3.PublicKey
-  objectiveStartUnix: beet.bignum
-  objectiveEndUnix: beet.COption<beet.bignum>
-  objectiveDescriptionLink: string
-  objectiveState: ObjectiveState
-  childrenObjectiveKeys: web3.PublicKey[]
-  objectiveDeliverable: ObjectiveDeliverable
-  objectiveIssue: web3.PublicKey
-  objectiveId: string
-  objectiveRepository: web3.PublicKey
-}
+  bump: number;
+  objectiveTitle: string;
+  objectiveCreationUnix: beet.bignum;
+  objectiveCreatorId: web3.PublicKey;
+  objectiveStartUnix: beet.bignum;
+  objectiveEndUnix: beet.COption<beet.bignum>;
+  objectiveDescriptionLink: string;
+  objectiveState: ObjectiveState;
+  childrenObjectiveKeys: web3.PublicKey[];
+  objectiveDeliverable: ObjectiveDeliverable;
+  objectiveIssue: web3.PublicKey;
+  objectiveId: string;
+  objectiveRepository: web3.PublicKey;
+};
 
-export const objectiveDiscriminator = [167, 41, 90, 3, 203, 55, 34, 21]
+export const objectiveDiscriminator = [167, 41, 90, 3, 203, 55, 34, 21];
 /**
  * Holds the data for the {@link Objective} Account and provides de/serialization
  * functionality for that data
@@ -78,7 +78,7 @@ export class Objective implements ObjectiveArgs {
       args.objectiveIssue,
       args.objectiveId,
       args.objectiveRepository
-    )
+    );
   }
 
   /**
@@ -89,7 +89,7 @@ export class Objective implements ObjectiveArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [Objective, number] {
-    return Objective.deserialize(accountInfo.data, offset)
+    return Objective.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -106,11 +106,11 @@ export class Objective implements ObjectiveArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find Objective account at ${address}`)
+      throw new Error(`Unable to find Objective account at ${address}`);
     }
-    return Objective.fromAccountInfo(accountInfo, 0)[0]
+    return Objective.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -121,10 +121,10 @@ export class Objective implements ObjectiveArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, objectiveBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, objectiveBeet);
   }
 
   /**
@@ -132,7 +132,7 @@ export class Objective implements ObjectiveArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [Objective, number] {
-    return objectiveBeet.deserialize(buf, offset)
+    return objectiveBeet.deserialize(buf, offset);
   }
 
   /**
@@ -143,7 +143,7 @@ export class Objective implements ObjectiveArgs {
     return objectiveBeet.serialize({
       accountDiscriminator: objectiveDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -154,11 +154,11 @@ export class Objective implements ObjectiveArgs {
    * depends on them
    */
   static byteSize(args: ObjectiveArgs) {
-    const instance = Objective.fromArgs(args)
+    const instance = Objective.fromArgs(args);
     return objectiveBeet.toFixedFromValue({
       accountDiscriminator: objectiveDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -177,7 +177,7 @@ export class Objective implements ObjectiveArgs {
     return connection.getMinimumBalanceForRentExemption(
       Objective.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -189,39 +189,39 @@ export class Objective implements ObjectiveArgs {
       bump: this.bump,
       objectiveTitle: this.objectiveTitle,
       objectiveCreationUnix: (() => {
-        const x = <{ toNumber: () => number }>this.objectiveCreationUnix
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.objectiveCreationUnix;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       objectiveCreatorId: this.objectiveCreatorId.toBase58(),
       objectiveStartUnix: (() => {
-        const x = <{ toNumber: () => number }>this.objectiveStartUnix
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.objectiveStartUnix;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       objectiveEndUnix: this.objectiveEndUnix,
       objectiveDescriptionLink: this.objectiveDescriptionLink,
-      objectiveState: 'ObjectiveState.' + ObjectiveState[this.objectiveState],
+      objectiveState: "ObjectiveState." + ObjectiveState[this.objectiveState],
       childrenObjectiveKeys: this.childrenObjectiveKeys,
       objectiveDeliverable:
-        'ObjectiveDeliverable.' +
+        "ObjectiveDeliverable." +
         ObjectiveDeliverable[this.objectiveDeliverable],
       objectiveIssue: this.objectiveIssue.toBase58(),
       objectiveId: this.objectiveId,
       objectiveRepository: this.objectiveRepository.toBase58(),
-    }
+    };
   }
 }
 
@@ -232,25 +232,25 @@ export class Objective implements ObjectiveArgs {
 export const objectiveBeet = new beet.FixableBeetStruct<
   Objective,
   ObjectiveArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['objectiveTitle', beet.utf8String],
-    ['objectiveCreationUnix', beet.i64],
-    ['objectiveCreatorId', beetSolana.publicKey],
-    ['objectiveStartUnix', beet.i64],
-    ['objectiveEndUnix', beet.coption(beet.i64)],
-    ['objectiveDescriptionLink', beet.utf8String],
-    ['objectiveState', objectiveStateBeet],
-    ['childrenObjectiveKeys', beet.array(beetSolana.publicKey)],
-    ['objectiveDeliverable', objectiveDeliverableBeet],
-    ['objectiveIssue', beetSolana.publicKey],
-    ['objectiveId', beet.utf8String],
-    ['objectiveRepository', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["objectiveTitle", beet.utf8String],
+    ["objectiveCreationUnix", beet.i64],
+    ["objectiveCreatorId", beetSolana.publicKey],
+    ["objectiveStartUnix", beet.i64],
+    ["objectiveEndUnix", beet.coption(beet.i64)],
+    ["objectiveDescriptionLink", beet.utf8String],
+    ["objectiveState", objectiveStateBeet],
+    ["childrenObjectiveKeys", beet.array(beetSolana.publicKey)],
+    ["objectiveDeliverable", objectiveDeliverableBeet],
+    ["objectiveIssue", beetSolana.publicKey],
+    ["objectiveId", beet.utf8String],
+    ["objectiveRepository", beetSolana.publicKey],
   ],
   Objective.fromArgs,
-  'Objective'
-)
+  "Objective"
+);

@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,9 +15,9 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type BuyTokensInstructionArgs = {
-  usdcAmount: beet.bignum
-  numberOfTokens: beet.bignum
-}
+  usdcAmount: beet.bignum;
+  numberOfTokens: beet.bignum;
+};
 /**
  * @category Instructions
  * @category BuyTokens
@@ -25,16 +25,16 @@ export type BuyTokensInstructionArgs = {
  */
 export const buyTokensStruct = new beet.BeetArgsStruct<
   BuyTokensInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['usdcAmount', beet.u64],
-    ['numberOfTokens', beet.u64],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["usdcAmount", beet.u64],
+    ["numberOfTokens", beet.u64],
   ],
-  'BuyTokensInstructionArgs'
-)
+  "BuyTokensInstructionArgs"
+);
 /**
  * Accounts required by the _buyTokens_ instruction
  *
@@ -54,25 +54,25 @@ export const buyTokensStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type BuyTokensInstructionAccounts = {
-  buyer: web3.PublicKey
-  communalDeposit: web3.PublicKey
-  communalTokenAccount: web3.PublicKey
-  communalUsdcAccount: web3.PublicKey
-  buyerTokenAccount: web3.PublicKey
-  buyerUsdcAccount: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  usdcMint: web3.PublicKey
-  defaultSchedule: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  buyer: web3.PublicKey;
+  communalDeposit: web3.PublicKey;
+  communalTokenAccount: web3.PublicKey;
+  communalUsdcAccount: web3.PublicKey;
+  buyerTokenAccount: web3.PublicKey;
+  buyerUsdcAccount: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  usdcMint: web3.PublicKey;
+  defaultSchedule: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const buyTokensInstructionDiscriminator = [
   189, 21, 230, 133, 247, 2, 110, 42,
-]
+];
 
 /**
  * Creates a _BuyTokens_ instruction.
@@ -87,12 +87,12 @@ export const buyTokensInstructionDiscriminator = [
 export function createBuyTokensInstruction(
   accounts: BuyTokensInstructionAccounts,
   args: BuyTokensInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = buyTokensStruct.serialize({
     instructionDiscriminator: buyTokensInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.buyer,
@@ -159,11 +159,11 @@ export function createBuyTokensInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -171,6 +171,6 @@ export function createBuyTokensInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

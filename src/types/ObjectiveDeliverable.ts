@@ -5,7 +5,7 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
+import * as beet from "@metaplex-foundation/beet";
 /**
  * @category enums
  * @category generated
@@ -24,4 +24,4 @@ export enum ObjectiveDeliverable {
  */
 export const objectiveDeliverableBeet = beet.fixedScalarEnum(
   ObjectiveDeliverable
-) as beet.FixedSizeBeet<ObjectiveDeliverable, ObjectiveDeliverable>
+) as beet.FixedSizeBeet<ObjectiveDeliverable, ObjectiveDeliverable>;

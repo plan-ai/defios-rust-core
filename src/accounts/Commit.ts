@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link Commit}
@@ -15,17 +15,17 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type CommitArgs = {
-  bump: number
-  index: beet.bignum
-  commitCreator: web3.PublicKey
-  issue: web3.PublicKey
-  commitHash: string
-  treeHash: string
-  createdAt: beet.bignum
-  metadataUri: string
-}
+  bump: number;
+  index: beet.bignum;
+  commitCreator: web3.PublicKey;
+  issue: web3.PublicKey;
+  commitHash: string;
+  treeHash: string;
+  createdAt: beet.bignum;
+  metadataUri: string;
+};
 
-export const commitDiscriminator = [222, 158, 102, 118, 51, 65, 166, 130]
+export const commitDiscriminator = [222, 158, 102, 118, 51, 65, 166, 130];
 /**
  * Holds the data for the {@link Commit} Account and provides de/serialization
  * functionality for that data
@@ -58,7 +58,7 @@ export class Commit implements CommitArgs {
       args.treeHash,
       args.createdAt,
       args.metadataUri
-    )
+    );
   }
 
   /**
@@ -69,7 +69,7 @@ export class Commit implements CommitArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [Commit, number] {
-    return Commit.deserialize(accountInfo.data, offset)
+    return Commit.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -86,11 +86,11 @@ export class Commit implements CommitArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find Commit account at ${address}`)
+      throw new Error(`Unable to find Commit account at ${address}`);
     }
-    return Commit.fromAccountInfo(accountInfo, 0)[0]
+    return Commit.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -101,10 +101,10 @@ export class Commit implements CommitArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, commitBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, commitBeet);
   }
 
   /**
@@ -112,7 +112,7 @@ export class Commit implements CommitArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [Commit, number] {
-    return commitBeet.deserialize(buf, offset)
+    return commitBeet.deserialize(buf, offset);
   }
 
   /**
@@ -123,7 +123,7 @@ export class Commit implements CommitArgs {
     return commitBeet.serialize({
       accountDiscriminator: commitDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -134,11 +134,11 @@ export class Commit implements CommitArgs {
    * depends on them
    */
   static byteSize(args: CommitArgs) {
-    const instance = Commit.fromArgs(args)
+    const instance = Commit.fromArgs(args);
     return commitBeet.toFixedFromValue({
       accountDiscriminator: commitDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -157,7 +157,7 @@ export class Commit implements CommitArgs {
     return connection.getMinimumBalanceForRentExemption(
       Commit.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -168,33 +168,33 @@ export class Commit implements CommitArgs {
     return {
       bump: this.bump,
       index: (() => {
-        const x = <{ toNumber: () => number }>this.index
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.index;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       commitCreator: this.commitCreator.toBase58(),
       issue: this.issue.toBase58(),
       commitHash: this.commitHash,
       treeHash: this.treeHash,
       createdAt: (() => {
-        const x = <{ toNumber: () => number }>this.createdAt
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.createdAt;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       metadataUri: this.metadataUri,
-    }
+    };
   }
 }
 
@@ -205,20 +205,20 @@ export class Commit implements CommitArgs {
 export const commitBeet = new beet.FixableBeetStruct<
   Commit,
   CommitArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['index', beet.u64],
-    ['commitCreator', beetSolana.publicKey],
-    ['issue', beetSolana.publicKey],
-    ['commitHash', beet.utf8String],
-    ['treeHash', beet.utf8String],
-    ['createdAt', beet.u64],
-    ['metadataUri', beet.utf8String],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["index", beet.u64],
+    ["commitCreator", beetSolana.publicKey],
+    ["issue", beetSolana.publicKey],
+    ["commitHash", beet.utf8String],
+    ["treeHash", beet.utf8String],
+    ["createdAt", beet.u64],
+    ["metadataUri", beet.utf8String],
   ],
   Commit.fromArgs,
-  'Commit'
-)
+  "Commit"
+);

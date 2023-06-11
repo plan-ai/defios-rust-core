@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,13 +15,13 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type CreateRepositoryInstructionArgs = {
-  id: string
-  description: string
-  uri: string
-  tokenName: beet.COption<string>
-  tokenImage: beet.COption<string>
-  tokenMetadataUri: beet.COption<string>
-}
+  id: string;
+  description: string;
+  uri: string;
+  tokenName: beet.COption<string>;
+  tokenImage: beet.COption<string>;
+  tokenMetadataUri: beet.COption<string>;
+};
 /**
  * @category Instructions
  * @category CreateRepository
@@ -29,20 +29,20 @@ export type CreateRepositoryInstructionArgs = {
  */
 export const createRepositoryStruct = new beet.FixableBeetArgsStruct<
   CreateRepositoryInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['id', beet.utf8String],
-    ['description', beet.utf8String],
-    ['uri', beet.utf8String],
-    ['tokenName', beet.coption(beet.utf8String)],
-    ['tokenImage', beet.coption(beet.utf8String)],
-    ['tokenMetadataUri', beet.coption(beet.utf8String)],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["id", beet.utf8String],
+    ["description", beet.utf8String],
+    ["uri", beet.utf8String],
+    ["tokenName", beet.coption(beet.utf8String)],
+    ["tokenImage", beet.coption(beet.utf8String)],
+    ["tokenMetadataUri", beet.coption(beet.utf8String)],
   ],
-  'CreateRepositoryInstructionArgs'
-)
+  "CreateRepositoryInstructionArgs"
+);
 /**
  * Accounts required by the _createRepository_ instruction
  *
@@ -64,27 +64,27 @@ export const createRepositoryStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type CreateRepositoryInstructionAccounts = {
-  repositoryCreator: web3.PublicKey
-  repositoryVerifiedUser: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  routerCreator: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  vestingAccount?: web3.PublicKey
-  vestingTokenAccount?: web3.PublicKey
-  repositoryCreatorTokenAccount?: web3.PublicKey
-  defaultSchedule: web3.PublicKey
-  metadata?: web3.PublicKey
-  rewardsMint?: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  tokenMetadataProgram: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  repositoryCreator: web3.PublicKey;
+  repositoryVerifiedUser: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  routerCreator: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  vestingAccount?: web3.PublicKey;
+  vestingTokenAccount?: web3.PublicKey;
+  repositoryCreatorTokenAccount?: web3.PublicKey;
+  defaultSchedule: web3.PublicKey;
+  metadata?: web3.PublicKey;
+  rewardsMint?: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  tokenMetadataProgram: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const createRepositoryInstructionDiscriminator = [
   241, 131, 206, 187, 2, 121, 223, 253,
-]
+];
 
 /**
  * Creates a _CreateRepository_ instruction.
@@ -104,12 +104,12 @@ export const createRepositoryInstructionDiscriminator = [
 export function createCreateRepositoryInstruction(
   accounts: CreateRepositoryInstructionAccounts,
   args: CreateRepositoryInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = createRepositoryStruct.serialize({
     instructionDiscriminator: createRepositoryInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.repositoryCreator,
@@ -136,26 +136,26 @@ export function createCreateRepositoryInstruction(
       isWritable: true,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.vestingAccount != null) {
     keys.push({
       pubkey: accounts.vestingAccount,
       isWritable: true,
       isSigner: false,
-    })
+    });
   }
   if (accounts.vestingTokenAccount != null) {
     if (accounts.vestingAccount == null) {
       throw new Error(
         "When providing 'vestingTokenAccount' then 'accounts.vestingAccount' need(s) to be provided as well."
-      )
+      );
     }
     keys.push({
       pubkey: accounts.vestingTokenAccount,
       isWritable: true,
       isSigner: false,
-    })
+    });
   }
   if (accounts.repositoryCreatorTokenAccount != null) {
     if (
@@ -164,19 +164,19 @@ export function createCreateRepositoryInstruction(
     ) {
       throw new Error(
         "When providing 'repositoryCreatorTokenAccount' then 'accounts.vestingAccount', 'accounts.vestingTokenAccount' need(s) to be provided as well."
-      )
+      );
     }
     keys.push({
       pubkey: accounts.repositoryCreatorTokenAccount,
       isWritable: true,
       isSigner: false,
-    })
+    });
   }
   keys.push({
     pubkey: accounts.defaultSchedule,
     isWritable: false,
     isSigner: false,
-  })
+  });
   if (accounts.metadata != null) {
     if (
       accounts.vestingAccount == null ||
@@ -185,13 +185,13 @@ export function createCreateRepositoryInstruction(
     ) {
       throw new Error(
         "When providing 'metadata' then 'accounts.vestingAccount', 'accounts.vestingTokenAccount', 'accounts.repositoryCreatorTokenAccount' need(s) to be provided as well."
-      )
+      );
     }
     keys.push({
       pubkey: accounts.metadata,
       isWritable: true,
       isSigner: false,
-    })
+    });
   }
   if (accounts.rewardsMint != null) {
     if (
@@ -202,38 +202,38 @@ export function createCreateRepositoryInstruction(
     ) {
       throw new Error(
         "When providing 'rewardsMint' then 'accounts.vestingAccount', 'accounts.vestingTokenAccount', 'accounts.repositoryCreatorTokenAccount', 'accounts.metadata' need(s) to be provided as well."
-      )
+      );
     }
     keys.push({
       pubkey: accounts.rewardsMint,
       isWritable: true,
       isSigner: false,
-    })
+    });
   }
   keys.push({
     pubkey: accounts.tokenProgram ?? splToken.TOKEN_PROGRAM_ID,
     isWritable: false,
     isSigner: false,
-  })
+  });
   keys.push({
     pubkey: accounts.associatedTokenProgram,
     isWritable: false,
     isSigner: false,
-  })
+  });
   keys.push({
     pubkey: accounts.systemProgram ?? web3.SystemProgram.programId,
     isWritable: false,
     isSigner: false,
-  })
+  });
   keys.push({
     pubkey: accounts.tokenMetadataProgram,
     isWritable: false,
     isSigner: false,
-  })
+  });
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -241,6 +241,6 @@ export function createCreateRepositoryInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

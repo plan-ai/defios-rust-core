@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,9 +15,9 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type SellTokensInstructionArgs = {
-  usdcAmount: beet.bignum
-  numberOfTokens: beet.bignum
-}
+  usdcAmount: beet.bignum;
+  numberOfTokens: beet.bignum;
+};
 /**
  * @category Instructions
  * @category SellTokens
@@ -25,16 +25,16 @@ export type SellTokensInstructionArgs = {
  */
 export const sellTokensStruct = new beet.BeetArgsStruct<
   SellTokensInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['usdcAmount', beet.u64],
-    ['numberOfTokens', beet.u64],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["usdcAmount", beet.u64],
+    ["numberOfTokens", beet.u64],
   ],
-  'SellTokensInstructionArgs'
-)
+  "SellTokensInstructionArgs"
+);
 /**
  * Accounts required by the _sellTokens_ instruction
  *
@@ -54,25 +54,25 @@ export const sellTokensStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type SellTokensInstructionAccounts = {
-  seller: web3.PublicKey
-  communalDeposit: web3.PublicKey
-  communalTokenAccount: web3.PublicKey
-  communalUsdcAccount: web3.PublicKey
-  sellerTokenAccount: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  sellerUsdcAccount: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  usdcMint: web3.PublicKey
-  defaultSchedule: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  seller: web3.PublicKey;
+  communalDeposit: web3.PublicKey;
+  communalTokenAccount: web3.PublicKey;
+  communalUsdcAccount: web3.PublicKey;
+  sellerTokenAccount: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  sellerUsdcAccount: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  usdcMint: web3.PublicKey;
+  defaultSchedule: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const sellTokensInstructionDiscriminator = [
   114, 242, 25, 12, 62, 126, 92, 2,
-]
+];
 
 /**
  * Creates a _SellTokens_ instruction.
@@ -87,12 +87,12 @@ export const sellTokensInstructionDiscriminator = [
 export function createSellTokensInstruction(
   accounts: SellTokensInstructionAccounts,
   args: SellTokensInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = sellTokensStruct.serialize({
     instructionDiscriminator: sellTokensInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.seller,
@@ -159,11 +159,11 @@ export function createSellTokensInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -171,6 +171,6 @@ export function createSellTokensInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

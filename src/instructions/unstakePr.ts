@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,11 +15,11 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export const unstakePrStruct = new beet.BeetArgsStruct<{
-  instructionDiscriminator: number[] /* size: 8 */
+  instructionDiscriminator: number[] /* size: 8 */;
 }>(
-  [['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)]],
-  'UnstakePrInstructionArgs'
-)
+  [["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)]],
+  "UnstakePrInstructionArgs"
+);
 /**
  * Accounts required by the _unstakePr_ instruction
  *
@@ -37,23 +37,23 @@ export const unstakePrStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type UnstakePrInstructionAccounts = {
-  pullRequestAddr: web3.PublicKey
-  issue: web3.PublicKey
-  pullRequestMetadataAccount: web3.PublicKey
-  pullRequestTokenAccount: web3.PublicKey
-  pullRequestStaker: web3.PublicKey
-  pullRequestStakerTokenAccount: web3.PublicKey
-  pullRequestStakerAccount: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  pullRequestAddr: web3.PublicKey;
+  issue: web3.PublicKey;
+  pullRequestMetadataAccount: web3.PublicKey;
+  pullRequestTokenAccount: web3.PublicKey;
+  pullRequestStaker: web3.PublicKey;
+  pullRequestStakerTokenAccount: web3.PublicKey;
+  pullRequestStakerAccount: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const unstakePrInstructionDiscriminator = [
   218, 14, 235, 254, 222, 176, 147, 76,
-]
+];
 
 /**
  * Creates a _UnstakePr_ instruction.
@@ -65,11 +65,11 @@ export const unstakePrInstructionDiscriminator = [
  */
 export function createUnstakePrInstruction(
   accounts: UnstakePrInstructionAccounts,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = unstakePrStruct.serialize({
     instructionDiscriminator: unstakePrInstructionDiscriminator,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.pullRequestAddr,
@@ -126,11 +126,11 @@ export function createUnstakePrInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -138,6 +138,6 @@ export function createUnstakePrInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }
