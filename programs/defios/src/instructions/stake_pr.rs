@@ -66,12 +66,6 @@ pub fn handler(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
     let issue = &ctx.accounts.issue;
     require!(issue.closed_at.is_none(), DefiOSError::IssueClosedAlready);
 
-    msg!(
-        "Staking {} including decimals of token {}",
-        transfer_amount,
-        rewards_mint.key().to_string()
-    );
-
     //Creating token account if empty
     if pull_request_token_account.data_is_empty() {
         create_associated_token_account(CpiContext::new(

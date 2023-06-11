@@ -68,11 +68,6 @@ pub fn handler(
     let metadata_account = &mut ctx.accounts.metadata_account;
     let roadmap_data_adder = &mut ctx.accounts.roadmap_data_adder;
     let repository_account = &ctx.accounts.repository_account;
-    msg!(
-        "Adding roadmap: Title:{}, Description: {}",
-        roadmap_title,
-        roadmap_description_link
-    );
 
     metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
     metadata_account.roadmap_title = roadmap_title.clone();

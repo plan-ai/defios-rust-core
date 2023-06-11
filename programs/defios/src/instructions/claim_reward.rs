@@ -87,7 +87,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
 
     //Creating token account if empty
     if pull_request_creator_reward_account.data_is_empty() {
-        msg!("Creating Commit creator reward token account");
         create_associated_token_account(CpiContext::new(
             associated_token_program.to_account_info(),
             Create {

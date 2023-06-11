@@ -96,14 +96,8 @@ pub fn handler(
     let commit_creator = &ctx.accounts.commit_creator;
     let commit_account = &mut ctx.accounts.commit_account;
     let created_at = Clock::get()?.unix_timestamp;
-
-    msg!(
-        "Adding commit under issue: {} Commit state address: {} Commit creator: {}",
-        issue_account.key().to_string(),
-        commit_account.key().to_string(),
-        commit_creator.key().to_string()
-    );
     let metadata = metadata_uri.clone();
+
     commit_account.bump = *ctx.bumps.get("commit_account").unwrap();
     commit_account.index = issue_account.commit_index;
     commit_account.tree_hash = tree_hash;

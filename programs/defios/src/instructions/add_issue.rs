@@ -98,14 +98,7 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     let associated_token_program = &ctx.accounts.associated_token_program;
     let system_program = &ctx.accounts.system_program;
     let token_program = &ctx.accounts.token_program;
-
     let created_at = Clock::get()?.unix_timestamp;
-    msg!(
-        "Creating issue under repository: {} Issue address: {} Issue Token pool address {}",
-        repository_account.key().to_string(),
-        issue_account.key().to_string(),
-        issue_token_pool_account.key().to_string(),
-    );
 
     create_associated_token_account(CpiContext::new(
         associated_token_program.to_account_info(),
