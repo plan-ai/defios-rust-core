@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,8 +15,8 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type StakeIssueInstructionArgs = {
-  transferAmount: beet.bignum
-}
+  transferAmount: beet.bignum;
+};
 /**
  * @category Instructions
  * @category StakeIssue
@@ -24,15 +24,15 @@ export type StakeIssueInstructionArgs = {
  */
 export const stakeIssueStruct = new beet.BeetArgsStruct<
   StakeIssueInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['transferAmount', beet.u64],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["transferAmount", beet.u64],
   ],
-  'StakeIssueInstructionArgs'
-)
+  "StakeIssueInstructionArgs"
+);
 /**
  * Accounts required by the _stakeIssue_ instruction
  *
@@ -49,22 +49,22 @@ export const stakeIssueStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type StakeIssueInstructionAccounts = {
-  issueStaker: web3.PublicKey
-  issueStakerTokenAccount: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  issueAccount: web3.PublicKey
-  issueTokenPoolAccount: web3.PublicKey
-  issueStakerAccount: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  issueStaker: web3.PublicKey;
+  issueStakerTokenAccount: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  issueAccount: web3.PublicKey;
+  issueTokenPoolAccount: web3.PublicKey;
+  issueStakerAccount: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const stakeIssueInstructionDiscriminator = [
   195, 43, 228, 10, 157, 70, 246, 12,
-]
+];
 
 /**
  * Creates a _StakeIssue_ instruction.
@@ -79,12 +79,12 @@ export const stakeIssueInstructionDiscriminator = [
 export function createStakeIssueInstruction(
   accounts: StakeIssueInstructionAccounts,
   args: StakeIssueInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = stakeIssueStruct.serialize({
     instructionDiscriminator: stakeIssueInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.issueStaker,
@@ -136,11 +136,11 @@ export function createStakeIssueInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -148,6 +148,6 @@ export function createStakeIssueInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

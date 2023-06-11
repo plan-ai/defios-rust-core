@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,8 +15,8 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type AddPrInstructionArgs = {
-  metadataUri: string
-}
+  metadataUri: string;
+};
 /**
  * @category Instructions
  * @category AddPr
@@ -24,15 +24,15 @@ export type AddPrInstructionArgs = {
  */
 export const addPrStruct = new beet.FixableBeetArgsStruct<
   AddPrInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['metadataUri', beet.utf8String],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["metadataUri", beet.utf8String],
   ],
-  'AddPrInstructionArgs'
-)
+  "AddPrInstructionArgs"
+);
 /**
  * Accounts required by the _addPr_ instruction
  *
@@ -50,21 +50,21 @@ export const addPrStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddPrInstructionAccounts = {
-  pullRequestAddr: web3.PublicKey
-  issue: web3.PublicKey
-  pullRequestMetadataAccount: web3.PublicKey
-  pullRequestVerifiedUser: web3.PublicKey
-  pullRequestTokenAccount: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  routerCreator: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  pullRequestAddr: web3.PublicKey;
+  issue: web3.PublicKey;
+  pullRequestMetadataAccount: web3.PublicKey;
+  pullRequestVerifiedUser: web3.PublicKey;
+  pullRequestTokenAccount: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  routerCreator: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
-export const addPrInstructionDiscriminator = [35, 20, 64, 162, 171, 49, 91, 3]
+export const addPrInstructionDiscriminator = [35, 20, 64, 162, 171, 49, 91, 3];
 
 /**
  * Creates a _AddPr_ instruction.
@@ -79,12 +79,12 @@ export const addPrInstructionDiscriminator = [35, 20, 64, 162, 171, 49, 91, 3]
 export function createAddPrInstruction(
   accounts: AddPrInstructionAccounts,
   args: AddPrInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addPrStruct.serialize({
     instructionDiscriminator: addPrInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.pullRequestAddr,
@@ -141,11 +141,11 @@ export function createAddPrInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -153,6 +153,6 @@ export function createAddPrInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

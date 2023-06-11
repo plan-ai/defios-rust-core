@@ -2857,6 +2857,8 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        usdcMint: mintKeypair,
+        communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
@@ -2932,9 +2934,25 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        usdcMint: mintKeypair,
+        communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
+
+    await program.methods
+      .unlockTokens()
+      .accounts({
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([repositoryCreator])
+      .rpc({ skipPreflight: false });
 
     await program.methods
       .buyTokens(new anchor.BN(1), new anchor.BN(1))
@@ -2949,6 +2967,9 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         buyerTokenAccount: repositoryCreatorTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        communalUsdcAccount: communalTokenAccount,
+        buyerUsdcAccount: repositoryCreatorTokenAccount,
+        usdcMint: mintKeypair,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
@@ -3024,6 +3045,8 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        usdcMint: mintKeypair,
+        communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
@@ -3055,6 +3078,9 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         sellerTokenAccount: repositoryCreatorTokenAccount,
         defaultSchedule: defaultVestingSchedule,
+        communalUsdcAccount: communalTokenAccount,
+        sellerUsdcAccount: repositoryCreatorTokenAccount,
+        usdcMint: mintKeypair,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
@@ -3466,205 +3492,6 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         authority: repositoryCreator.publicKey,
         vestingSchedule: vestingSchedule,
-      })
-      .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
-  });
-  it("Swaps tokens", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
-    const repositoryCreator2 = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-    const [verifiedUserAccount2] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator2.publicKey
-    );
-
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-      defaultVestingSchedule,
-    ] = await create_spl_token(repositoryCreator);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenName,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount: repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        defaultSchedule: defaultVestingSchedule,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress,
-      })
-      .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
-
-    const [
-      repositoryAccount2,
-      repositoryCreatorTokenAccount2,
-      vestingTokenAccount2,
-      mintKeypair2,
-      vestingAccount2,
-      defaultVestingSchedule2,
-    ] = await create_spl_token(repositoryCreator2);
-    const metadataAddress2 = await get_metadata_account(mintKeypair2);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenName,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount: repositoryAccount2,
-        repositoryCreatorTokenAccount: repositoryCreatorTokenAccount2,
-        repositoryCreator: repositoryCreator2.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount2,
-        rewardsMint: mintKeypair2,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount2,
-        vestingTokenAccount: vestingTokenAccount2,
-        defaultSchedule: defaultVestingSchedule,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress2,
-      })
-      .signers([repositoryCreator2])
-      .rpc({ skipPreflight: false });
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc({ skipPreflight: false });
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount: repositoryAccount2,
-        repositoryCreatorTokenAccount: repositoryCreatorTokenAccount2,
-        repositoryCreator: repositoryCreator2.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount2,
-        tokenMint: mintKeypair2,
-        vestingTokenAccount: vestingTokenAccount2,
-      })
-      .signers([repositoryCreator2])
-      .rpc({ skipPreflight: false });
-
-    const [communal_account] = await get_pda_from_seeds([
-      Buffer.from("are_we_conscious"),
-      Buffer.from("is love life ?  "),
-      Buffer.from("arewemadorinlove"),
-      mintKeypair.toBuffer(),
-    ]);
-
-    const [communal_account2] = await get_pda_from_seeds([
-      Buffer.from("are_we_conscious"),
-      Buffer.from("is love life ?  "),
-      Buffer.from("arewemadorinlove"),
-      mintKeypair2.toBuffer(),
-    ]);
-
-    const communalTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      communal_account,
-      true
-    );
-
-    const communalTokenAccount2 = await getAssociatedTokenAddress(
-      mintKeypair2,
-      communal_account2,
-      true
-    );
-
-    await program.methods
-      .createCommunalAccount()
-      .accounts({
-        authority: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
-        communalTokenAccount: communalTokenAccount,
-        systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .signers([repositoryCreator])
-      .rpc({ skipPreflight: true });
-
-    await program.methods
-      .createCommunalAccount()
-      .accounts({
-        authority: repositoryCreator2.publicKey,
-        communalDeposit: communal_account2,
-        communalTokenAccount: communalTokenAccount2,
-        systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair2,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true });
-
-    const tokenAccount2 = await getAssociatedTokenAddress(
-      mintKeypair2,
-      repositoryCreator.publicKey
-    );
-
-    await program.methods
-      .swap(new anchor.BN(15), new anchor.BN(25))
-      .accounts({
-        buyer: repositoryCreator.publicKey,
-        buyerTokenAccount1: repositoryCreatorTokenAccount,
-        buyerTokenAccount2: tokenAccount2,
-        communalDeposit1: communal_account,
-        communalDeposit2: communal_account2,
-        communalTokenAccount: communalTokenAccount,
-        communalTokenAccount2: communalTokenAccount2,
-        rewardsMint1: mintKeypair,
-        rewardsMint2: mintKeypair2,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        repositoryAccount1: repositoryAccount,
-        repositoryAccount2: repositoryAccount2,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });

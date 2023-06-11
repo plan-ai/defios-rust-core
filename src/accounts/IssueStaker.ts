@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link IssueStaker}
@@ -15,15 +15,15 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type IssueStakerArgs = {
-  bump: number
-  stakedAmount: beet.bignum
-  stakedAt: beet.bignum[]
-  issueStaker: web3.PublicKey
-  issue: web3.PublicKey
-  issueStakerTokenAccount: web3.PublicKey
-}
+  bump: number;
+  stakedAmount: beet.bignum;
+  stakedAt: beet.bignum[];
+  issueStaker: web3.PublicKey;
+  issue: web3.PublicKey;
+  issueStakerTokenAccount: web3.PublicKey;
+};
 
-export const issueStakerDiscriminator = [220, 130, 235, 235, 189, 112, 6, 166]
+export const issueStakerDiscriminator = [220, 130, 235, 235, 189, 112, 6, 166];
 /**
  * Holds the data for the {@link IssueStaker} Account and provides de/serialization
  * functionality for that data
@@ -52,7 +52,7 @@ export class IssueStaker implements IssueStakerArgs {
       args.issueStaker,
       args.issue,
       args.issueStakerTokenAccount
-    )
+    );
   }
 
   /**
@@ -63,7 +63,7 @@ export class IssueStaker implements IssueStakerArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [IssueStaker, number] {
-    return IssueStaker.deserialize(accountInfo.data, offset)
+    return IssueStaker.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -80,11 +80,11 @@ export class IssueStaker implements IssueStakerArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find IssueStaker account at ${address}`)
+      throw new Error(`Unable to find IssueStaker account at ${address}`);
     }
-    return IssueStaker.fromAccountInfo(accountInfo, 0)[0]
+    return IssueStaker.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -95,10 +95,10 @@ export class IssueStaker implements IssueStakerArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, issueStakerBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, issueStakerBeet);
   }
 
   /**
@@ -106,7 +106,7 @@ export class IssueStaker implements IssueStakerArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [IssueStaker, number] {
-    return issueStakerBeet.deserialize(buf, offset)
+    return issueStakerBeet.deserialize(buf, offset);
   }
 
   /**
@@ -117,7 +117,7 @@ export class IssueStaker implements IssueStakerArgs {
     return issueStakerBeet.serialize({
       accountDiscriminator: issueStakerDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -128,11 +128,11 @@ export class IssueStaker implements IssueStakerArgs {
    * depends on them
    */
   static byteSize(args: IssueStakerArgs) {
-    const instance = IssueStaker.fromArgs(args)
+    const instance = IssueStaker.fromArgs(args);
     return issueStakerBeet.toFixedFromValue({
       accountDiscriminator: issueStakerDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -151,7 +151,7 @@ export class IssueStaker implements IssueStakerArgs {
     return connection.getMinimumBalanceForRentExemption(
       IssueStaker.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -162,21 +162,21 @@ export class IssueStaker implements IssueStakerArgs {
     return {
       bump: this.bump,
       stakedAmount: (() => {
-        const x = <{ toNumber: () => number }>this.stakedAmount
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.stakedAmount;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       stakedAt: this.stakedAt,
       issueStaker: this.issueStaker.toBase58(),
       issue: this.issue.toBase58(),
       issueStakerTokenAccount: this.issueStakerTokenAccount.toBase58(),
-    }
+    };
   }
 }
 
@@ -187,18 +187,18 @@ export class IssueStaker implements IssueStakerArgs {
 export const issueStakerBeet = new beet.FixableBeetStruct<
   IssueStaker,
   IssueStakerArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['stakedAmount', beet.u64],
-    ['stakedAt', beet.array(beet.u64)],
-    ['issueStaker', beetSolana.publicKey],
-    ['issue', beetSolana.publicKey],
-    ['issueStakerTokenAccount', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["stakedAmount", beet.u64],
+    ["stakedAt", beet.array(beet.u64)],
+    ["issueStaker", beetSolana.publicKey],
+    ["issue", beetSolana.publicKey],
+    ["issueStakerTokenAccount", beetSolana.publicKey],
   ],
   IssueStaker.fromArgs,
-  'IssueStaker'
-)
+  "IssueStaker"
+);

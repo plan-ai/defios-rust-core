@@ -5,8 +5,8 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -14,9 +14,9 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type CreateNameRouterInstructionArgs = {
-  signingDomain: string
-  signatureVersion: number
-}
+  signingDomain: string;
+  signatureVersion: number;
+};
 /**
  * @category Instructions
  * @category CreateNameRouter
@@ -24,16 +24,16 @@ export type CreateNameRouterInstructionArgs = {
  */
 export const createNameRouterStruct = new beet.FixableBeetArgsStruct<
   CreateNameRouterInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['signingDomain', beet.utf8String],
-    ['signatureVersion', beet.u8],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["signingDomain", beet.utf8String],
+    ["signatureVersion", beet.u8],
   ],
-  'CreateNameRouterInstructionArgs'
-)
+  "CreateNameRouterInstructionArgs"
+);
 /**
  * Accounts required by the _createNameRouter_ instruction
  *
@@ -44,15 +44,15 @@ export const createNameRouterStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type CreateNameRouterInstructionAccounts = {
-  routerCreator: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  routerCreator: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const createNameRouterInstructionDiscriminator = [
   26, 2, 251, 19, 88, 70, 117, 39,
-]
+];
 
 /**
  * Creates a _CreateNameRouter_ instruction.
@@ -67,12 +67,12 @@ export const createNameRouterInstructionDiscriminator = [
 export function createCreateNameRouterInstruction(
   accounts: CreateNameRouterInstructionAccounts,
   args: CreateNameRouterInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = createNameRouterStruct.serialize({
     instructionDiscriminator: createNameRouterInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.routerCreator,
@@ -89,11 +89,11 @@ export function createCreateNameRouterInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -101,6 +101,6 @@ export function createCreateNameRouterInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

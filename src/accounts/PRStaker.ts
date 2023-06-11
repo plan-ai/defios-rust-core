@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link PRStaker}
@@ -15,15 +15,15 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type PRStakerArgs = {
-  bump: number
-  stakedAmount: beet.bignum
-  stakedAt: beet.bignum[]
-  prStaker: web3.PublicKey
-  pr: web3.PublicKey
-  prStakerTokenAccount: web3.PublicKey
-}
+  bump: number;
+  stakedAmount: beet.bignum;
+  stakedAt: beet.bignum[];
+  prStaker: web3.PublicKey;
+  pr: web3.PublicKey;
+  prStakerTokenAccount: web3.PublicKey;
+};
 
-export const pRStakerDiscriminator = [125, 109, 247, 116, 16, 251, 69, 187]
+export const pRStakerDiscriminator = [125, 109, 247, 116, 16, 251, 69, 187];
 /**
  * Holds the data for the {@link PRStaker} Account and provides de/serialization
  * functionality for that data
@@ -52,7 +52,7 @@ export class PRStaker implements PRStakerArgs {
       args.prStaker,
       args.pr,
       args.prStakerTokenAccount
-    )
+    );
   }
 
   /**
@@ -63,7 +63,7 @@ export class PRStaker implements PRStakerArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [PRStaker, number] {
-    return PRStaker.deserialize(accountInfo.data, offset)
+    return PRStaker.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -80,11 +80,11 @@ export class PRStaker implements PRStakerArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find PRStaker account at ${address}`)
+      throw new Error(`Unable to find PRStaker account at ${address}`);
     }
-    return PRStaker.fromAccountInfo(accountInfo, 0)[0]
+    return PRStaker.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -95,10 +95,10 @@ export class PRStaker implements PRStakerArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, pRStakerBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, pRStakerBeet);
   }
 
   /**
@@ -106,7 +106,7 @@ export class PRStaker implements PRStakerArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [PRStaker, number] {
-    return pRStakerBeet.deserialize(buf, offset)
+    return pRStakerBeet.deserialize(buf, offset);
   }
 
   /**
@@ -117,7 +117,7 @@ export class PRStaker implements PRStakerArgs {
     return pRStakerBeet.serialize({
       accountDiscriminator: pRStakerDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -128,11 +128,11 @@ export class PRStaker implements PRStakerArgs {
    * depends on them
    */
   static byteSize(args: PRStakerArgs) {
-    const instance = PRStaker.fromArgs(args)
+    const instance = PRStaker.fromArgs(args);
     return pRStakerBeet.toFixedFromValue({
       accountDiscriminator: pRStakerDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -151,7 +151,7 @@ export class PRStaker implements PRStakerArgs {
     return connection.getMinimumBalanceForRentExemption(
       PRStaker.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -162,21 +162,21 @@ export class PRStaker implements PRStakerArgs {
     return {
       bump: this.bump,
       stakedAmount: (() => {
-        const x = <{ toNumber: () => number }>this.stakedAmount
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.stakedAmount;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       stakedAt: this.stakedAt,
       prStaker: this.prStaker.toBase58(),
       pr: this.pr.toBase58(),
       prStakerTokenAccount: this.prStakerTokenAccount.toBase58(),
-    }
+    };
   }
 }
 
@@ -187,18 +187,18 @@ export class PRStaker implements PRStakerArgs {
 export const pRStakerBeet = new beet.FixableBeetStruct<
   PRStaker,
   PRStakerArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['stakedAmount', beet.u64],
-    ['stakedAt', beet.array(beet.u64)],
-    ['prStaker', beetSolana.publicKey],
-    ['pr', beetSolana.publicKey],
-    ['prStakerTokenAccount', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["stakedAmount", beet.u64],
+    ["stakedAt", beet.array(beet.u64)],
+    ["prStaker", beetSolana.publicKey],
+    ["pr", beetSolana.publicKey],
+    ["prStakerTokenAccount", beetSolana.publicKey],
   ],
   PRStaker.fromArgs,
-  'PRStaker'
-)
+  "PRStaker"
+);

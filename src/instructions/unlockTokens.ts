@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,11 +15,11 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export const unlockTokensStruct = new beet.BeetArgsStruct<{
-  instructionDiscriminator: number[] /* size: 8 */
+  instructionDiscriminator: number[] /* size: 8 */;
 }>(
-  [['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)]],
-  'UnlockTokensInstructionArgs'
-)
+  [["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)]],
+  "UnlockTokensInstructionArgs"
+);
 /**
  * Accounts required by the _unlockTokens_ instruction
  *
@@ -34,20 +34,20 @@ export const unlockTokensStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type UnlockTokensInstructionAccounts = {
-  repositoryCreator: web3.PublicKey
-  repositoryCreatorTokenAccount: web3.PublicKey
-  tokenMint: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  vestingAccount: web3.PublicKey
-  vestingTokenAccount: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  repositoryCreator: web3.PublicKey;
+  repositoryCreatorTokenAccount: web3.PublicKey;
+  tokenMint: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  vestingAccount: web3.PublicKey;
+  vestingTokenAccount: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const unlockTokensInstructionDiscriminator = [
   233, 35, 95, 159, 37, 185, 47, 88,
-]
+];
 
 /**
  * Creates a _UnlockTokens_ instruction.
@@ -59,11 +59,11 @@ export const unlockTokensInstructionDiscriminator = [
  */
 export function createUnlockTokensInstruction(
   accounts: UnlockTokensInstructionAccounts,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = unlockTokensStruct.serialize({
     instructionDiscriminator: unlockTokensInstructionDiscriminator,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.repositoryCreator,
@@ -105,11 +105,11 @@ export function createUnlockTokensInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -117,6 +117,6 @@ export function createUnlockTokensInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

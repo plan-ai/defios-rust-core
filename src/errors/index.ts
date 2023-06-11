@@ -5,11 +5,11 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-type ErrorWithCode = Error & { code: number }
-type MaybeErrorWithCode = ErrorWithCode | null | undefined
+type ErrorWithCode = Error & { code: number };
+type MaybeErrorWithCode = ErrorWithCode | null | undefined;
 
-const createErrorFromCodeLookup: Map<number, () => ErrorWithCode> = new Map()
-const createErrorFromNameLookup: Map<string, () => ErrorWithCode> = new Map()
+const createErrorFromCodeLookup: Map<number, () => ErrorWithCode> = new Map();
+const createErrorFromNameLookup: Map<string, () => ErrorWithCode> = new Map();
 
 /**
  * SignatureVerificationFailed: 'Invalid Signature'
@@ -18,12 +18,12 @@ const createErrorFromNameLookup: Map<string, () => ErrorWithCode> = new Map()
  * @category generated
  */
 export class SignatureVerificationFailedError extends Error {
-  readonly code: number = 0x1770
-  readonly name: string = 'SignatureVerificationFailed'
+  readonly code: number = 0x1770;
+  readonly name: string = "SignatureVerificationFailed";
   constructor() {
-    super('Invalid Signature')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, SignatureVerificationFailedError)
+    super("Invalid Signature");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, SignatureVerificationFailedError);
     }
   }
 }
@@ -31,11 +31,11 @@ export class SignatureVerificationFailedError extends Error {
 createErrorFromCodeLookup.set(
   0x1770,
   () => new SignatureVerificationFailedError()
-)
+);
 createErrorFromNameLookup.set(
-  'SignatureVerificationFailed',
+  "SignatureVerificationFailed",
   () => new SignatureVerificationFailedError()
-)
+);
 
 /**
  * UnauthorizedUser: 'User not verified'
@@ -44,21 +44,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class UnauthorizedUserError extends Error {
-  readonly code: number = 0x1771
-  readonly name: string = 'UnauthorizedUser'
+  readonly code: number = 0x1771;
+  readonly name: string = "UnauthorizedUser";
   constructor() {
-    super('User not verified')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, UnauthorizedUserError)
+    super("User not verified");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, UnauthorizedUserError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1771, () => new UnauthorizedUserError())
+createErrorFromCodeLookup.set(0x1771, () => new UnauthorizedUserError());
 createErrorFromNameLookup.set(
-  'UnauthorizedUser',
+  "UnauthorizedUser",
   () => new UnauthorizedUserError()
-)
+);
 
 /**
  * InvalidNameRouter: 'Invalid Name Router'
@@ -67,21 +67,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class InvalidNameRouterError extends Error {
-  readonly code: number = 0x1772
-  readonly name: string = 'InvalidNameRouter'
+  readonly code: number = 0x1772;
+  readonly name: string = "InvalidNameRouter";
   constructor() {
-    super('Invalid Name Router')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, InvalidNameRouterError)
+    super("Invalid Name Router");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, InvalidNameRouterError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1772, () => new InvalidNameRouterError())
+createErrorFromCodeLookup.set(0x1772, () => new InvalidNameRouterError());
 createErrorFromNameLookup.set(
-  'InvalidNameRouter',
+  "InvalidNameRouter",
   () => new InvalidNameRouterError()
-)
+);
 
 /**
  * TokenAccountMismatch: 'Token account mismatch'
@@ -90,21 +90,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class TokenAccountMismatchError extends Error {
-  readonly code: number = 0x1773
-  readonly name: string = 'TokenAccountMismatch'
+  readonly code: number = 0x1773;
+  readonly name: string = "TokenAccountMismatch";
   constructor() {
-    super('Token account mismatch')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, TokenAccountMismatchError)
+    super("Token account mismatch");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, TokenAccountMismatchError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1773, () => new TokenAccountMismatchError())
+createErrorFromCodeLookup.set(0x1773, () => new TokenAccountMismatchError());
 createErrorFromNameLookup.set(
-  'TokenAccountMismatch',
+  "TokenAccountMismatch",
   () => new TokenAccountMismatchError()
-)
+);
 
 /**
  * InsufficientStakingFunds: 'Insufficient funds for staking'
@@ -113,21 +113,24 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class InsufficientStakingFundsError extends Error {
-  readonly code: number = 0x1774
-  readonly name: string = 'InsufficientStakingFunds'
+  readonly code: number = 0x1774;
+  readonly name: string = "InsufficientStakingFunds";
   constructor() {
-    super('Insufficient funds for staking')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, InsufficientStakingFundsError)
+    super("Insufficient funds for staking");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, InsufficientStakingFundsError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1774, () => new InsufficientStakingFundsError())
-createErrorFromNameLookup.set(
-  'InsufficientStakingFunds',
+createErrorFromCodeLookup.set(
+  0x1774,
   () => new InsufficientStakingFundsError()
-)
+);
+createErrorFromNameLookup.set(
+  "InsufficientStakingFunds",
+  () => new InsufficientStakingFundsError()
+);
 
 /**
  * IssueClosedAlready: 'Cannot stake/unstake for a closed issue'
@@ -136,21 +139,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class IssueClosedAlreadyError extends Error {
-  readonly code: number = 0x1775
-  readonly name: string = 'IssueClosedAlready'
+  readonly code: number = 0x1775;
+  readonly name: string = "IssueClosedAlready";
   constructor() {
-    super('Cannot stake/unstake for a closed issue')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, IssueClosedAlreadyError)
+    super("Cannot stake/unstake for a closed issue");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, IssueClosedAlreadyError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1775, () => new IssueClosedAlreadyError())
+createErrorFromCodeLookup.set(0x1775, () => new IssueClosedAlreadyError());
 createErrorFromNameLookup.set(
-  'IssueClosedAlready',
+  "IssueClosedAlready",
   () => new IssueClosedAlreadyError()
-)
+);
 
 /**
  * HashesMismatch: 'Commit hashes do not match for reward eligibility'
@@ -159,18 +162,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class HashesMismatchError extends Error {
-  readonly code: number = 0x1776
-  readonly name: string = 'HashesMismatch'
+  readonly code: number = 0x1776;
+  readonly name: string = "HashesMismatch";
   constructor() {
-    super('Commit hashes do not match for reward eligibility')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, HashesMismatchError)
+    super("Commit hashes do not match for reward eligibility");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, HashesMismatchError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1776, () => new HashesMismatchError())
-createErrorFromNameLookup.set('HashesMismatch', () => new HashesMismatchError())
+createErrorFromCodeLookup.set(0x1776, () => new HashesMismatchError());
+createErrorFromNameLookup.set(
+  "HashesMismatch",
+  () => new HashesMismatchError()
+);
 
 /**
  * AlreadyClaimed: 'Tokens Already Claimed'
@@ -179,18 +185,21 @@ createErrorFromNameLookup.set('HashesMismatch', () => new HashesMismatchError())
  * @category generated
  */
 export class AlreadyClaimedError extends Error {
-  readonly code: number = 0x1777
-  readonly name: string = 'AlreadyClaimed'
+  readonly code: number = 0x1777;
+  readonly name: string = "AlreadyClaimed";
   constructor() {
-    super('Tokens Already Claimed')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, AlreadyClaimedError)
+    super("Tokens Already Claimed");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, AlreadyClaimedError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1777, () => new AlreadyClaimedError())
-createErrorFromNameLookup.set('AlreadyClaimed', () => new AlreadyClaimedError())
+createErrorFromCodeLookup.set(0x1777, () => new AlreadyClaimedError());
+createErrorFromNameLookup.set(
+  "AlreadyClaimed",
+  () => new AlreadyClaimedError()
+);
 
 /**
  * ObjectiveClosedAlready: 'Cannot stake/unstake on a closed objective'
@@ -199,21 +208,21 @@ createErrorFromNameLookup.set('AlreadyClaimed', () => new AlreadyClaimedError())
  * @category generated
  */
 export class ObjectiveClosedAlreadyError extends Error {
-  readonly code: number = 0x1778
-  readonly name: string = 'ObjectiveClosedAlready'
+  readonly code: number = 0x1778;
+  readonly name: string = "ObjectiveClosedAlready";
   constructor() {
-    super('Cannot stake/unstake on a closed objective')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, ObjectiveClosedAlreadyError)
+    super("Cannot stake/unstake on a closed objective");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, ObjectiveClosedAlreadyError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1778, () => new ObjectiveClosedAlreadyError())
+createErrorFromCodeLookup.set(0x1778, () => new ObjectiveClosedAlreadyError());
 createErrorFromNameLookup.set(
-  'ObjectiveClosedAlready',
+  "ObjectiveClosedAlready",
   () => new ObjectiveClosedAlreadyError()
-)
+);
 
 /**
  * NoParentEntered: 'Parent was not mentioned to which objective is to be added'
@@ -222,21 +231,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class NoParentEnteredError extends Error {
-  readonly code: number = 0x1779
-  readonly name: string = 'NoParentEntered'
+  readonly code: number = 0x1779;
+  readonly name: string = "NoParentEntered";
   constructor() {
-    super('Parent was not mentioned to which objective is to be added')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, NoParentEnteredError)
+    super("Parent was not mentioned to which objective is to be added");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, NoParentEnteredError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1779, () => new NoParentEnteredError())
+createErrorFromCodeLookup.set(0x1779, () => new NoParentEnteredError());
 createErrorFromNameLookup.set(
-  'NoParentEntered',
+  "NoParentEntered",
   () => new NoParentEnteredError()
-)
+);
 
 /**
  * RoadmapInvalidEndTime: 'Roadmap end time before roadmap creation time'
@@ -245,21 +254,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class RoadmapInvalidEndTimeError extends Error {
-  readonly code: number = 0x177a
-  readonly name: string = 'RoadmapInvalidEndTime'
+  readonly code: number = 0x177a;
+  readonly name: string = "RoadmapInvalidEndTime";
   constructor() {
-    super('Roadmap end time before roadmap creation time')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, RoadmapInvalidEndTimeError)
+    super("Roadmap end time before roadmap creation time");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, RoadmapInvalidEndTimeError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x177a, () => new RoadmapInvalidEndTimeError())
+createErrorFromCodeLookup.set(0x177a, () => new RoadmapInvalidEndTimeError());
 createErrorFromNameLookup.set(
-  'RoadmapInvalidEndTime',
+  "RoadmapInvalidEndTime",
   () => new RoadmapInvalidEndTimeError()
-)
+);
 
 /**
  * UnauthorizedPR: 'Can not add PR of somebody else's commits'
@@ -268,18 +277,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class UnauthorizedPRError extends Error {
-  readonly code: number = 0x177b
-  readonly name: string = 'UnauthorizedPR'
+  readonly code: number = 0x177b;
+  readonly name: string = "UnauthorizedPR";
   constructor() {
-    super("Can not add PR of somebody else's commits")
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, UnauthorizedPRError)
+    super("Can not add PR of somebody else's commits");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, UnauthorizedPRError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x177b, () => new UnauthorizedPRError())
-createErrorFromNameLookup.set('UnauthorizedPR', () => new UnauthorizedPRError())
+createErrorFromCodeLookup.set(0x177b, () => new UnauthorizedPRError());
+createErrorFromNameLookup.set(
+  "UnauthorizedPR",
+  () => new UnauthorizedPRError()
+);
 
 /**
  * MathOverflow: 'Math overflow'
@@ -288,18 +300,18 @@ createErrorFromNameLookup.set('UnauthorizedPR', () => new UnauthorizedPRError())
  * @category generated
  */
 export class MathOverflowError extends Error {
-  readonly code: number = 0x177c
-  readonly name: string = 'MathOverflow'
+  readonly code: number = 0x177c;
+  readonly name: string = "MathOverflow";
   constructor() {
-    super('Math overflow')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, MathOverflowError)
+    super("Math overflow");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, MathOverflowError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x177c, () => new MathOverflowError())
-createErrorFromNameLookup.set('MathOverflow', () => new MathOverflowError())
+createErrorFromCodeLookup.set(0x177c, () => new MathOverflowError());
+createErrorFromNameLookup.set("MathOverflow", () => new MathOverflowError());
 
 /**
  * MintMismatch: 'Token Mint mismatch'
@@ -308,18 +320,18 @@ createErrorFromNameLookup.set('MathOverflow', () => new MathOverflowError())
  * @category generated
  */
 export class MintMismatchError extends Error {
-  readonly code: number = 0x177d
-  readonly name: string = 'MintMismatch'
+  readonly code: number = 0x177d;
+  readonly name: string = "MintMismatch";
   constructor() {
-    super('Token Mint mismatch')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, MintMismatchError)
+    super("Token Mint mismatch");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, MintMismatchError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x177d, () => new MintMismatchError())
-createErrorFromNameLookup.set('MintMismatch', () => new MintMismatchError())
+createErrorFromCodeLookup.set(0x177d, () => new MintMismatchError());
+createErrorFromNameLookup.set("MintMismatch", () => new MintMismatchError());
 
 /**
  * VestingNotReachedRelease: 'Vesting contract has not reached release time'
@@ -328,21 +340,24 @@ createErrorFromNameLookup.set('MintMismatch', () => new MintMismatchError())
  * @category generated
  */
 export class VestingNotReachedReleaseError extends Error {
-  readonly code: number = 0x177e
-  readonly name: string = 'VestingNotReachedRelease'
+  readonly code: number = 0x177e;
+  readonly name: string = "VestingNotReachedRelease";
   constructor() {
-    super('Vesting contract has not reached release time')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, VestingNotReachedReleaseError)
+    super("Vesting contract has not reached release time");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, VestingNotReachedReleaseError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x177e, () => new VestingNotReachedReleaseError())
-createErrorFromNameLookup.set(
-  'VestingNotReachedRelease',
+createErrorFromCodeLookup.set(
+  0x177e,
   () => new VestingNotReachedReleaseError()
-)
+);
+createErrorFromNameLookup.set(
+  "VestingNotReachedRelease",
+  () => new VestingNotReachedReleaseError()
+);
 
 /**
  * PullRequestNotYetAccepted: 'Pull request not yet accepted'
@@ -351,12 +366,12 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class PullRequestNotYetAcceptedError extends Error {
-  readonly code: number = 0x177f
-  readonly name: string = 'PullRequestNotYetAccepted'
+  readonly code: number = 0x177f;
+  readonly name: string = "PullRequestNotYetAccepted";
   constructor() {
-    super('Pull request not yet accepted')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, PullRequestNotYetAcceptedError)
+    super("Pull request not yet accepted");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, PullRequestNotYetAcceptedError);
     }
   }
 }
@@ -364,11 +379,11 @@ export class PullRequestNotYetAcceptedError extends Error {
 createErrorFromCodeLookup.set(
   0x177f,
   () => new PullRequestNotYetAcceptedError()
-)
+);
 createErrorFromNameLookup.set(
-  'PullRequestNotYetAccepted',
+  "PullRequestNotYetAccepted",
   () => new PullRequestNotYetAcceptedError()
-)
+);
 
 /**
  * CanNotMergePullRequest: 'You are not authorized to merge this pull request'
@@ -377,21 +392,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class CanNotMergePullRequestError extends Error {
-  readonly code: number = 0x1780
-  readonly name: string = 'CanNotMergePullRequest'
+  readonly code: number = 0x1780;
+  readonly name: string = "CanNotMergePullRequest";
   constructor() {
-    super('You are not authorized to merge this pull request')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, CanNotMergePullRequestError)
+    super("You are not authorized to merge this pull request");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, CanNotMergePullRequestError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1780, () => new CanNotMergePullRequestError())
+createErrorFromCodeLookup.set(0x1780, () => new CanNotMergePullRequestError());
 createErrorFromNameLookup.set(
-  'CanNotMergePullRequest',
+  "CanNotMergePullRequest",
   () => new CanNotMergePullRequestError()
-)
+);
 
 /**
  * UnauthorizedActionAttempted: 'Unauthorized smart contract Action'
@@ -400,12 +415,12 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class UnauthorizedActionAttemptedError extends Error {
-  readonly code: number = 0x1781
-  readonly name: string = 'UnauthorizedActionAttempted'
+  readonly code: number = 0x1781;
+  readonly name: string = "UnauthorizedActionAttempted";
   constructor() {
-    super('Unauthorized smart contract Action')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, UnauthorizedActionAttemptedError)
+    super("Unauthorized smart contract Action");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, UnauthorizedActionAttemptedError);
     }
   }
 }
@@ -413,11 +428,11 @@ export class UnauthorizedActionAttemptedError extends Error {
 createErrorFromCodeLookup.set(
   0x1781,
   () => new UnauthorizedActionAttemptedError()
-)
+);
 createErrorFromNameLookup.set(
-  'UnauthorizedActionAttempted',
+  "UnauthorizedActionAttempted",
   () => new UnauthorizedActionAttemptedError()
-)
+);
 
 /**
  * NoMoneyStakedOnIssue: 'No money was staked on this issue, Still thanks for the support to the community'
@@ -426,23 +441,23 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class NoMoneyStakedOnIssueError extends Error {
-  readonly code: number = 0x1782
-  readonly name: string = 'NoMoneyStakedOnIssue'
+  readonly code: number = 0x1782;
+  readonly name: string = "NoMoneyStakedOnIssue";
   constructor() {
     super(
-      'No money was staked on this issue, Still thanks for the support to the community'
-    )
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, NoMoneyStakedOnIssueError)
+      "No money was staked on this issue, Still thanks for the support to the community"
+    );
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, NoMoneyStakedOnIssueError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1782, () => new NoMoneyStakedOnIssueError())
+createErrorFromCodeLookup.set(0x1782, () => new NoMoneyStakedOnIssueError());
 createErrorFromNameLookup.set(
-  'NoMoneyStakedOnIssue',
+  "NoMoneyStakedOnIssue",
   () => new NoMoneyStakedOnIssueError()
-)
+);
 
 /**
  * InsufficientFunds: 'Insufficient funds'
@@ -451,21 +466,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class InsufficientFundsError extends Error {
-  readonly code: number = 0x1783
-  readonly name: string = 'InsufficientFunds'
+  readonly code: number = 0x1783;
+  readonly name: string = "InsufficientFunds";
   constructor() {
-    super('Insufficient funds')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, InsufficientFundsError)
+    super("Insufficient funds");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, InsufficientFundsError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1783, () => new InsufficientFundsError())
+createErrorFromCodeLookup.set(0x1783, () => new InsufficientFundsError());
 createErrorFromNameLookup.set(
-  'InsufficientFunds',
+  "InsufficientFunds",
   () => new InsufficientFundsError()
-)
+);
 
 /**
  * IncorrectMaths: 'Incorrect Inputs for buy/sell given'
@@ -474,18 +489,21 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class IncorrectMathsError extends Error {
-  readonly code: number = 0x1784
-  readonly name: string = 'IncorrectMaths'
+  readonly code: number = 0x1784;
+  readonly name: string = "IncorrectMaths";
   constructor() {
-    super('Incorrect Inputs for buy/sell given')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, IncorrectMathsError)
+    super("Incorrect Inputs for buy/sell given");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, IncorrectMathsError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1784, () => new IncorrectMathsError())
-createErrorFromNameLookup.set('IncorrectMaths', () => new IncorrectMathsError())
+createErrorFromCodeLookup.set(0x1784, () => new IncorrectMathsError());
+createErrorFromNameLookup.set(
+  "IncorrectMaths",
+  () => new IncorrectMathsError()
+);
 
 /**
  * IncorrectMetadataAccount: 'Incorrect Metadata account provided'
@@ -494,21 +512,24 @@ createErrorFromNameLookup.set('IncorrectMaths', () => new IncorrectMathsError())
  * @category generated
  */
 export class IncorrectMetadataAccountError extends Error {
-  readonly code: number = 0x1785
-  readonly name: string = 'IncorrectMetadataAccount'
+  readonly code: number = 0x1785;
+  readonly name: string = "IncorrectMetadataAccount";
   constructor() {
-    super('Incorrect Metadata account provided')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, IncorrectMetadataAccountError)
+    super("Incorrect Metadata account provided");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, IncorrectMetadataAccountError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1785, () => new IncorrectMetadataAccountError())
-createErrorFromNameLookup.set(
-  'IncorrectMetadataAccount',
+createErrorFromCodeLookup.set(
+  0x1785,
   () => new IncorrectMetadataAccountError()
-)
+);
+createErrorFromNameLookup.set(
+  "IncorrectMetadataAccount",
+  () => new IncorrectMetadataAccountError()
+);
 
 /**
  * PullRequestClosedAlready: 'Cannot unstake for a closed pull request'
@@ -517,21 +538,24 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class PullRequestClosedAlreadyError extends Error {
-  readonly code: number = 0x1786
-  readonly name: string = 'PullRequestClosedAlready'
+  readonly code: number = 0x1786;
+  readonly name: string = "PullRequestClosedAlready";
   constructor() {
-    super('Cannot unstake for a closed pull request')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, PullRequestClosedAlreadyError)
+    super("Cannot unstake for a closed pull request");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, PullRequestClosedAlreadyError);
     }
   }
 }
 
-createErrorFromCodeLookup.set(0x1786, () => new PullRequestClosedAlreadyError())
-createErrorFromNameLookup.set(
-  'PullRequestClosedAlready',
+createErrorFromCodeLookup.set(
+  0x1786,
   () => new PullRequestClosedAlreadyError()
-)
+);
+createErrorFromNameLookup.set(
+  "PullRequestClosedAlready",
+  () => new PullRequestClosedAlreadyError()
+);
 
 /**
  * CantAddObjectiveToSomebodiesRoadmap: 'Unauthorized objective addition'
@@ -540,12 +564,12 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export class CantAddObjectiveToSomebodiesRoadmapError extends Error {
-  readonly code: number = 0x1787
-  readonly name: string = 'CantAddObjectiveToSomebodiesRoadmap'
+  readonly code: number = 0x1787;
+  readonly name: string = "CantAddObjectiveToSomebodiesRoadmap";
   constructor() {
-    super('Unauthorized objective addition')
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, CantAddObjectiveToSomebodiesRoadmapError)
+    super("Unauthorized objective addition");
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, CantAddObjectiveToSomebodiesRoadmapError);
     }
   }
 }
@@ -553,11 +577,11 @@ export class CantAddObjectiveToSomebodiesRoadmapError extends Error {
 createErrorFromCodeLookup.set(
   0x1787,
   () => new CantAddObjectiveToSomebodiesRoadmapError()
-)
+);
 createErrorFromNameLookup.set(
-  'CantAddObjectiveToSomebodiesRoadmap',
+  "CantAddObjectiveToSomebodiesRoadmap",
   () => new CantAddObjectiveToSomebodiesRoadmapError()
-)
+);
 
 /**
  * Attempts to resolve a custom program error from the provided error code.
@@ -565,8 +589,8 @@ createErrorFromNameLookup.set(
  * @category generated
  */
 export function errorFromCode(code: number): MaybeErrorWithCode {
-  const createError = createErrorFromCodeLookup.get(code)
-  return createError != null ? createError() : null
+  const createError = createErrorFromCodeLookup.get(code);
+  return createError != null ? createError() : null;
 }
 
 /**
@@ -575,6 +599,6 @@ export function errorFromCode(code: number): MaybeErrorWithCode {
  * @category generated
  */
 export function errorFromName(name: string): MaybeErrorWithCode {
-  const createError = createErrorFromNameLookup.get(name)
-  return createError != null ? createError() : null
+  const createError = createErrorFromNameLookup.get(name);
+  return createError != null ? createError() : null;
 }

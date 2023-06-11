@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link Repository}
@@ -15,18 +15,18 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type RepositoryArgs = {
-  bump: number
-  issueIndex: beet.bignum
-  nameRouter: web3.PublicKey
-  repositoryCreator: web3.PublicKey
-  rewardsMint: beet.COption<web3.PublicKey>
-  id: string
-  description: string
-  uri: string
-  vestingSchedule: beet.COption<web3.PublicKey>
-}
+  bump: number;
+  issueIndex: beet.bignum;
+  nameRouter: web3.PublicKey;
+  repositoryCreator: web3.PublicKey;
+  rewardsMint: beet.COption<web3.PublicKey>;
+  id: string;
+  description: string;
+  uri: string;
+  vestingSchedule: beet.COption<web3.PublicKey>;
+};
 
-export const repositoryDiscriminator = [100, 130, 92, 39, 250, 203, 126, 170]
+export const repositoryDiscriminator = [100, 130, 92, 39, 250, 203, 126, 170];
 /**
  * Holds the data for the {@link Repository} Account and provides de/serialization
  * functionality for that data
@@ -61,7 +61,7 @@ export class Repository implements RepositoryArgs {
       args.description,
       args.uri,
       args.vestingSchedule
-    )
+    );
   }
 
   /**
@@ -72,7 +72,7 @@ export class Repository implements RepositoryArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [Repository, number] {
-    return Repository.deserialize(accountInfo.data, offset)
+    return Repository.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -89,11 +89,11 @@ export class Repository implements RepositoryArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find Repository account at ${address}`)
+      throw new Error(`Unable to find Repository account at ${address}`);
     }
-    return Repository.fromAccountInfo(accountInfo, 0)[0]
+    return Repository.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -104,10 +104,10 @@ export class Repository implements RepositoryArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, repositoryBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, repositoryBeet);
   }
 
   /**
@@ -115,7 +115,7 @@ export class Repository implements RepositoryArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [Repository, number] {
-    return repositoryBeet.deserialize(buf, offset)
+    return repositoryBeet.deserialize(buf, offset);
   }
 
   /**
@@ -126,7 +126,7 @@ export class Repository implements RepositoryArgs {
     return repositoryBeet.serialize({
       accountDiscriminator: repositoryDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -137,11 +137,11 @@ export class Repository implements RepositoryArgs {
    * depends on them
    */
   static byteSize(args: RepositoryArgs) {
-    const instance = Repository.fromArgs(args)
+    const instance = Repository.fromArgs(args);
     return repositoryBeet.toFixedFromValue({
       accountDiscriminator: repositoryDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -160,7 +160,7 @@ export class Repository implements RepositoryArgs {
     return connection.getMinimumBalanceForRentExemption(
       Repository.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -171,15 +171,15 @@ export class Repository implements RepositoryArgs {
     return {
       bump: this.bump,
       issueIndex: (() => {
-        const x = <{ toNumber: () => number }>this.issueIndex
-        if (typeof x.toNumber === 'function') {
+        const x = <{ toNumber: () => number }>this.issueIndex;
+        if (typeof x.toNumber === "function") {
           try {
-            return x.toNumber()
+            return x.toNumber();
           } catch (_) {
-            return x
+            return x;
           }
         }
-        return x
+        return x;
       })(),
       nameRouter: this.nameRouter.toBase58(),
       repositoryCreator: this.repositoryCreator.toBase58(),
@@ -188,7 +188,7 @@ export class Repository implements RepositoryArgs {
       description: this.description,
       uri: this.uri,
       vestingSchedule: this.vestingSchedule,
-    }
+    };
   }
 }
 
@@ -199,21 +199,21 @@ export class Repository implements RepositoryArgs {
 export const repositoryBeet = new beet.FixableBeetStruct<
   Repository,
   RepositoryArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['issueIndex', beet.u64],
-    ['nameRouter', beetSolana.publicKey],
-    ['repositoryCreator', beetSolana.publicKey],
-    ['rewardsMint', beet.coption(beetSolana.publicKey)],
-    ['id', beet.utf8String],
-    ['description', beet.utf8String],
-    ['uri', beet.utf8String],
-    ['vestingSchedule', beet.coption(beetSolana.publicKey)],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["issueIndex", beet.u64],
+    ["nameRouter", beetSolana.publicKey],
+    ["repositoryCreator", beetSolana.publicKey],
+    ["rewardsMint", beet.coption(beetSolana.publicKey)],
+    ["id", beet.utf8String],
+    ["description", beet.utf8String],
+    ["uri", beet.utf8String],
+    ["vestingSchedule", beet.coption(beetSolana.publicKey)],
   ],
   Repository.fromArgs,
-  'Repository'
-)
+  "Repository"
+);

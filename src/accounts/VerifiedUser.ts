@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as web3 from '@solana/web3.js'
-import * as beet from '@metaplex-foundation/beet'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as web3 from "@solana/web3.js";
+import * as beet from "@metaplex-foundation/beet";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link VerifiedUser}
@@ -15,13 +15,13 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type VerifiedUserArgs = {
-  bump: number
-  nameRouter: web3.PublicKey
-  userName: string
-  userPubkey: web3.PublicKey
-}
+  bump: number;
+  nameRouter: web3.PublicKey;
+  userName: string;
+  userPubkey: web3.PublicKey;
+};
 
-export const verifiedUserDiscriminator = [197, 144, 184, 72, 82, 65, 99, 144]
+export const verifiedUserDiscriminator = [197, 144, 184, 72, 82, 65, 99, 144];
 /**
  * Holds the data for the {@link VerifiedUser} Account and provides de/serialization
  * functionality for that data
@@ -46,7 +46,7 @@ export class VerifiedUser implements VerifiedUserArgs {
       args.nameRouter,
       args.userName,
       args.userPubkey
-    )
+    );
   }
 
   /**
@@ -57,7 +57,7 @@ export class VerifiedUser implements VerifiedUserArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [VerifiedUser, number] {
-    return VerifiedUser.deserialize(accountInfo.data, offset)
+    return VerifiedUser.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -74,11 +74,11 @@ export class VerifiedUser implements VerifiedUserArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find VerifiedUser account at ${address}`)
+      throw new Error(`Unable to find VerifiedUser account at ${address}`);
     }
-    return VerifiedUser.fromAccountInfo(accountInfo, 0)[0]
+    return VerifiedUser.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -89,10 +89,10 @@ export class VerifiedUser implements VerifiedUserArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, verifiedUserBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, verifiedUserBeet);
   }
 
   /**
@@ -100,7 +100,7 @@ export class VerifiedUser implements VerifiedUserArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [VerifiedUser, number] {
-    return verifiedUserBeet.deserialize(buf, offset)
+    return verifiedUserBeet.deserialize(buf, offset);
   }
 
   /**
@@ -111,7 +111,7 @@ export class VerifiedUser implements VerifiedUserArgs {
     return verifiedUserBeet.serialize({
       accountDiscriminator: verifiedUserDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -122,11 +122,11 @@ export class VerifiedUser implements VerifiedUserArgs {
    * depends on them
    */
   static byteSize(args: VerifiedUserArgs) {
-    const instance = VerifiedUser.fromArgs(args)
+    const instance = VerifiedUser.fromArgs(args);
     return verifiedUserBeet.toFixedFromValue({
       accountDiscriminator: verifiedUserDiscriminator,
       ...instance,
-    }).byteSize
+    }).byteSize;
   }
 
   /**
@@ -145,7 +145,7 @@ export class VerifiedUser implements VerifiedUserArgs {
     return connection.getMinimumBalanceForRentExemption(
       VerifiedUser.byteSize(args),
       commitment
-    )
+    );
   }
 
   /**
@@ -158,7 +158,7 @@ export class VerifiedUser implements VerifiedUserArgs {
       nameRouter: this.nameRouter.toBase58(),
       userName: this.userName,
       userPubkey: this.userPubkey.toBase58(),
-    }
+    };
   }
 }
 
@@ -169,16 +169,16 @@ export class VerifiedUser implements VerifiedUserArgs {
 export const verifiedUserBeet = new beet.FixableBeetStruct<
   VerifiedUser,
   VerifiedUserArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
-    ['nameRouter', beetSolana.publicKey],
-    ['userName', beet.utf8String],
-    ['userPubkey', beetSolana.publicKey],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
+    ["nameRouter", beetSolana.publicKey],
+    ["userName", beet.utf8String],
+    ["userPubkey", beetSolana.publicKey],
   ],
   VerifiedUser.fromArgs,
-  'VerifiedUser'
-)
+  "VerifiedUser"
+);

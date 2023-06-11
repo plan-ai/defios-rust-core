@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as web3 from '@solana/web3.js'
-import * as beet from '@metaplex-foundation/beet'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as web3 from "@solana/web3.js";
+import * as beet from "@metaplex-foundation/beet";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * @category Instructions
@@ -15,11 +15,11 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type AddVerifiedUserInstructionArgs = {
-  userName: string
-  userPubkey: web3.PublicKey
-  msg: Uint8Array
-  sig: number[] /* size: 64 */
-}
+  userName: string;
+  userPubkey: web3.PublicKey;
+  msg: Uint8Array;
+  sig: number[] /* size: 64 */;
+};
 /**
  * @category Instructions
  * @category AddVerifiedUser
@@ -27,18 +27,18 @@ export type AddVerifiedUserInstructionArgs = {
  */
 export const addVerifiedUserStruct = new beet.FixableBeetArgsStruct<
   AddVerifiedUserInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['userName', beet.utf8String],
-    ['userPubkey', beetSolana.publicKey],
-    ['msg', beet.bytes],
-    ['sig', beet.uniformFixedSizeArray(beet.u8, 64)],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["userName", beet.utf8String],
+    ["userPubkey", beetSolana.publicKey],
+    ["msg", beet.bytes],
+    ["sig", beet.uniformFixedSizeArray(beet.u8, 64)],
   ],
-  'AddVerifiedUserInstructionArgs'
-)
+  "AddVerifiedUserInstructionArgs"
+);
 /**
  * Accounts required by the _addVerifiedUser_ instruction
  *
@@ -51,17 +51,17 @@ export const addVerifiedUserStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddVerifiedUserInstructionAccounts = {
-  routerCreator: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  verifiedUserAccount: web3.PublicKey
-  sysvarInstructions: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  routerCreator: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  verifiedUserAccount: web3.PublicKey;
+  sysvarInstructions: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addVerifiedUserInstructionDiscriminator = [
   126, 135, 209, 24, 87, 111, 27, 225,
-]
+];
 
 /**
  * Creates a _AddVerifiedUser_ instruction.
@@ -76,12 +76,12 @@ export const addVerifiedUserInstructionDiscriminator = [
 export function createAddVerifiedUserInstruction(
   accounts: AddVerifiedUserInstructionAccounts,
   args: AddVerifiedUserInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addVerifiedUserStruct.serialize({
     instructionDiscriminator: addVerifiedUserInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.routerCreator,
@@ -108,11 +108,11 @@ export function createAddVerifiedUserInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -120,6 +120,6 @@ export function createAddVerifiedUserInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

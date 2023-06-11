@@ -5,8 +5,8 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -14,10 +14,10 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type SetDefaultScheduleInstructionArgs = {
-  numberOfSchedules: number
-  perVestingAmount: beet.bignum
-  unixChange: beet.bignum
-}
+  numberOfSchedules: number;
+  perVestingAmount: beet.bignum;
+  unixChange: beet.bignum;
+};
 /**
  * @category Instructions
  * @category SetDefaultSchedule
@@ -25,17 +25,17 @@ export type SetDefaultScheduleInstructionArgs = {
  */
 export const setDefaultScheduleStruct = new beet.BeetArgsStruct<
   SetDefaultScheduleInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['numberOfSchedules', beet.u32],
-    ['perVestingAmount', beet.u64],
-    ['unixChange', beet.u64],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["numberOfSchedules", beet.u32],
+    ["perVestingAmount", beet.u64],
+    ["unixChange", beet.u64],
   ],
-  'SetDefaultScheduleInstructionArgs'
-)
+  "SetDefaultScheduleInstructionArgs"
+);
 /**
  * Accounts required by the _setDefaultSchedule_ instruction
  *
@@ -46,15 +46,15 @@ export const setDefaultScheduleStruct = new beet.BeetArgsStruct<
  * @category generated
  */
 export type SetDefaultScheduleInstructionAccounts = {
-  authority: web3.PublicKey
-  defaultSchedule: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  authority: web3.PublicKey;
+  defaultSchedule: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const setDefaultScheduleInstructionDiscriminator = [
   233, 192, 47, 129, 66, 64, 231, 116,
-]
+];
 
 /**
  * Creates a _SetDefaultSchedule_ instruction.
@@ -69,12 +69,12 @@ export const setDefaultScheduleInstructionDiscriminator = [
 export function createSetDefaultScheduleInstruction(
   accounts: SetDefaultScheduleInstructionAccounts,
   args: SetDefaultScheduleInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = setDefaultScheduleStruct.serialize({
     instructionDiscriminator: setDefaultScheduleInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.authority,
@@ -91,11 +91,11 @@ export function createSetDefaultScheduleInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -103,6 +103,6 @@ export function createSetDefaultScheduleInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

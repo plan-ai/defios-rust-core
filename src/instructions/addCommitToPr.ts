@@ -5,8 +5,8 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -14,11 +14,11 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export const addCommitToPrStruct = new beet.BeetArgsStruct<{
-  instructionDiscriminator: number[] /* size: 8 */
+  instructionDiscriminator: number[] /* size: 8 */;
 }>(
-  [['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)]],
-  'AddCommitToPrInstructionArgs'
-)
+  [["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)]],
+  "AddCommitToPrInstructionArgs"
+);
 /**
  * Accounts required by the _addCommitToPr_ instruction
  *
@@ -29,15 +29,15 @@ export const addCommitToPrStruct = new beet.BeetArgsStruct<{
  * @category generated
  */
 export type AddCommitToPrInstructionAccounts = {
-  commitAddr: web3.PublicKey
-  pullRequestMetadataAccount: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  commitAddr: web3.PublicKey;
+  pullRequestMetadataAccount: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addCommitToPrInstructionDiscriminator = [
   162, 115, 134, 40, 25, 88, 114, 155,
-]
+];
 
 /**
  * Creates a _AddCommitToPr_ instruction.
@@ -49,11 +49,11 @@ export const addCommitToPrInstructionDiscriminator = [
  */
 export function createAddCommitToPrInstruction(
   accounts: AddCommitToPrInstructionAccounts,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addCommitToPrStruct.serialize({
     instructionDiscriminator: addCommitToPrInstructionDiscriminator,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.commitAddr,
@@ -70,11 +70,11 @@ export function createAddCommitToPrInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -82,6 +82,6 @@ export function createAddCommitToPrInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

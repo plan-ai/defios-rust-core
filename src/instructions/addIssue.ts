@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as splToken from '@solana/spl-token'
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as splToken from "@solana/spl-token";
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 
 /**
  * @category Instructions
@@ -15,8 +15,8 @@ import * as web3 from '@solana/web3.js'
  * @category generated
  */
 export type AddIssueInstructionArgs = {
-  uri: string
-}
+  uri: string;
+};
 /**
  * @category Instructions
  * @category AddIssue
@@ -24,15 +24,15 @@ export type AddIssueInstructionArgs = {
  */
 export const addIssueStruct = new beet.FixableBeetArgsStruct<
   AddIssueInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['uri', beet.utf8String],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["uri", beet.utf8String],
   ],
-  'AddIssueInstructionArgs'
-)
+  "AddIssueInstructionArgs"
+);
 /**
  * Accounts required by the _addIssue_ instruction
  *
@@ -51,24 +51,24 @@ export const addIssueStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddIssueInstructionAccounts = {
-  issueCreator: web3.PublicKey
-  routerCreator: web3.PublicKey
-  repositoryCreator: web3.PublicKey
-  issueVerifiedUser: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  issueAccount: web3.PublicKey
-  issueTokenPoolAccount: web3.PublicKey
-  rewardsMint: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  associatedTokenProgram: web3.PublicKey
-  tokenProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  issueCreator: web3.PublicKey;
+  routerCreator: web3.PublicKey;
+  repositoryCreator: web3.PublicKey;
+  issueVerifiedUser: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  issueAccount: web3.PublicKey;
+  issueTokenPoolAccount: web3.PublicKey;
+  rewardsMint: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  associatedTokenProgram: web3.PublicKey;
+  tokenProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addIssueInstructionDiscriminator = [
   200, 5, 11, 179, 100, 248, 56, 111,
-]
+];
 
 /**
  * Creates a _AddIssue_ instruction.
@@ -83,12 +83,12 @@ export const addIssueInstructionDiscriminator = [
 export function createAddIssueInstruction(
   accounts: AddIssueInstructionAccounts,
   args: AddIssueInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addIssueStruct.serialize({
     instructionDiscriminator: addIssueInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.issueCreator,
@@ -150,11 +150,11 @@ export function createAddIssueInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -162,6 +162,6 @@ export function createAddIssueInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

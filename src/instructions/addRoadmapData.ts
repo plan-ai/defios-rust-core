@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import { RoadmapOutlook, roadmapOutlookBeet } from '../types/RoadmapOutlook'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import { RoadmapOutlook, roadmapOutlookBeet } from "../types/RoadmapOutlook";
 
 /**
  * @category Instructions
@@ -15,11 +15,11 @@ import { RoadmapOutlook, roadmapOutlookBeet } from '../types/RoadmapOutlook'
  * @category generated
  */
 export type AddRoadmapDataInstructionArgs = {
-  roadmapTitle: string
-  roadmapDescriptionLink: string
-  roadmapImageUrl: string
-  roadmapOutlook: RoadmapOutlook
-}
+  roadmapTitle: string;
+  roadmapDescriptionLink: string;
+  roadmapImageUrl: string;
+  roadmapOutlook: RoadmapOutlook;
+};
 /**
  * @category Instructions
  * @category AddRoadmapData
@@ -27,18 +27,18 @@ export type AddRoadmapDataInstructionArgs = {
  */
 export const addRoadmapDataStruct = new beet.FixableBeetArgsStruct<
   AddRoadmapDataInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['roadmapTitle', beet.utf8String],
-    ['roadmapDescriptionLink', beet.utf8String],
-    ['roadmapImageUrl', beet.utf8String],
-    ['roadmapOutlook', roadmapOutlookBeet],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["roadmapTitle", beet.utf8String],
+    ["roadmapDescriptionLink", beet.utf8String],
+    ["roadmapImageUrl", beet.utf8String],
+    ["roadmapOutlook", roadmapOutlookBeet],
   ],
-  'AddRoadmapDataInstructionArgs'
-)
+  "AddRoadmapDataInstructionArgs"
+);
 /**
  * Accounts required by the _addRoadmapData_ instruction
  *
@@ -53,19 +53,19 @@ export const addRoadmapDataStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddRoadmapDataInstructionAccounts = {
-  roadmapDataAdder: web3.PublicKey
-  metadataAccount: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  roadmapVerifiedUser: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  routerCreator: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  roadmapDataAdder: web3.PublicKey;
+  metadataAccount: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  roadmapVerifiedUser: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  routerCreator: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addRoadmapDataInstructionDiscriminator = [
   174, 151, 61, 213, 57, 59, 10, 35,
-]
+];
 
 /**
  * Creates a _AddRoadmapData_ instruction.
@@ -80,12 +80,12 @@ export const addRoadmapDataInstructionDiscriminator = [
 export function createAddRoadmapDataInstruction(
   accounts: AddRoadmapDataInstructionAccounts,
   args: AddRoadmapDataInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addRoadmapDataStruct.serialize({
     instructionDiscriminator: addRoadmapDataInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.roadmapDataAdder,
@@ -122,11 +122,11 @@ export function createAddRoadmapDataInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -134,6 +134,6 @@ export function createAddRoadmapDataInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

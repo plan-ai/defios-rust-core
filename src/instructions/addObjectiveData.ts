@@ -5,12 +5,12 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
 import {
   ObjectiveDeliverable,
   objectiveDeliverableBeet,
-} from '../types/ObjectiveDeliverable'
+} from "../types/ObjectiveDeliverable";
 
 /**
  * @category Instructions
@@ -18,13 +18,13 @@ import {
  * @category generated
  */
 export type AddObjectiveDataInstructionArgs = {
-  objectiveId: string
-  objectiveTitle: string
-  objectiveStartUnix: beet.bignum
-  objectiveEndUnix: beet.COption<beet.bignum>
-  objectiveDescriptionLink: string
-  objectiveDeliverable: ObjectiveDeliverable
-}
+  objectiveId: string;
+  objectiveTitle: string;
+  objectiveStartUnix: beet.bignum;
+  objectiveEndUnix: beet.COption<beet.bignum>;
+  objectiveDescriptionLink: string;
+  objectiveDeliverable: ObjectiveDeliverable;
+};
 /**
  * @category Instructions
  * @category AddObjectiveData
@@ -32,20 +32,20 @@ export type AddObjectiveDataInstructionArgs = {
  */
 export const addObjectiveDataStruct = new beet.FixableBeetArgsStruct<
   AddObjectiveDataInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['objectiveId', beet.utf8String],
-    ['objectiveTitle', beet.utf8String],
-    ['objectiveStartUnix', beet.i64],
-    ['objectiveEndUnix', beet.coption(beet.i64)],
-    ['objectiveDescriptionLink', beet.utf8String],
-    ['objectiveDeliverable', objectiveDeliverableBeet],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["objectiveId", beet.utf8String],
+    ["objectiveTitle", beet.utf8String],
+    ["objectiveStartUnix", beet.i64],
+    ["objectiveEndUnix", beet.coption(beet.i64)],
+    ["objectiveDescriptionLink", beet.utf8String],
+    ["objectiveDeliverable", objectiveDeliverableBeet],
   ],
-  'AddObjectiveDataInstructionArgs'
-)
+  "AddObjectiveDataInstructionArgs"
+);
 /**
  * Accounts required by the _addObjectiveData_ instruction
  *
@@ -61,20 +61,20 @@ export const addObjectiveDataStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type AddObjectiveDataInstructionAccounts = {
-  objectiveDataAddr: web3.PublicKey
-  metadataAccount: web3.PublicKey
-  objectiveIssue: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  objectiveVerifiedUser: web3.PublicKey
-  nameRouterAccount: web3.PublicKey
-  routerCreator: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  objectiveDataAddr: web3.PublicKey;
+  metadataAccount: web3.PublicKey;
+  objectiveIssue: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  objectiveVerifiedUser: web3.PublicKey;
+  nameRouterAccount: web3.PublicKey;
+  routerCreator: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const addObjectiveDataInstructionDiscriminator = [
   175, 230, 125, 196, 16, 28, 182, 36,
-]
+];
 
 /**
  * Creates a _AddObjectiveData_ instruction.
@@ -89,12 +89,12 @@ export const addObjectiveDataInstructionDiscriminator = [
 export function createAddObjectiveDataInstruction(
   accounts: AddObjectiveDataInstructionAccounts,
   args: AddObjectiveDataInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = addObjectiveDataStruct.serialize({
     instructionDiscriminator: addObjectiveDataInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.objectiveDataAddr,
@@ -136,11 +136,11 @@ export function createAddObjectiveDataInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -148,6 +148,6 @@ export function createAddObjectiveDataInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

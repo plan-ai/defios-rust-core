@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import * as beetSolana from '@metaplex-foundation/beet-solana'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import * as beetSolana from "@metaplex-foundation/beet-solana";
 
 /**
  * Arguments used to create {@link CommunalAccount}
@@ -15,10 +15,10 @@ import * as beetSolana from '@metaplex-foundation/beet-solana'
  * @category generated
  */
 export type CommunalAccountArgs = {
-  bump: number
-}
+  bump: number;
+};
 
-export const communalAccountDiscriminator = [24, 65, 18, 4, 144, 223, 114, 203]
+export const communalAccountDiscriminator = [24, 65, 18, 4, 144, 223, 114, 203];
 /**
  * Holds the data for the {@link CommunalAccount} Account and provides de/serialization
  * functionality for that data
@@ -33,7 +33,7 @@ export class CommunalAccount implements CommunalAccountArgs {
    * Creates a {@link CommunalAccount} instance from the provided args.
    */
   static fromArgs(args: CommunalAccountArgs) {
-    return new CommunalAccount(args.bump)
+    return new CommunalAccount(args.bump);
   }
 
   /**
@@ -44,7 +44,7 @@ export class CommunalAccount implements CommunalAccountArgs {
     accountInfo: web3.AccountInfo<Buffer>,
     offset = 0
   ): [CommunalAccount, number] {
-    return CommunalAccount.deserialize(accountInfo.data, offset)
+    return CommunalAccount.deserialize(accountInfo.data, offset);
   }
 
   /**
@@ -61,11 +61,11 @@ export class CommunalAccount implements CommunalAccountArgs {
     const accountInfo = await connection.getAccountInfo(
       address,
       commitmentOrConfig
-    )
+    );
     if (accountInfo == null) {
-      throw new Error(`Unable to find CommunalAccount account at ${address}`)
+      throw new Error(`Unable to find CommunalAccount account at ${address}`);
     }
-    return CommunalAccount.fromAccountInfo(accountInfo, 0)[0]
+    return CommunalAccount.fromAccountInfo(accountInfo, 0)[0];
   }
 
   /**
@@ -76,10 +76,10 @@ export class CommunalAccount implements CommunalAccountArgs {
    */
   static gpaBuilder(
     programId: web3.PublicKey = new web3.PublicKey(
-      '7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F'
+      "7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F"
     )
   ) {
-    return beetSolana.GpaBuilder.fromStruct(programId, communalAccountBeet)
+    return beetSolana.GpaBuilder.fromStruct(programId, communalAccountBeet);
   }
 
   /**
@@ -87,7 +87,7 @@ export class CommunalAccount implements CommunalAccountArgs {
    * @returns a tuple of the account data and the offset up to which the buffer was read to obtain it.
    */
   static deserialize(buf: Buffer, offset = 0): [CommunalAccount, number] {
-    return communalAccountBeet.deserialize(buf, offset)
+    return communalAccountBeet.deserialize(buf, offset);
   }
 
   /**
@@ -98,7 +98,7 @@ export class CommunalAccount implements CommunalAccountArgs {
     return communalAccountBeet.serialize({
       accountDiscriminator: communalAccountDiscriminator,
       ...this,
-    })
+    });
   }
 
   /**
@@ -106,7 +106,7 @@ export class CommunalAccount implements CommunalAccountArgs {
    * {@link CommunalAccount}
    */
   static get byteSize() {
-    return communalAccountBeet.byteSize
+    return communalAccountBeet.byteSize;
   }
 
   /**
@@ -122,7 +122,7 @@ export class CommunalAccount implements CommunalAccountArgs {
     return connection.getMinimumBalanceForRentExemption(
       CommunalAccount.byteSize,
       commitment
-    )
+    );
   }
 
   /**
@@ -130,7 +130,7 @@ export class CommunalAccount implements CommunalAccountArgs {
    * hold {@link CommunalAccount} data.
    */
   static hasCorrectByteSize(buf: Buffer, offset = 0) {
-    return buf.byteLength - offset === CommunalAccount.byteSize
+    return buf.byteLength - offset === CommunalAccount.byteSize;
   }
 
   /**
@@ -140,7 +140,7 @@ export class CommunalAccount implements CommunalAccountArgs {
   pretty() {
     return {
       bump: this.bump,
-    }
+    };
   }
 }
 
@@ -151,13 +151,13 @@ export class CommunalAccount implements CommunalAccountArgs {
 export const communalAccountBeet = new beet.BeetStruct<
   CommunalAccount,
   CommunalAccountArgs & {
-    accountDiscriminator: number[] /* size: 8 */
+    accountDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['accountDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['bump', beet.u8],
+    ["accountDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["bump", beet.u8],
   ],
   CommunalAccount.fromArgs,
-  'CommunalAccount'
-)
+  "CommunalAccount"
+);

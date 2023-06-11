@@ -5,9 +5,9 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
-import * as web3 from '@solana/web3.js'
-import { Schedule, scheduleBeet } from '../types/Schedule'
+import * as beet from "@metaplex-foundation/beet";
+import * as web3 from "@solana/web3.js";
+import { Schedule, scheduleBeet } from "../types/Schedule";
 
 /**
  * @category Instructions
@@ -15,8 +15,8 @@ import { Schedule, scheduleBeet } from '../types/Schedule'
  * @category generated
  */
 export type ChangeVestingScheduleInstructionArgs = {
-  newVestingSchedule: Schedule[]
-}
+  newVestingSchedule: Schedule[];
+};
 /**
  * @category Instructions
  * @category ChangeVestingSchedule
@@ -24,15 +24,15 @@ export type ChangeVestingScheduleInstructionArgs = {
  */
 export const changeVestingScheduleStruct = new beet.FixableBeetArgsStruct<
   ChangeVestingScheduleInstructionArgs & {
-    instructionDiscriminator: number[] /* size: 8 */
+    instructionDiscriminator: number[] /* size: 8 */;
   }
 >(
   [
-    ['instructionDiscriminator', beet.uniformFixedSizeArray(beet.u8, 8)],
-    ['newVestingSchedule', beet.array(scheduleBeet)],
+    ["instructionDiscriminator", beet.uniformFixedSizeArray(beet.u8, 8)],
+    ["newVestingSchedule", beet.array(scheduleBeet)],
   ],
-  'ChangeVestingScheduleInstructionArgs'
-)
+  "ChangeVestingScheduleInstructionArgs"
+);
 /**
  * Accounts required by the _changeVestingSchedule_ instruction
  *
@@ -44,16 +44,16 @@ export const changeVestingScheduleStruct = new beet.FixableBeetArgsStruct<
  * @category generated
  */
 export type ChangeVestingScheduleInstructionAccounts = {
-  authority: web3.PublicKey
-  repositoryAccount: web3.PublicKey
-  vestingSchedule: web3.PublicKey
-  systemProgram?: web3.PublicKey
-  anchorRemainingAccounts?: web3.AccountMeta[]
-}
+  authority: web3.PublicKey;
+  repositoryAccount: web3.PublicKey;
+  vestingSchedule: web3.PublicKey;
+  systemProgram?: web3.PublicKey;
+  anchorRemainingAccounts?: web3.AccountMeta[];
+};
 
 export const changeVestingScheduleInstructionDiscriminator = [
   176, 109, 2, 47, 181, 78, 12, 252,
-]
+];
 
 /**
  * Creates a _ChangeVestingSchedule_ instruction.
@@ -68,12 +68,12 @@ export const changeVestingScheduleInstructionDiscriminator = [
 export function createChangeVestingScheduleInstruction(
   accounts: ChangeVestingScheduleInstructionAccounts,
   args: ChangeVestingScheduleInstructionArgs,
-  programId = new web3.PublicKey('7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F')
+  programId = new web3.PublicKey("7aDYtX4L9sRykPoo5mGAoKfDgjVMcWoo3D6B5AiUa99F")
 ) {
   const [data] = changeVestingScheduleStruct.serialize({
     instructionDiscriminator: changeVestingScheduleInstructionDiscriminator,
     ...args,
-  })
+  });
   const keys: web3.AccountMeta[] = [
     {
       pubkey: accounts.authority,
@@ -95,11 +95,11 @@ export function createChangeVestingScheduleInstruction(
       isWritable: false,
       isSigner: false,
     },
-  ]
+  ];
 
   if (accounts.anchorRemainingAccounts != null) {
     for (const acc of accounts.anchorRemainingAccounts) {
-      keys.push(acc)
+      keys.push(acc);
     }
   }
 
@@ -107,6 +107,6 @@ export function createChangeVestingScheduleInstruction(
     programId,
     keys,
     data,
-  })
-  return ix
+  });
+  return ix;
 }

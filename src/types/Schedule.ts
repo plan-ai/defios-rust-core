@@ -5,11 +5,11 @@
  * See: https://github.com/metaplex-foundation/solita
  */
 
-import * as beet from '@metaplex-foundation/beet'
+import * as beet from "@metaplex-foundation/beet";
 export type Schedule = {
-  releaseTime: beet.bignum
-  amount: beet.bignum
-}
+  releaseTime: beet.bignum;
+  amount: beet.bignum;
+};
 
 /**
  * @category userTypes
@@ -17,8 +17,8 @@ export type Schedule = {
  */
 export const scheduleBeet = new beet.BeetArgsStruct<Schedule>(
   [
-    ['releaseTime', beet.u64],
-    ['amount', beet.u64],
+    ["releaseTime", beet.u64],
+    ["amount", beet.u64],
   ],
-  'Schedule'
-)
+  "Schedule"
+);
