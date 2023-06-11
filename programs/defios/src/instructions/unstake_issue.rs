@@ -84,12 +84,6 @@ pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
         DefiOSError::IssueClosedAlready
     );
 
-    msg!(
-        "Unstaking {} including decimals of token {}",
-        issue_staker_account.staked_amount,
-        rewards_mint.key().to_string()
-    );
-
     let issue_index_str = issue_account.index.to_string();
     let repository_account_key = repository_account.key();
     let issue_creator_key = issue_account.issue_creator.key();

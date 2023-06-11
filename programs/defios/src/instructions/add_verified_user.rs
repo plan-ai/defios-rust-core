@@ -63,7 +63,6 @@ pub fn handler(
 
     verify_signature(&ed25519_create_ix, &router_creator.to_bytes(), &msg, &sig)?;
 
-    msg!("Signature verification success");
     let name_router_account = &mut ctx.accounts.name_router_account;
 
     let verified_user_account = &mut ctx.accounts.verified_user_account;

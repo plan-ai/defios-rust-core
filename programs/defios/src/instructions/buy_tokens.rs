@@ -178,6 +178,6 @@ pub fn handler(ctx: Context<BuyToken>, usdc_amount: u64, number_of_tokens: u64) 
         ),
         number_of_tokens,
     )?;
-    msg!("{}", number_of_tokens);
+
     Ok(())
 }

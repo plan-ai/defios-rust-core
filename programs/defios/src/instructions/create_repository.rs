@@ -131,12 +131,6 @@ pub fn handler(
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
     let metadata = &mut ctx.accounts.metadata;
-    //logs repository and spl token creation
-    msg!(
-        "Creating repository of id: {} Repository address: {}",
-        &id,
-        repository_account.key().to_string()
-    );
 
     //fills repository account data
     repository_account.bump = *ctx.bumps.get("repository_account").unwrap();

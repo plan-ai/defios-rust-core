@@ -83,12 +83,6 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         DefiOSError::IssueClosedAlready
     );
 
-    msg!(
-        "Staking {} including decimals of token {}",
-        transfer_amount,
-        rewards_mint.key().to_string()
-    );
-
     //Creating token account if empty
     if issue_token_pool_account.data_is_empty() {
         create_associated_token_account(CpiContext::new(

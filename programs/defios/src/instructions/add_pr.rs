@@ -70,12 +70,6 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     let system_program = &ctx.accounts.system_program;
     let token_program = &ctx.accounts.token_program;
 
-    msg!(
-        "Adding pull request on issue {} by {}",
-        issue.uri,
-        pull_request_addr.key()
-    );
-
     require!(issue.closed_at.is_none(), DefiOSError::IssueClosedAlready);
 
     create_associated_token_account(CpiContext::new(

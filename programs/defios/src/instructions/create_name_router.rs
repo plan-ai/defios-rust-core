@@ -30,12 +30,6 @@ pub fn handler(
     let name_router_account = &mut ctx.accounts.name_router_account;
     let router_creator = &ctx.accounts.router_creator;
 
-    msg!(
-        "Creating name router. Signing domain: {}, Signature version: {}",
-        &signing_domain,
-        signature_version
-    );
-
     name_router_account.bump = *ctx.bumps.get("name_router_account").unwrap();
     name_router_account.router_creator = router_creator.key();
     name_router_account.signing_domain = signing_domain;
