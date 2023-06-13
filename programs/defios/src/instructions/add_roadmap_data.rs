@@ -15,7 +15,7 @@ pub struct AddMetadata<'info> {
         space = RoadMapMetaDataStore::size(),
         seeds = [
             b"roadmapmetadataadd",
-            roadmap_verified_user.key().as_ref(),
+            repository_account.key().as_ref(),
             roadmap_data_adder.key().as_ref()
         ],
         bump
