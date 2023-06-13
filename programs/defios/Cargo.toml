@@ -19,4 +19,4 @@ default = []
 anchor-lang = {version = "0.28.0", features = ["init-if-needed"]}
 anchor-spl = { version = "0.28.0", features = ["metadata"] }
 mpl-token-metadata = { version = "=1.12.0", features = ["no-entrypoint"] }
-solana-program = "~1.14.16"
+solana-program = "~1.16.0"
