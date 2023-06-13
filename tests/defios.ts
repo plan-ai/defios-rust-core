@@ -890,7 +890,7 @@ describe("defios", () => {
     const metadataAddress = await get_metadata_account(mintKeypair);
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
-      verifiedUserAccount.toBuffer(),
+      repositoryAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
 
@@ -1039,7 +1039,7 @@ describe("defios", () => {
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
-      verifiedUserAccount.toBuffer(),
+      repositoryAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
@@ -1189,7 +1189,7 @@ describe("defios", () => {
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
-      verifiedUserAccount.toBuffer(),
+      repositoryAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
@@ -1353,7 +1353,7 @@ describe("defios", () => {
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
-      verifiedUserAccount.toBuffer(),
+      repositoryAccount.toBuffer(),
       roadmapDataAdder.publicKey.toBuffer(),
     ]);
     await program.methods
