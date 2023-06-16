@@ -27,6 +27,9 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
 
                 if objective.objective_repository.key()
                     != roadmap_metadata_account.roadmap_repository.key()
+                    || objective
+                        .objective_creator_id
+                        .eq(&child_objective_adder.key())
                 {
                     continue;
                 };
@@ -34,9 +37,6 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
                 match objective.objective_end_unix {
                     Some(child_objective_end_unix) => {
                         if child_objective_end_unix > roadmap_metadata_account.roadmap_creation_unix
-                            && objective
-                                .objective_creator_id
-                                .eq(&child_objective_adder.key())
                         {
                             roadmap_metadata_account
                                 .root_objective_ids
@@ -50,7 +50,6 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
                     }
                 }
             }
-
             emit!(AddChildObjectiveEvent {
                 parent_objective_account: roadmap_metadata_account.key(),
                 added_by: child_objective_adder.key(),
@@ -64,17 +63,16 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
 
                     if objective.objective_repository.key()
                         != parent_objective_account.objective_repository.key()
+                        || objective
+                            .objective_creator_id
+                            .eq(&child_objective_adder.key())
                     {
                         continue;
                     };
 
                     match objective.objective_end_unix {
                         Some(child_objective_end_unix) => {
-                            if child_objective_end_unix > current_unix
-                                && objective
-                                    .objective_creator_id
-                                    .eq(&child_objective_adder.key())
-                            {
+                            if child_objective_end_unix > current_unix {
                                 parent_objective_account
                                     .children_objective_keys
                                     .push(objective.key());

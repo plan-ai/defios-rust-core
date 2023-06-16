@@ -83,15 +83,19 @@ pub fn handler(
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
 
-        if objective.objective_repository.key() != repository_account.key() {
+        if objective.objective_repository.key() != repository_account.key()
+            || {
+                objective
+                    .objective_creator_id
+                    .eq(&roadmap_data_adder.key())
+            }
+        {
             continue;
         };
 
         match objective.objective_end_unix {
             Some(child_objective_end_unix) => {
-                if child_objective_end_unix > roadmap_creation_unix
-                    && objective.objective_creator_id.eq(&roadmap_data_adder.key())
-                {
+                if child_objective_end_unix > roadmap_creation_unix {
                     metadata_account.root_objective_ids.push(objective.key());
                 }
             }
