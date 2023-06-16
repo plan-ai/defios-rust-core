@@ -105,17 +105,17 @@ pub fn handler(
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
 
-        if objective.objective_repository.key() != repository_account.key() {
+        if objective.objective_repository.key() != repository_account.key()
+            || objective
+                .objective_creator_id
+                .eq(&objective_data_addr.key())
+        {
             continue;
         };
 
         match objective.objective_end_unix {
             Some(child_objective_end_unix) => {
-                if child_objective_end_unix > objective_creation_unix
-                    && objective
-                        .objective_creator_id
-                        .eq(&objective_data_addr.key())
-                {
+                if child_objective_end_unix > objective_creation_unix {
                     metadata_account
                         .children_objective_keys
                         .push(objective.key());

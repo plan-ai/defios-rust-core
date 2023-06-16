@@ -1244,7 +1244,6 @@ describe("defios", () => {
       .accounts({
         roadmapMetadataAccount: metadataAccount,
         childObjectiveAdder: roadmapDataAdder.publicKey,
-        objectiveVerifiedUser: verifiedUserAccount,
         parentObjectiveAccount: null,
         systemProgram: web3.SystemProgram.programId,
       })
