@@ -63,7 +63,7 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
 
                     if objective.objective_repository.key()
                         != parent_objective_account.objective_repository.key()
-                        || objective
+                        || !objective
                             .objective_creator_id
                             .eq(&child_objective_adder.key())
                     {

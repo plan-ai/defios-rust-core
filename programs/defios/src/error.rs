@@ -97,4 +97,8 @@ pub enum DefiOSError {
     //6023
     #[msg("Unauthorized objective addition")]
     CantAddObjectiveToSomebodiesRoadmap,
+
+    //6024
+    #[msg("Cant enter time below 0")]
+    CantEnterTimeBelowZero,
 }

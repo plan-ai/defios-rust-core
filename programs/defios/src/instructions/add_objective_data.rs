@@ -77,6 +77,11 @@ pub fn handler(
     let repository_account = &ctx.accounts.repository_account;
     let objective_state = ObjectiveState::InProgress;
 
+    require!(
+        objective_creation_unix > 0,
+        DefiOSError::CantEnterTimeBelowZero
+    );
+
     match objective_end_unix {
         Some(x) => {
             require!(
