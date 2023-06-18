@@ -78,7 +78,7 @@ pub fn handler(
     let objective_state = ObjectiveState::InProgress;
 
     require!(
-        objective_creation_unix > 0,
+        objective_start_unix > 0,
         DefiOSError::CantEnterTimeBelowZero
     );
 
