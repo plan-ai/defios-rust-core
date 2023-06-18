@@ -27,7 +27,7 @@ pub fn handler(ctx: Context<AddChildObjective>) -> Result<()> {
 
                 if objective.objective_repository.key()
                     != roadmap_metadata_account.roadmap_repository.key()
-                    || objective
+                    || !objective
                         .objective_creator_id
                         .eq(&child_objective_adder.key())
                 {

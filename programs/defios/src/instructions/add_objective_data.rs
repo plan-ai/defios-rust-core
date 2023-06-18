@@ -106,7 +106,7 @@ pub fn handler(
         objective = Account::try_from(account)?;
 
         if objective.objective_repository.key() != repository_account.key()
-            || objective
+            || !objective
                 .objective_creator_id
                 .eq(&objective_data_addr.key())
         {
