@@ -85,7 +85,7 @@ pub fn handler(
 
         if objective.objective_repository.key() != repository_account.key()
             || {
-                objective
+                !objective
                     .objective_creator_id
                     .eq(&roadmap_data_adder.key())
             }
