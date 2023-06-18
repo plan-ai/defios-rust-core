@@ -83,13 +83,9 @@ pub fn handler(
     for account in ctx.remaining_accounts.to_vec().iter() {
         objective = Account::try_from(account)?;
 
-        if objective.objective_repository.key() != repository_account.key()
-            || {
-                !objective
-                    .objective_creator_id
-                    .eq(&roadmap_data_adder.key())
-            }
-        {
+        if objective.objective_repository.key() != repository_account.key() || {
+            !objective.objective_creator_id.eq(&roadmap_data_adder.key())
+        } {
             continue;
         };
 

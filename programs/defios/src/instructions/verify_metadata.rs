@@ -1,13 +1,9 @@
 use crate::{
     error::DefiOSError,
-    state::{
-        NameRouter, VerifiedUser,
-    },
+    state::{NameRouter, VerifiedUser},
 };
 use anchor_lang::prelude::*;
-use anchor_spl::{
-    token::{Token},
-};
+use anchor_spl::token::Token;
 
 #[derive(Accounts)]
 pub struct VerifyUserMetadata<'info> {
@@ -61,8 +57,6 @@ pub struct VerifyUserMetadata<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(
-    ctx: Context<VerifyUserMetadata>,
-) -> Result<()> {
+pub fn handler(ctx: Context<VerifyUserMetadata>) -> Result<()> {
     Ok(())
 }
