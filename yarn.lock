@@ -551,7 +551,7 @@
 
 "@metaplex-foundation/solita@^0.19.4":
   version "0.19.4"
-  resolved "https://registry.yarnpkg.com/@metaplex-foundation/solita/-/solita-0.19.4.tgz#d73fc3eea0424927c8cab2117177704bd8818681"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/solita/-/solita-0.19.4.tgz"
   integrity sha512-5j7F2qKDc7Po6ye7fm/JsUcYMxPK5QkkGBJJfgY7dGhF5YQw8YPwqw95F7rSavuDrXOK9mhq/L8s+3ilvEk6CA==
   dependencies:
     "@metaplex-foundation/beet" "^0.7.1"
@@ -760,9 +760,9 @@
   integrity sha512-Z61JK7DKDtdKTWwLeElSEBcWGRLY8g95ic5FoQqI9CMx0ns/Ghep3B4DfcEimiKMvtamNVULVNKEsiwV3aQmXw==
 
 "@types/node@*":
-  version "20.2.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.2.6.tgz#f8f4cdcf9bc74fffcb44a9e1e3f3586d583dac24"
-  integrity sha512-GQBWUtGoefMEOx/vu+emHEHU5aw6JdDoEtZhoBrHFPZbA/YNRFfN996XbBASEWdvmLSLyv9FKYppYGyZjCaq/g==
+  version "20.3.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.3.1.tgz#e8a83f1aa8b649377bb1fb5d7bac5cb90e784dfe"
+  integrity sha512-EhcH/wvidPy1WeML3TtYFGR83UzjxeWRen9V402T8aUGYsCHOmfoisV3ZSg03gAFIbLq8TnWOJ0f4cALtnSEUg==
 
 "@types/node@11.11.6":
   version "11.11.6"
@@ -2544,9 +2544,9 @@ secp256k1@^4.0.1, secp256k1@^4.0.2:
     node-gyp-build "^4.2.0"
 
 semver@^7.3.7:
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.1.tgz#c90c4d631cf74720e46b21c1d37ea07edfab91ec"
-  integrity sha512-Wvss5ivl8TMRZXXESstBA4uR5iXgEN/VC5/sOcuXdVLzcdkz4HWetIoRfG5gb5X+ij/G9rw9YoGn3QoQ8OCSpw==
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.2.tgz#5b851e66d1be07c1cdaf37dfc856f543325a2beb"
+  integrity sha512-SoftuTROv/cRjCze/scjGyiDtcUyxw1rgYQSZY7XTmtR5hX+dm76iDbTH8TkLPHCQmlbQVSSbNZCPM2hb0knnQ==
   dependencies:
     lru-cache "^6.0.0"
 
