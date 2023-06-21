@@ -93,10 +93,10 @@ pub struct CreateRepository<'info> {
     #[account(mut)]
     pub metadata: Option<UncheckedAccount<'info>>,
     #[account(
-        init_if_needed,
+        init,
         payer = repository_creator,
         mint::authority = rewards_mint,
-        mint::decimals = 0,
+        mint::decimals = 1,
         seeds = [b"Miners",
         b"MinerC",
         repository_account.key().as_ref()],
