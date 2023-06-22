@@ -26,6 +26,7 @@ use anchor_lang::{prelude::*, solana_program::sysvar::rent::Rent};
 use borsh::BorshDeserialize;
 
 pub mod canopy;
+pub mod constants;
 pub mod error;
 pub mod events;
 #[macro_use]

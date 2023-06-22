@@ -1766,6 +1766,7 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bytemuck",
+ "solana-program",
  "spl-concurrent-merkle-tree",
  "spl-noop",
 ]

@@ -108,4 +108,8 @@ pub enum ApplicationError {
     ///Not authorized to file complaint
     #[msg("Not authorized to file complaint")]
     NotAuthroizedToFileComplaint,
+
+    ///Not authorized to accept complaint
+    #[msg("Not authorized to accept complaint")]
+    NotAuthroizedToAcceptComplaint,
 }
