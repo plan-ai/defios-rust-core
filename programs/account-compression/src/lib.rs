@@ -116,4 +116,12 @@ pub mod spl_account_compression {
     ) -> Result<()> {
         add_job::handler(ctx, job_name, job_desc, job_length, job_metadata_uri)
     }
+
+    pub fn stake_job(ctx: Context<StakeJob>, stake_amount: u64) -> Result<()> {
+        stake_job::handler(ctx, stake_amount)
+    }
+
+    pub fn close_job(ctx: Context<CloseJob>) -> Result<()> {
+        close_job::handler(ctx)
+    }
 }
