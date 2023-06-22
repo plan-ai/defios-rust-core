@@ -1,3 +1,4 @@
+pub mod accept_job;
 pub mod add_job;
 pub mod add_review;
 pub mod append_leaf;
@@ -10,6 +11,7 @@ pub mod stake_job;
 pub mod transfer_merkle_tree;
 pub mod verify_leaf;
 
+pub use accept_job::*;
 pub use add_job::*;
 pub use add_review::*;
 pub use append_leaf::*;

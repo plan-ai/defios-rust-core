@@ -50,3 +50,8 @@ pub struct JobStaked {
 pub struct JobClosed {
     pub job: Pubkey,
 }
+
+#[event]
+pub struct JobAccepted {
+    pub job: Pubkey,
+}
