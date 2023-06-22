@@ -84,4 +84,8 @@ pub enum ApplicationError {
     ///Incorrect Token Account Provided
     #[msg("Incorrect token account provided")]
     IncorrectTokenAccount,
+
+    ///Invalid Stake amount
+    #[msg("Can only stake in multiples of 10**(-4) usdc")]
+    InvalidStakeAmount,
 }
