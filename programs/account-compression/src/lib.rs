@@ -41,7 +41,8 @@ pub use crate::error::AccountCompressionError;
 pub use crate::events::{AccountCompressionEvent, ChangeLogEvent};
 use crate::noop::wrap_event;
 use crate::state::{
-    merkle_tree_get_size, ConcurrentMerkleTreeHeader, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength,
+    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 
 pub mod instructions;
@@ -104,5 +105,15 @@ pub mod spl_account_compression {
         index: u32,
     ) -> Result<()> {
         insert_append_leaf::handler(ctx, root, leaf, index)
+    }
+
+    pub fn add_job(
+        ctx: Context<AddJob>,
+        job_name: String,
+        job_desc: String,
+        job_length: JobLength,
+        job_metadata_uri: String,
+    ) -> Result<()> {
+        add_job::handler(ctx, job_name, job_desc, job_length, job_metadata_uri)
     }
 }
