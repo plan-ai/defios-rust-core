@@ -37,6 +37,8 @@ pub fn handler(
     job.job_metadata_uri = job_metadata_uri.clone();
     job.job_creator = job_addr.key();
     job.job_stake = 0;
+    job.assigned_freelancer = None;
+    job.job_completed = false;
 
     emit!(JobCreated {
         job_length: job_length,

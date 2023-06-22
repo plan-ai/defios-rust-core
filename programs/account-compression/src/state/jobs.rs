@@ -27,6 +27,7 @@ pub struct Jobs {
     pub job_creator: Pubkey,
     pub job_stake: u64,
     pub assigned_freelancer: Option<Pubkey>,
+    pub job_completed: bool,
 }
 
 #[event]

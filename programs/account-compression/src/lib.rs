@@ -41,7 +41,7 @@ pub use crate::error::AccountCompressionError;
 pub use crate::events::{AccountCompressionEvent, ChangeLogEvent};
 use crate::noop::wrap_event;
 use crate::state::{
-    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength,
+    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, ReviewerType,
     CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 
@@ -123,5 +123,13 @@ pub mod spl_account_compression {
 
     pub fn close_job(ctx: Context<CloseJob>) -> Result<()> {
         close_job::handler(ctx)
+    }
+
+    pub fn add_review(
+        ctx: Context<AddReview>,
+        reviewer_type: ReviewerType,
+        review: String,
+    ) -> Result<()> {
+        add_review::handler(ctx, reviewer_type, review)
     }
 }

@@ -88,4 +88,16 @@ pub enum ApplicationError {
     ///Invalid Stake amount
     #[msg("Can only stake in multiples of 10**(-4) usdc")]
     InvalidStakeAmount,
+
+    ///Cant review before job is completed
+    #[msg("Cant review before job is completed")]
+    JobNotYetCompleted,
+
+    ///Cant review as third party
+    #[msg("Cant review as third party")]
+    UnauthorizedToReview,
+
+    ///Cant close without assigned freelancer
+    #[msg("Cant close job as completed without freelancer")]
+    NoFreelancerSelected,
 }
