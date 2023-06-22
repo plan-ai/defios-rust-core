@@ -138,4 +138,12 @@ pub mod spl_account_compression {
     pub fn accept_job(ctx: Context<AcceptJob>) -> Result<()> {
         accept_job::handler(ctx)
     }
+
+    pub fn raise_complaint(ctx: Context<RaiseComplaint>, complaint_text: String) -> Result<()> {
+        raise_complaint::handler(ctx, complaint_text)
+    }
+
+    pub fn accept_complaint(ctx: Context<AcceptComplaint>) -> Result<()> {
+        accept_complaint::handler(ctx)
+    }
 }
