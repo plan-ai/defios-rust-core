@@ -22,11 +22,8 @@
 //! All modifications to SPL ConcurrentMerkleTrees are settled on the Solana ledger via instructions against the SPL Compression contract.
 //! A production-ready indexer (Plerkle) can be found in the [Metaplex program library](https://github.com/metaplex-foundation/digital-asset-validator-plugin)
 
-use anchor_lang::{
-    prelude::*,
-    solana_program::sysvar::{clock::Clock, rent::Rent},
-};
-use borsh::{BorshDeserialize, BorshSerialize};
+use anchor_lang::{prelude::*, solana_program::sysvar::rent::Rent};
+use borsh::BorshDeserialize;
 
 pub mod canopy;
 pub mod error;
@@ -46,7 +43,6 @@ use crate::noop::wrap_event;
 use crate::state::{
     merkle_tree_get_size, ConcurrentMerkleTreeHeader, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
-use crate::zero_copy::ZeroCopy;
 
 pub mod instructions;
 use instructions::*;
@@ -84,7 +80,29 @@ pub mod spl_account_compression {
         replace_leaf::handler(ctx, root, previous_leaf, new_leaf, index)
     }
 
-    pub fn append(ctx: Context<AppendLeaf>, leaf: [u8; 32]) -> Result<()> {
+    pub fn append_leaf(ctx: Context<AppendLeaf>, leaf: [u8; 32]) -> Result<()> {
         append_leaf::handler(ctx, leaf)
+    }
+
+    pub fn transfer_tree(ctx: Context<TransferAuthority>, new_authority: Pubkey) -> Result<()> {
+        transfer_merkle_tree::handler(ctx, new_authority)
+    }
+
+    pub fn verify_leaf(
+        ctx: Context<VerifyLeaf>,
+        root: [u8; 32],
+        leaf: [u8; 32],
+        index: u32,
+    ) -> Result<()> {
+        verify_leaf::handler(ctx, root, leaf, index)
+    }
+
+    pub fn insert_or_append_leaf(
+        ctx: Context<Modify>,
+        root: [u8; 32],
+        leaf: [u8; 32],
+        index: u32,
+    ) -> Result<()> {
+        insert_append_leaf::handler(ctx, root, leaf, index)
     }
 }
