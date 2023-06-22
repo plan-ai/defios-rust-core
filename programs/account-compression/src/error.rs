@@ -104,4 +104,8 @@ pub enum ApplicationError {
     ///Invalid review no
     #[msg("Invalid review no")]
     InvalidReview,
+
+    ///Not authorized to file complaint
+    #[msg("Not authorized to file complaint")]
+    NotAuthroizedToFileComplaint,
 }
