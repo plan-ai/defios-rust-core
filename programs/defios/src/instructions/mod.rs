@@ -20,7 +20,6 @@ pub mod stake_pr;
 pub mod unlock_tokens;
 pub mod unstake_issue;
 pub mod unstake_pr;
-pub mod verify_metadata;
 
 pub use accept_pr::*;
 pub use add_child_objective::*;
@@ -44,4 +43,3 @@ pub use stake_pr::*;
 pub use unlock_tokens::*;
 pub use unstake_issue::*;
 pub use unstake_pr::*;
-pub use verify_metadata::*;
