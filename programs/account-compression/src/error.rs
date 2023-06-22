@@ -66,3 +66,22 @@ pub fn error_msg<T>(data_len: usize) -> impl Fn(PodCastError) -> ProgramError {
         ProgramError::InvalidAccountData
     }
 }
+
+#[error_code]
+pub enum ApplicationError {
+    /// Not enough usdc to stake
+    #[msg("Insufficient balance to stake")]
+    InsufficientBalance,
+
+    ///Cant add funds to somebody elses job
+    #[msg("Cant add funda to somebody elses job")]
+    UnauthorizedStakeAttempt,
+
+    ///Can only stake usdc
+    #[msg("Only USDC staking is supported")]
+    NonUSDCStakingNotSupported,
+
+    ///Incorrect Token Account Provided
+    #[msg("Incorrect token account provided")]
+    IncorrectTokenAccount,
+}

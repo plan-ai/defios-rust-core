@@ -36,3 +36,10 @@ pub struct JobCreated {
     pub job_metadata_uri: String,
     pub job_creator: Pubkey,
 }
+
+#[event]
+pub struct JobStaked {
+    pub job: Pubkey,
+    pub stake_amount: u64,
+    pub unix_time: i64,
+}

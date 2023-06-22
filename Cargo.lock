@@ -1764,6 +1764,7 @@ name = "spl-account-compression"
 version = "0.1.10"
 dependencies = [
  "anchor-lang",
+ "anchor-spl",
  "bytemuck",
  "spl-concurrent-merkle-tree",
  "spl-noop",
