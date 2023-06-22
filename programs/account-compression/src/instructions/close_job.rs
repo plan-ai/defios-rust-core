@@ -1,5 +1,5 @@
 use crate::error::ApplicationError;
-use crate::state::jobs::{JobClosed, Jobs};
+use crate::state::job::{Job, JobClosed};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -27,7 +27,7 @@ pub struct CloseJob<'info> {
     bump=job.bump,
     close = job_addr)
     ]
-    pub job: Account<'info, Jobs>,
+    pub job: Account<'info, Job>,
     #[account(mut,close=job)]
     pub job_usdc_account: Account<'info, TokenAccount>,
     #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]

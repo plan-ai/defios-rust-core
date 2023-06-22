@@ -1,5 +1,5 @@
 use crate::error::ApplicationError;
-use crate::state::jobs::{JobAccepted, Jobs};
+use crate::state::job::{Job, JobAccepted};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -15,7 +15,7 @@ pub struct AcceptJob<'info> {
     ],
     bump=job.bump)
     ]
-    pub job: Account<'info, Jobs>,
+    pub job: Account<'info, Job>,
     pub system_program: Program<'info, System>,
 }
 

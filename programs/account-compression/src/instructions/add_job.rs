@@ -1,4 +1,4 @@
-use crate::state::jobs::{JobCreated, JobLength, Jobs};
+use crate::state::job::{Job, JobCreated, JobLength};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -7,7 +7,7 @@ pub struct AddJob<'info> {
     #[account(mut)]
     pub job_addr: Signer<'info>,
     #[account(init,
-    space = 8+Jobs::INIT_SPACE,
+    space = 8+Job::INIT_SPACE,
     payer=job_addr,
     seeds = [
         b"boringlif",
@@ -16,7 +16,7 @@ pub struct AddJob<'info> {
     ],
     bump)
     ]
-    pub job: Account<'info, Jobs>,
+    pub job: Account<'info, Job>,
     pub system_program: Program<'info, System>,
 }
 

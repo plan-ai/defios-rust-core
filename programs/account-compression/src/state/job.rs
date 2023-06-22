@@ -15,7 +15,7 @@ impl Space for JobLength {
 
 #[account]
 #[derive(InitSpace)]
-pub struct Jobs {
+pub struct Job {
     pub bump: u8,
     pub job_length: JobLength,
     #[max_len(50)]

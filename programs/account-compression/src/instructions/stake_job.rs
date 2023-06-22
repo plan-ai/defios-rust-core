@@ -1,5 +1,5 @@
 use crate::error::ApplicationError;
-use crate::state::jobs::{JobStaked, Jobs};
+use crate::state::job::{Job, JobStaked};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},
@@ -27,7 +27,7 @@ pub struct StakeJob<'info> {
     ],
     bump=job.bump)
     ]
-    pub job: Account<'info, Jobs>,
+    pub job: Account<'info, Job>,
     /// CHECK: Check done at function level
     pub job_usdc_account: AccountInfo<'info>,
     #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]

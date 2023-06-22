@@ -1,6 +1,6 @@
 use crate::error::ApplicationError;
 use crate::state::{
-    jobs::Jobs,
+    job::Job,
     review::{JobReviewed, ReviewerType},
 };
 use anchor_lang::prelude::*;
@@ -16,7 +16,7 @@ pub struct AddReview<'info> {
     ],
     bump=job.bump)
     ]
-    pub job: Account<'info, Jobs>,
+    pub job: Account<'info, Job>,
     pub system_program: Program<'info, System>,
 }
 
