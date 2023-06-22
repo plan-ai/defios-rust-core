@@ -20,10 +20,19 @@ pub struct AddReview<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<AddReview>, reviewer_type: ReviewerType, review: String) -> Result<()> {
+pub fn handler(
+    ctx: Context<AddReview>,
+    reviewer_type: ReviewerType,
+    review: String,
+    review_no: u16,
+) -> Result<()> {
     let job = &ctx.accounts.job;
     let reviewer = &ctx.accounts.reviewer;
 
+    require!(
+        review_no > 0 && review_no < 100,
+        ApplicationError::InvalidReview
+    );
     require!(job.job_completed, ApplicationError::JobNotYetCompleted);
 
     match reviewer_type {
@@ -49,7 +58,8 @@ pub fn handler(ctx: Context<AddReview>, reviewer_type: ReviewerType, review: Str
     emit!(JobReviewed {
         reviewer: reviewer.key(),
         reviewer_type: reviewer_type,
-        review: review
+        review: review,
+        review_no: review_no
     });
 
     Ok(())

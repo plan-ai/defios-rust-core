@@ -100,4 +100,8 @@ pub enum ApplicationError {
     ///Cant close without assigned freelancer
     #[msg("Cant close job as completed without freelancer")]
     NoFreelancerSelected,
+
+    ///Invalid review no
+    #[msg("Invalid review no")]
+    InvalidReview,
 }

@@ -129,8 +129,9 @@ pub mod spl_account_compression {
         ctx: Context<AddReview>,
         reviewer_type: ReviewerType,
         review: String,
+        review_no: u16,
     ) -> Result<()> {
-        add_review::handler(ctx, reviewer_type, review)
+        add_review::handler(ctx, reviewer_type, review, review_no)
     }
 
     pub fn accept_job(ctx: Context<AcceptJob>) -> Result<()> {

@@ -12,4 +12,5 @@ pub struct JobReviewed {
     pub reviewer: Pubkey,
     pub reviewer_type: ReviewerType,
     pub review: String,
+    pub review_no: u16,
 }
