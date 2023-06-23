@@ -150,4 +150,18 @@ pub mod spl_account_compression {
     pub fn accept_complaint(ctx: Context<AcceptComplaint>) -> Result<()> {
         accept_complaint::handler(ctx)
     }
+
+    pub fn stake_leaf(
+        ctx: Context<StakeLeaf>,
+        leaf: [u8; 32],
+        root: [u8; 32],
+        index: u32,
+        stake_amount: u64,
+    ) -> Result<()> {
+        stake_leaf::handler(ctx,leaf, root, index, stake_amount)
+    }
+
+    pub fn unstake_leaf(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
+        unstake_leaf::handler(ctx, unstake_amount)
+    }
 }
