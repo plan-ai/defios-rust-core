@@ -1,6 +1,7 @@
 pub mod accept_complaint;
 pub mod accept_job;
 pub mod add_job;
+pub mod add_name_router;
 pub mod add_review;
 pub mod append_leaf;
 pub mod close_job;
@@ -18,6 +19,7 @@ pub mod verify_leaf;
 pub use accept_complaint::*;
 pub use accept_job::*;
 pub use add_job::*;
+pub use add_name_router::*;
 pub use add_review::*;
 pub use append_leaf::*;
 pub use close_job::*;

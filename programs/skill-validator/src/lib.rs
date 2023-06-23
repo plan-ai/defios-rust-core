@@ -165,4 +165,12 @@ pub mod spl_account_compression {
     pub fn unstake_leaf(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
         unstake_leaf::handler(ctx, unstake_amount)
     }
+
+    pub fn add_name_router(
+        ctx: Context<CreateNameRouter>,
+        signing_domain: String,
+        signature_version: u8,
+    ) -> Result<()> {
+        add_name_router::handler(ctx, signing_domain, signature_version)
+    }
 }
