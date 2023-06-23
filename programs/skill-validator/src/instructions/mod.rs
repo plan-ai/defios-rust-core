@@ -12,6 +12,7 @@ pub mod replace_leaf;
 pub mod stake_job;
 pub mod stake_leaf;
 pub mod transfer_merkle_tree;
+pub mod unstake_leaf;
 pub mod verify_leaf;
 
 pub use accept_complaint::*;
@@ -28,4 +29,5 @@ pub use replace_leaf::*;
 pub use stake_job::*;
 pub use stake_leaf::*;
 pub use transfer_merkle_tree::*;
+pub use unstake_leaf::*;
 pub use verify_leaf::*;

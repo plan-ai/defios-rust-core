@@ -112,4 +112,8 @@ pub enum ApplicationError {
     ///Not authorized to accept complaint
     #[msg("Not authorized to accept complaint")]
     NotAuthroizedToAcceptComplaint,
+
+    ///Cant unstake more than stake
+    #[msg("Cant unstake more than stake")]
+    CantUnstakeMoreThanStake,
 }

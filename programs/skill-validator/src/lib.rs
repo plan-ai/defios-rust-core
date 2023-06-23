@@ -46,7 +46,7 @@ use crate::noop::wrap_event;
 pub use crate::noop::{wrap_application_data_v1, Noop};
 use crate::state::{
     merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, LeafStake, LeafStaked,
-    ReviewerType, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    LeafUnStaked, ReviewerType, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 
 pub mod instructions;

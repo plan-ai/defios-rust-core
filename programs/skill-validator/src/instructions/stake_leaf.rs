@@ -6,6 +6,7 @@ use crate::{
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
+    associated_token::{create as create_associated_token_account, AssociatedToken, Create},
     mint::USDC,
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
@@ -40,9 +41,13 @@ pub struct StakeLeaf<'info> {
         bump
     )]
     pub stake_account: Account<'info, LeafStake>,
+    ///CHECK: Handling of account is done in function
+    #[account(mut)]
+    pub stake_account_usdc: UncheckedAccount<'info>,
     #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
 
@@ -58,6 +63,10 @@ pub fn handler(
     let authority = &mut ctx.accounts.authority;
     let stake_account = &mut ctx.accounts.stake_account;
     let merkle_tree = &ctx.accounts.merkle_tree;
+    let stake_account_usdc = &mut ctx.accounts.stake_account_usdc;
+    let usdc_mint = &ctx.accounts.usdc_mint;
+    let associated_token_program = &ctx.accounts.associated_token_program;
+    let system_program = &ctx.accounts.system_program;
 
     require_eq!(
         *merkle_tree.owner,
@@ -83,11 +92,26 @@ pub fn handler(
 
     merkle_tree_apply_fn!(header, id, tree_bytes, prove_leaf, root, leaf, &proof, index)?;
 
+    //Creating token account if empty
+    if stake_account_usdc.data_is_empty() {
+        create_associated_token_account(CpiContext::new(
+            associated_token_program.to_account_info(),
+            Create {
+                payer: authority.to_account_info(),
+                associated_token: stake_account_usdc.to_account_info(),
+                authority: stake_account.to_account_info(),
+                mint: usdc_mint.to_account_info(),
+                system_program: system_program.to_account_info(),
+                token_program: token_program.to_account_info(),
+            },
+        ))?;
+    }
+
     stake_account.bump = *ctx.bumps.get("stake_account").unwrap();
     stake_account.root = root;
     stake_account.leaf = leaf;
     stake_account.index = index;
-    stake_account.stake_amount = stake_amount;
+    stake_account.stake_amount += stake_amount;
     stake_account.tree = merkle_tree.key();
 
     transfer(
@@ -95,7 +119,7 @@ pub fn handler(
             token_program.to_account_info(),
             Transfer {
                 from: authority_usdc_account.to_account_info(),
-                to: stake_account.to_account_info(),
+                to: stake_account_usdc.to_account_info(),
                 authority: authority.to_account_info(),
             },
         ),
