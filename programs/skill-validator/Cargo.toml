@@ -18,7 +18,7 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = {version = "0.28.0", features = ["init-if-needed"]}
+anchor-lang = {version = "0.28.0", features = ["init-if-needed","event-cpi"]}
 anchor-spl = "0.28.0"
 solana-program = "~1.14.16"
 bytemuck = "1.8.0"

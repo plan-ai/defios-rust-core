@@ -8,12 +8,14 @@ mod changelog_event;
 pub mod job;
 pub mod leaf_stake;
 pub mod review;
+pub mod skill;
 
 pub use application_data::{ApplicationDataEvent, ApplicationDataEventV1};
 pub use changelog_event::{ChangeLogEvent, ChangeLogEventV1};
 pub use job::*;
 pub use leaf_stake::*;
 pub use review::*;
+pub use skill::*;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 #[repr(C)]
