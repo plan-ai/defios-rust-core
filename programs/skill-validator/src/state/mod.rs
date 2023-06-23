@@ -4,9 +4,11 @@ mod concurrent_merkle_tree_header;
 pub mod job;
 mod path_node;
 pub mod review;
+pub mod stake;
 
 pub use complaint::*;
 pub use concurrent_merkle_tree_header::*;
 pub use job::*;
 pub use path_node::PathNode;
 pub use review::*;
+pub use stake::*;

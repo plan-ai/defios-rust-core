@@ -31,21 +31,22 @@ pub mod error;
 pub mod events;
 #[macro_use]
 pub mod macros;
+pub mod helpers;
 mod noop;
 pub mod state;
 pub mod zero_copy;
-
-pub use crate::noop::{wrap_application_data_v1, Noop};
 
 use crate::canopy::{fill_in_proof_from_canopy, update_canopy};
 pub use crate::error::AccountCompressionError;
 pub use crate::events::{
     AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1, ChangeLogEvent,
 };
+pub use crate::helpers::leading_bits;
 use crate::noop::wrap_event;
+pub use crate::noop::{wrap_application_data_v1, Noop};
 use crate::state::{
-    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, ReviewerType,
-    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, LeafStake, LeafStaked,
+    ReviewerType, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 
 pub mod instructions;

@@ -13,7 +13,7 @@ use anchor_spl::{
 #[derive(Accounts)]
 #[instruction(usdc_amount:u64)]
 pub struct BuyToken<'info> {
-    #[account(mut,constraint = buyer.to_account_info().lamports() >= usdc_amount @DefiOSError::InsufficientFunds)]
+    #[account(mut)]
     pub buyer: Signer<'info>,
     #[account(mut,
         seeds = [
@@ -43,7 +43,8 @@ pub struct BuyToken<'info> {
     #[account(
         mut,
         constraint=buyer_usdc_account.mint==usdc_mint.key(),
-        constraint = buyer_usdc_account.owner == buyer.key()
+        constraint = buyer_usdc_account.owner == buyer.key(),
+        constraint = buyer_usdc_account.amount >= usdc_amount @DefiOSError::InsufficientFunds
     )]
     pub buyer_usdc_account: Account<'info, TokenAccount>,
     #[account(mut)]
