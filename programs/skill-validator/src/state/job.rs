@@ -28,4 +28,6 @@ pub struct Job {
     pub job_stake: u64,
     pub assigned_freelancer: Option<Pubkey>,
     pub job_completed: bool,
+    #[max_len(1000)]
+    pub appliers: Vec<Pubkey>,
 }

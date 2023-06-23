@@ -120,4 +120,8 @@ pub enum ApplicationError {
     ///Signature verification failed
     #[msg("Signature verification failed when adding freelancer")]
     SignatureVerificationFailed,
+
+    ///Cant close job after completeion
+    #[msg("Cant close job after completeion")]
+    CantCloseJob,
 }

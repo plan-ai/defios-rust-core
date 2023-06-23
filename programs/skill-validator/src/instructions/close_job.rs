@@ -45,6 +45,7 @@ pub fn handler(ctx: Context<CloseJob>) -> Result<()> {
     let job_addr_usdc_account = &ctx.accounts.job_addr_usdc_account;
     let job_addr = &ctx.accounts.job_addr;
 
+    require!(!job.job_completed, ApplicationError::CantCloseJob);
     let job_key = job_addr.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"boringlif",

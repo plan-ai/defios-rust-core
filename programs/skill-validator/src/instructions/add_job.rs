@@ -40,6 +40,7 @@ pub fn handler(
     job.job_stake = 0;
     job.assigned_freelancer = None;
     job.job_completed = false;
+    job.appliers = vec![];
 
     emit!(JobCreated {
         job_length: job_length,
