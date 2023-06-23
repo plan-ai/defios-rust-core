@@ -1553,6 +1553,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "skill-validator"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "bytemuck",
+ "solana-program",
+ "spl-concurrent-merkle-tree",
+ "spl-noop",
+]
+
+[[package]]
 name = "smallvec"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1757,18 +1769,6 @@ dependencies = [
  "subtle",
  "thiserror",
  "zeroize",
-]
-
-[[package]]
-name = "spl-account-compression"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bytemuck",
- "solana-program",
- "spl-concurrent-merkle-tree",
- "spl-noop",
 ]
 
 [[package]]
