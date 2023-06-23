@@ -39,7 +39,9 @@ pub use crate::noop::{wrap_application_data_v1, Noop};
 
 use crate::canopy::{fill_in_proof_from_canopy, update_canopy};
 pub use crate::error::AccountCompressionError;
-pub use crate::events::{AccountCompressionEvent, ChangeLogEvent};
+pub use crate::events::{
+    AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1, ChangeLogEvent,
+};
 use crate::noop::wrap_event;
 use crate::state::{
     merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, ReviewerType,
@@ -82,8 +84,8 @@ pub mod spl_account_compression {
         replace_leaf::handler(ctx, root, previous_leaf, new_leaf, index)
     }
 
-    pub fn append_leaf(ctx: Context<AppendLeaf>, leaf: [u8; 32]) -> Result<()> {
-        append_leaf::handler(ctx, leaf)
+    pub fn append_leaf(ctx: Context<AppendLeaf>, leaf: [u8; 32], data: String) -> Result<()> {
+        append_leaf::handler(ctx, leaf, data)
     }
 
     pub fn transfer_tree(ctx: Context<TransferAuthority>, new_authority: Pubkey) -> Result<()> {
@@ -104,8 +106,9 @@ pub mod spl_account_compression {
         root: [u8; 32],
         leaf: [u8; 32],
         index: u32,
+        data: String,
     ) -> Result<()> {
-        insert_append_leaf::handler(ctx, root, leaf, index)
+        insert_append_leaf::handler(ctx, root, leaf, index, data)
     }
 
     pub fn add_job(

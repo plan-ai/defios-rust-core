@@ -1,8 +1,8 @@
 use crate::error::AccountCompressionError;
 use crate::{
     fill_in_proof_from_canopy, merkle_tree_get_size, update_canopy, wrap_event,
-    zero_copy::ZeroCopy, AccountCompressionEvent, ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop,
-    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    zero_copy::ZeroCopy, AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1,
+    ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 use anchor_lang::prelude::*;
 use spl_concurrent_merkle_tree::concurrent_merkle_tree::ConcurrentMerkleTree;
@@ -28,7 +28,13 @@ pub struct Modify<'info> {
 /// to the specified index in the tree. If the insert operation fails, the leaf will be `append`-ed
 /// to the tree.
 /// It is up to the indexer to parse the final location of the leaf from the emitted changelog.
-pub fn handler(ctx: Context<Modify>, root: [u8; 32], leaf: [u8; 32], index: u32) -> Result<()> {
+pub fn handler(
+    ctx: Context<Modify>,
+    root: [u8; 32],
+    leaf: [u8; 32],
+    index: u32,
+    data: String,
+) -> Result<()> {
     require_eq!(
         *ctx.accounts.merkle_tree.owner,
         crate::id(),
@@ -69,6 +75,14 @@ pub fn handler(ctx: Context<Modify>, root: [u8; 32], leaf: [u8; 32], index: u32)
     )?;
     wrap_event(
         &AccountCompressionEvent::ChangeLog(*change_log_event),
+        &ctx.accounts.noop,
+    )?;
+    wrap_event(
+        &AccountCompressionEvent::ApplicationData(ApplicationDataEvent::V1(
+            ApplicationDataEventV1 {
+                application_data: data.into_bytes(),
+            },
+        )),
         &ctx.accounts.noop,
     )
 }

@@ -1,7 +1,8 @@
 use crate::error::AccountCompressionError;
 use crate::{
     merkle_tree_get_size, update_canopy, wrap_event, zero_copy::ZeroCopy, AccountCompressionEvent,
-    ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    ApplicationDataEvent, ApplicationDataEventV1, ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop,
+    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 use anchor_lang::prelude::*;
 use spl_concurrent_merkle_tree::concurrent_merkle_tree::ConcurrentMerkleTree;
@@ -29,7 +30,7 @@ pub struct AppendLeaf<'info> {
 /// Learn more about SPL
 /// ConcurrentMerkleTree
 /// [here](https://github.com/solana-labs/solana-program-library/tree/master/libraries/concurrent-merkle-tree)
-pub fn handler(ctx: Context<AppendLeaf>, leaf: [u8; 32]) -> Result<()> {
+pub fn handler(ctx: Context<AppendLeaf>, leaf: [u8; 32], data: String) -> Result<()> {
     require_eq!(
         *ctx.accounts.merkle_tree.owner,
         crate::id(),
@@ -53,6 +54,14 @@ pub fn handler(ctx: Context<AppendLeaf>, leaf: [u8; 32]) -> Result<()> {
     )?;
     wrap_event(
         &AccountCompressionEvent::ChangeLog(*change_log_event),
+        &ctx.accounts.noop,
+    )?;
+    wrap_event(
+        &AccountCompressionEvent::ApplicationData(ApplicationDataEvent::V1(
+            ApplicationDataEventV1 {
+                application_data: data.into_bytes(),
+            },
+        )),
         &ctx.accounts.noop,
     )
 }
