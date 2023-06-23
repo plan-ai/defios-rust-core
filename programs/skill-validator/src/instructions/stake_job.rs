@@ -1,5 +1,6 @@
 use crate::error::ApplicationError;
-use crate::state::job::{Job, JobStaked};
+use crate::events::job::JobStaked;
+use crate::state::job::Job;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},

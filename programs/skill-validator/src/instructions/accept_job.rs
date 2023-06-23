@@ -1,5 +1,6 @@
 use crate::error::ApplicationError;
-use crate::state::job::{Job, JobAccepted};
+use crate::events::job::JobAccepted;
+use crate::state::job::Job;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

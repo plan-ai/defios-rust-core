@@ -1,8 +1,6 @@
 use crate::error::ApplicationError;
-use crate::state::{
-    job::Job,
-    review::{JobReviewed, ReviewerType},
-};
+use crate::events::review::{JobReviewed, ReviewerType};
+use crate::state::job::Job;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

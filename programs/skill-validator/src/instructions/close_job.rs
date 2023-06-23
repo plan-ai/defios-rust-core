@@ -1,5 +1,6 @@
 use crate::error::ApplicationError;
-use crate::state::job::{Job, JobClosed};
+use crate::events::job::JobClosed;
+use crate::state::job::Job;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,

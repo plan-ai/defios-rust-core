@@ -1,4 +1,5 @@
-use crate::state::job::{Job, JobCreated, JobLength};
+use crate::events::job::JobCreated;
+use crate::state::job::{Job, JobLength};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

@@ -40,13 +40,14 @@ use crate::canopy::{fill_in_proof_from_canopy, update_canopy};
 pub use crate::error::AccountCompressionError;
 pub use crate::events::{
     AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1, ChangeLogEvent,
+    LeafStaked, LeafUnStaked, ReviewerType,
 };
 pub use crate::helpers::leading_bits;
 use crate::noop::wrap_event;
 pub use crate::noop::{wrap_application_data_v1, Noop};
 use crate::state::{
-    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, LeafStake, LeafStaked,
-    LeafUnStaked, ReviewerType, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    merkle_tree_get_size, ConcurrentMerkleTreeHeader, JobLength, LeafStake,
+    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 
 pub mod instructions;
@@ -158,7 +159,7 @@ pub mod spl_account_compression {
         index: u32,
         stake_amount: u64,
     ) -> Result<()> {
-        stake_leaf::handler(ctx,leaf, root, index, stake_amount)
+        stake_leaf::handler(ctx, leaf, root, index, stake_amount)
     }
 
     pub fn unstake_leaf(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
