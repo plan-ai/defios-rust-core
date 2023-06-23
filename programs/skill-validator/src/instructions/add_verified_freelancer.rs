@@ -1,6 +1,7 @@
 use crate::{
-    error::DefiOSError,
-    state::{NameRouter, VerifiedUser, VerifiedUserAdded},
+    error::ApplicationError,
+    events::freelancer::VerifiedFreelancerAdded,
+    state::{freelancer::Freelancer, name_router::NameRouter},
 };
 use anchor_lang::prelude::*;
 use solana_program::{
@@ -10,8 +11,8 @@ use solana_program::{
 };
 
 #[derive(Accounts)]
-#[instruction(user_name: String, user_pubkey: Pubkey)]
-pub struct AddVerifiedUser<'info> {
+#[instruction(user_metadata_uri: String, user_pubkey: Pubkey)]
+pub struct AddVerifiedFreelancer<'info> {
     #[account(
         mut,
         address = name_router_account.router_creator
@@ -32,15 +33,15 @@ pub struct AddVerifiedUser<'info> {
     #[account(
         init,
         payer = router_creator,
-        space = VerifiedUser::size(),
+        space = 8+(Freelancer::INIT_SPACE),
         seeds = [
-            user_name.as_bytes(),
+            user_metadata_uri.as_bytes(),
             user_pubkey.as_ref(),
             name_router_account.key().as_ref(),
         ],
         bump,
     )]
-    pub verified_user_account: Account<'info, VerifiedUser>,
+    pub verified_user_account: Account<'info, Freelancer>,
 
     /// CHECK: Address check done
     #[account(address = SysvarInstructionsID)]
@@ -50,8 +51,8 @@ pub struct AddVerifiedUser<'info> {
 }
 
 pub fn handler(
-    ctx: Context<AddVerifiedUser>,
-    user_name: String,
+    ctx: Context<AddVerifiedFreelancer>,
+    user_metadata_uri: String,
     user_pubkey: Pubkey,
     msg: Vec<u8>,
     sig: [u8; 64],
@@ -72,13 +73,13 @@ pub fn handler(
 
     verified_user_account.bump = *ctx.bumps.get("verified_user_account").unwrap();
     verified_user_account.name_router = name_router_account.key();
-    verified_user_account.user_name = user_name;
+    verified_user_account.user_metadata_uri = user_metadata_uri;
     verified_user_account.user_pubkey = user_pubkey;
-    emit!(VerifiedUserAdded {
+    emit!(VerifiedFreelancerAdded {
         router_creator: router_creator.key(),
         name_router_account: name_router_account.key(),
         verified_user_account: verified_user_account.key(),
-        user_name: verified_user_account.user_name.clone(),
+        user_metadata_uri: verified_user_account.user_metadata_uri.clone(),
         user_pubkey: user_pubkey
     });
     Ok(())
@@ -94,7 +95,7 @@ pub fn verify_signature(
         || !create_ix.accounts.is_empty()
         || create_ix.data.len() != (16 + 64 + 32 + msg.len())
     {
-        return err!(DefiOSError::SignatureVerificationFailed);
+        return err!(ApplicationError::SignatureVerificationFailed);
     }
 
     let create_ix_data = &create_ix.data;
@@ -131,12 +132,12 @@ pub fn verify_signature(
         || message_data_size != exp_message_data_size.to_le_bytes()
         || message_instruction_index != u16::MAX.to_le_bytes()
     {
-        return err!(DefiOSError::SignatureVerificationFailed);
+        return err!(ApplicationError::SignatureVerificationFailed);
     }
 
     // Checking pubkey, signature, message
     if data_pubkey != user_pubkey || data_msg != msg || data_sig != sig {
-        return err!(DefiOSError::SignatureVerificationFailed);
+        return err!(ApplicationError::SignatureVerificationFailed);
     }
 
     Ok(())

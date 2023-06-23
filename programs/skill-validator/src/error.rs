@@ -116,4 +116,8 @@ pub enum ApplicationError {
     ///Cant unstake more than stake
     #[msg("Cant unstake more than stake")]
     CantUnstakeMoreThanStake,
+
+    ///Signature verification failed
+    #[msg("Signature verification failed when adding freelancer")]
+    SignatureVerificationFailed,
 }

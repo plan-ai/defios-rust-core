@@ -5,6 +5,7 @@ use anchor_lang::prelude::*;
 
 mod application_data;
 mod changelog_event;
+pub mod freelancer;
 pub mod job;
 pub mod leaf_stake;
 pub mod name_router;
@@ -13,6 +14,7 @@ pub mod skill;
 
 pub use application_data::{ApplicationDataEvent, ApplicationDataEventV1};
 pub use changelog_event::{ChangeLogEvent, ChangeLogEventV1};
+pub use freelancer::*;
 pub use job::*;
 pub use leaf_stake::*;
 pub use name_router::*;

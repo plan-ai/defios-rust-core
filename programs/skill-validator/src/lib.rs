@@ -173,4 +173,14 @@ pub mod spl_account_compression {
     ) -> Result<()> {
         add_name_router::handler(ctx, signing_domain, signature_version)
     }
+
+    pub fn add_verified_freelancer(
+        ctx: Context<AddVerifiedFreelancer>,
+        user_metadata_uri: String,
+        user_pubkey: Pubkey,
+        msg: Vec<u8>,
+        sig: [u8; 64],
+    ) -> Result<()> {
+        add_verified_freelancer::handler(ctx, user_metadata_uri, user_pubkey, msg, sig)
+    }
 }
