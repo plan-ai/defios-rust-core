@@ -6,3 +6,9 @@ pub struct IndexedDataAdded {
     pub freelancers: Vec<Pubkey>,
     pub job: Pubkey,
 }
+
+#[event]
+pub struct IndexedDataDestroyed {
+    pub indexer: Pubkey,
+    pub indexed_data: Pubkey,
+}
