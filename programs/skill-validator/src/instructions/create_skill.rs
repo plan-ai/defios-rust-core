@@ -1,6 +1,6 @@
 use crate::error::ApplicationError;
 use crate::events::skill::SkillCreated;
-use crate::state::{freelancer::Freelancer, job::Job, skill::Skill};
+use crate::state::{freelancer::Freelancer, skill::Skill};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -25,16 +25,6 @@ pub struct CreateSkill<'info> {
     #[account(
          constraint = verified_freelancer_account.user_pubkey == freelancer.key()@ApplicationError::UnauthorizedJobAction)]
     pub verified_freelancer_account: Account<'info, Freelancer>,
-    #[account(
-    mut,
-    seeds = [
-        b"boringlif",
-        job.job_creator.as_ref(),
-        job.job_name.as_bytes()
-    ],
-    bump=job.bump)
-    ]
-    pub job: Account<'info, Job>,
     pub system_program: Program<'info, System>,
 }
 

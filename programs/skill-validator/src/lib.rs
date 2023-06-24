@@ -197,4 +197,8 @@ pub mod spl_account_compression {
     ) -> Result<()> {
         create_skill::handler(ctx, roots, leafs, indexes, merkle_trees)
     }
+
+    pub fn destroy_skill(ctx: Context<DestroySkill>) -> Result<()> {
+        destroy_skill::handler(ctx)
+    }
 }

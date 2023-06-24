@@ -128,4 +128,12 @@ pub enum ApplicationError {
     ///Not authorized to apply for somebody else on job
     #[msg("Not authorized to apply for somebody else on job")]
     UnauthorizedJobAction,
+
+    ///Not authorized to destroy skill
+    #[msg("Only skill creators can destroy thier skill")]
+    UnauthorizedSkillAction,
+
+    ///Can't destroy a skill in use
+    #[msg("Can't destroy a skill in use")]
+    CantDestorySkillInUse,
 }
