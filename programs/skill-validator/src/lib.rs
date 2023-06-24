@@ -187,4 +187,14 @@ pub mod spl_account_compression {
     pub fn apply_job(ctx: Context<ApplyJob>) -> Result<()> {
         apply_job::handler(ctx)
     }
+
+    pub fn create_skill(
+        ctx: Context<CreateSkill>,
+        roots: Box<Vec<Vec<u8>>>,
+        leafs: Box<Vec<Vec<u8>>>,
+        indexes: Box<Vec<u32>>,
+        merkle_trees: Box<Vec<Pubkey>>,
+    ) -> Result<()> {
+        create_skill::handler(ctx, roots, leafs, indexes, merkle_trees)
+    }
 }

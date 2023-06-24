@@ -9,7 +9,7 @@ pub struct Skill {
     #[max_len(40, 32)]
     pub leafs: Vec<Vec<u8>>,
     #[max_len(40)]
-    pub index: Vec<u32>,
+    pub indexes: Vec<u32>,
     #[max_len(40)]
     pub merkle_trees: Vec<Pubkey>,
     pub freelancer: Pubkey,
