@@ -18,7 +18,7 @@ pub struct AddIndexedData<'info> {
     ]
     pub job: Account<'info, Job>,
     #[account(
-        init,
+        init_if_needed,
         payer = indexer,
         seeds=[
             indexer.key().as_ref(),
@@ -42,17 +42,14 @@ pub fn handler(ctx: Context<AddIndexedData>) -> Result<()> {
     indexed_data.job = job.key();
 
     let mut freelancer: Account<Freelancer>;
-    let mut freelancers: Vec<Pubkey> = vec![];
     for account in ctx.remaining_accounts.iter() {
         freelancer = Account::try_from(account)?;
-        freelancers.push(freelancer.key());
+        indexed_data.freelancers.push(freelancer.key());
     }
-
-    indexed_data.freelancers = freelancers.clone();
 
     emit_cpi!(IndexedDataAdded {
         indexer: indexer.key(),
-        freelancers: freelancers,
+        freelancers: indexed_data.freelancers.clone(),
         job: job.key(),
     });
     Ok(())
