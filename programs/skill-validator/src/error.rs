@@ -124,4 +124,8 @@ pub enum ApplicationError {
     ///Cant close job after completeion
     #[msg("Cant close job after completeion")]
     CantCloseJob,
+
+    ///Not authorized to apply for somebody else on job
+    #[msg("Not authorized to apply for somebody else on job")]
+    UnauthorizedJobAction,
 }

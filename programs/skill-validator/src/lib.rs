@@ -183,4 +183,8 @@ pub mod spl_account_compression {
     ) -> Result<()> {
         add_verified_freelancer::handler(ctx, user_metadata_uri, user_pubkey, msg, sig)
     }
+
+    pub fn apply_job(ctx: Context<ApplyJob>) -> Result<()> {
+        apply_job::handler(ctx)
+    }
 }

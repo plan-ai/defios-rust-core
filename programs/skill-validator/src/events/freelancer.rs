@@ -8,3 +8,9 @@ pub struct VerifiedFreelancerAdded {
     pub user_metadata_uri: String,
     pub user_pubkey: Pubkey,
 }
+
+#[event]
+pub struct JobApplied {
+    pub job: Pubkey,
+    pub freelancer: Pubkey,
+}
