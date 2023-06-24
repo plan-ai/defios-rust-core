@@ -44,7 +44,7 @@ pub fn handler(ctx: Context<AddIndexedData>) -> Result<()> {
     let mut freelancer: Account<Freelancer>;
     for account in ctx.remaining_accounts.iter() {
         freelancer = Account::try_from(account)?;
-        indexed_data.freelancers.push(freelancer.key());
+        indexed_data.freelancers.push(freelancer.user_pubkey);
     }
 
     emit_cpi!(IndexedDataAdded {
