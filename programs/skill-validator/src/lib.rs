@@ -201,4 +201,8 @@ pub mod spl_account_compression {
     pub fn destroy_skill(ctx: Context<DestroySkill>) -> Result<()> {
         destroy_skill::handler(ctx)
     }
+
+    pub fn add_indexed_data(ctx: Context<AddIndexedData>) -> Result<()> {
+        add_indexed_data::handler(ctx)
+    }
 }
