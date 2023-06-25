@@ -42,7 +42,6 @@ pub use crate::events::{
     AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1, ChangeLogEvent,
     LeafStaked, LeafUnStaked, ReviewerType,
 };
-pub use crate::helpers::leading_bits;
 use crate::noop::wrap_event;
 pub use crate::noop::{wrap_application_data_v1, Noop};
 use crate::state::{

@@ -1,8 +1,8 @@
 use crate::error::{AccountCompressionError, ApplicationError};
+use crate::helpers::Bytes;
 use crate::{
-    fill_in_proof_from_canopy, leading_bits, merkle_tree_get_size, zero_copy::ZeroCopy,
-    ChangeLogEvent, ConcurrentMerkleTreeHeader, LeafStake, LeafStaked,
-    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    fill_in_proof_from_canopy, merkle_tree_get_size, zero_copy::ZeroCopy, ChangeLogEvent,
+    ConcurrentMerkleTreeHeader, LeafStake, LeafStaked, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -34,7 +34,7 @@ pub struct StakeLeaf<'info> {
         space = 8 + LeafStake::INIT_SPACE,
         seeds = [
         b"Stak",    
-        &leading_bits(&leaf).to_be_bytes(),
+        &leaf.leading_bits().to_be_bytes(),
         merkle_tree.key().as_ref(),
         &index.to_be_bytes()
         ],
