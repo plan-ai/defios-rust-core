@@ -10,7 +10,7 @@ pub struct CreateNameRouter<'info> {
     #[account(
         init,
         payer = router_creator,
-        space = NameRouter::size(),
+        space = 8+NameRouter::INIT_SPACE,
         seeds = [
             signing_domain.as_bytes(),
             signature_version.to_string().as_bytes(),

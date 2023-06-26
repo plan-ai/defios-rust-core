@@ -16,7 +16,7 @@ pub struct AdminDefaultVestingScheduleShift<'info> {
         b"SweetChick"
     ],
     bump,
-    space = DefaultVestingSchedule::size(),
+    space = 8+DefaultVestingSchedule::INIT_SPACE,
     )]
     pub default_schedule: Account<'info, DefaultVestingSchedule>,
     pub system_program: Program<'info, System>,

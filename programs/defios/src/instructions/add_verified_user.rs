@@ -32,7 +32,7 @@ pub struct AddVerifiedUser<'info> {
     #[account(
         init,
         payer = router_creator,
-        space = VerifiedUser::size(),
+        space = 8+VerifiedUser::INIT_SPACE,
         seeds = [
             user_name.as_bytes(),
             user_pubkey.as_ref(),

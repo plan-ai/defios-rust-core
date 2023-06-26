@@ -53,7 +53,7 @@ pub struct CreateRepository<'info> {
 
     #[account(
         init,
-        space = Repository::size(),
+        space = 8+Repository::INIT_SPACE,
         payer = repository_creator,
         seeds = [
             b"repository",
@@ -66,7 +66,7 @@ pub struct CreateRepository<'info> {
     #[account(
         init,
         payer = repository_creator,
-        space = VestingSchedule::size(default_schedule.number_of_schedules.into()),
+        space = 8+VestingSchedule::INIT_SPACE,
         seeds = [
             b"vesting",
             repository_account.key().as_ref(),

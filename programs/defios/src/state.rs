@@ -30,81 +30,45 @@ pub enum RoadmapOutlook {
 }
 
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct NameRouter {
     pub bump: u8,
     pub signature_version: u8,
     pub total_verified_users: u64,
     pub router_creator: Pubkey,
+    #[max_len(50)]
     pub signing_domain: String,
 }
 
-impl NameRouter {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            1 + // signature_version
-            8 + // total_verified_users
-            32 + // router_creator
-            4 +
-            50 // signing_domain
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct VerifiedUser {
     pub bump: u8,
     pub name_router: Pubkey,
+    #[max_len(40)]
     pub user_name: String,
     pub user_pubkey: Pubkey,
 }
 
-impl VerifiedUser {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            32 + // name_router
-            4 +
-            32 + // user_name
-            32 // user_pubkey
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct Repository {
     pub bump: u8,
     pub issue_index: u64,
     pub name_router: Pubkey,
     pub repository_creator: Pubkey,
     pub rewards_mint: Option<Pubkey>,
+    #[max_len(50)]
     pub id: String,
+    #[max_len(250)]
     pub description: String,
+    #[max_len(100)]
     pub uri: String,
     pub vesting_schedule: Option<Pubkey>,
 }
 
-impl Repository {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // issue_index
-            32 + // name_router
-            32 + // repository_creator
-            32 + // rewards_mint
-            4 +
-            50 + // id
-            4 +
-            100 + // description
-            4 +
-            200 + // uri
-            32 //vesting schedule
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct DefaultVestingSchedule {
     pub bump: u8,
     pub number_of_schedules: u32,
@@ -112,18 +76,8 @@ pub struct DefaultVestingSchedule {
     pub unix_change: u64,
 }
 
-impl DefaultVestingSchedule {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-        4 + //number of schedules
-        8 + //total vesting amount
-        8 //unix change
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct Issue {
     pub bump: u8,
     pub index: u64,
@@ -133,63 +87,24 @@ pub struct Issue {
     pub commit_index: u64,
     pub created_at: u64,
     pub closed_at: Option<u64>,
+    #[max_len(100)]
     pub uri: String,
 }
 
-impl Issue {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // index
-            32 + // issue_creator
-            32 + // issue_token_pool_account
-            32 + // repository
-            8 + // commit_index
-            8 + // created_at
-            1 +
-            8 + // closed_at
-            4 +
-            200 // uri
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct VestingSchedule {
     pub bump: u8,
     pub destination_address: Pubkey,
     pub mint_address: Pubkey,
+    #[max_len(10)]
     pub schedules: Vec<Schedule>,
 }
 
-impl VestingSchedule {
-    pub fn size(number_of_schedules: u64) -> usize {
-        let number_of_schedules = if number_of_schedules > 0 {
-            number_of_schedules
-        } else {
-            1
-        };
-
-        8 + // discriminator
-        1 + // bump
-        32 + // destination_address
-        32 + // mint_address
-        number_of_schedules as usize * Schedule::size()
-    }
-}
-
-#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
 pub struct Schedule {
     pub release_time: u64,
     pub amount: u64,
-}
-
-impl Schedule {
-    pub fn size() -> usize {
-        4 + // Vec length discriminator
-        8 + // release_time
-        8 // amount
-    }
 }
 
 #[account]

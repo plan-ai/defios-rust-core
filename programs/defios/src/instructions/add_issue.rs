@@ -62,7 +62,7 @@ pub struct AddIssue<'info> {
 
     #[account(
         init,
-        space = Issue::size(),
+        space = 8+Issue::INIT_SPACE,
         payer = issue_creator,
         seeds = [
             b"issue",
