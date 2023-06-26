@@ -26,3 +26,9 @@ pub struct JobClosed {
 pub struct JobAccepted {
     pub job: Pubkey,
 }
+
+#[event]
+pub struct FreelancerAssigned {
+    pub job: Pubkey,
+    pub freelancer: Pubkey,
+}

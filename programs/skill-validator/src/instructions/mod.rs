@@ -1,4 +1,5 @@
 pub mod accept_complaint;
+pub mod accept_freelancer;
 pub mod accept_job;
 pub mod add_job;
 pub mod add_name_router;
@@ -23,6 +24,7 @@ pub mod validate_fit;
 pub mod verify_leaf;
 
 pub use accept_complaint::*;
+pub use accept_freelancer::*;
 pub use accept_job::*;
 pub use add_job::*;
 pub use add_name_router::*;

@@ -208,4 +208,8 @@ pub mod spl_account_compression {
     pub fn index_data(ctx: Context<IndexData>, metadata_uris: Vec<String>) -> Result<()> {
         index_data::handler(ctx, metadata_uris)
     }
+
+    pub fn accept_freelancer(ctx: Context<AcceptFreelancer>) -> Result<()> {
+        accept_freelancer::handler(ctx)
+    }
 }
