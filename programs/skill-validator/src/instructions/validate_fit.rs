@@ -1,12 +1,12 @@
-use crate::events::indexer::IndexedDataAdded;
-use crate::state::{freelancer::Freelancer, indexer::IndexedData, job::Job};
+use crate::events::fit::FitDataAdded;
+use crate::state::{freelancer::Freelancer, fit::ValidatedFit, job::Job};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[event_cpi]
-pub struct AddIndexedData<'info> {
+pub struct ValidateFit<'info> {
     #[account(mut)]
-    pub indexer: Signer<'info>,
+    pub validator: Signer<'info>,
     #[account(
         mut,
         seeds = [
@@ -19,39 +19,39 @@ pub struct AddIndexedData<'info> {
     pub job: Account<'info, Job>,
     #[account(
         init_if_needed,
-        payer = indexer,
+        payer = validator,
         seeds=[
-            indexer.key().as_ref(),
+            validator.key().as_ref(),
             job.key().as_ref(),
             b"indexed_job"
         ],
-        space = 8+IndexedData::INIT_SPACE,
+        space = 8+ValidatedFit::INIT_SPACE,
         bump
     )]
-    pub indexed_data: Account<'info, IndexedData>,
+    pub validated_data: Account<'info, ValidatedFit>,
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<AddIndexedData>) -> Result<()> {
-    let indexed_data = &mut ctx.accounts.indexed_data;
-    let indexer = &ctx.accounts.indexer;
+pub fn handler(ctx: Context<ValidateFit>) -> Result<()> {
+    let validated_data = &mut ctx.accounts.validated_data;
+    let validator = &ctx.accounts.validator;
     let job = &ctx.accounts.job;
 
-    indexed_data.bump = *ctx.bumps.get("indexed_data").unwrap();
-    indexed_data.indexer = indexer.key();
-    indexed_data.job = job.key();
+    validated_data.bump = *ctx.bumps.get("validated_data").unwrap();
+    validated_data.validator = validator.key();
+    validated_data.job = job.key();
 
     let mut freelancer: Account<Freelancer>;
     for account in ctx.remaining_accounts.iter() {
         freelancer = Account::try_from(account)?;
         if job.appliers.contains(&freelancer.user_pubkey) {
-            indexed_data.freelancers.push(freelancer.user_pubkey);
+            validated_data.freelancers.push(freelancer.user_pubkey);
         };
     }
 
-    emit_cpi!(IndexedDataAdded {
-        indexer: indexer.key(),
-        freelancers: indexed_data.freelancers.clone(),
+    emit_cpi!(FitDataAdded {
+        validator: validator.key(),
+        freelancers: validated_data.freelancers.clone(),
         job: job.key(),
     });
     Ok(())

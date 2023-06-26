@@ -201,7 +201,7 @@ pub mod spl_account_compression {
         destroy_skill::handler(ctx)
     }
 
-    pub fn validate_fit(ctx: Context<AddIndexedData>) -> Result<()> {
+    pub fn validate_fit(ctx: Context<ValidateFit>) -> Result<()> {
         validate_fit::handler(ctx)
     }
 }
