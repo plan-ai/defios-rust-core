@@ -57,7 +57,7 @@ pub use spl_concurrent_merkle_tree::{
     concurrent_merkle_tree::ConcurrentMerkleTree, error::ConcurrentMerkleTreeError, node::Node,
 };
 
-declare_id!("71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX");
+declare_id!("2HDrBtAm848yy8Swv92bzQdS8fmBjTbwJoN9vHLvvim7");
 
 #[program]
 pub mod skill_validator {

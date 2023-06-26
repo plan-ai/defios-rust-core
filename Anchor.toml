@@ -2,13 +2,11 @@
 seeds = true
 skip-lint = false
 [programs.localnet]
-defios = "2YnYdcZ5G6CX4MAu7q21eMz96ARZiB2STkwjjhZgxKBm"
-skill_validator = "71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX"
-spl_noop = "6YuzBthQZuZf7vVqzknDMQuDAcSHb8VecL9qS48Lqcf2"
+defios = "BnWZUV3NTmXdADnWuzSR7urEdUyT9eLG74cpoCWKypyP"
+skill_validator = "2HDrBtAm848yy8Swv92bzQdS8fmBjTbwJoN9vHLvvim7"
 [programs.devnet]
-defios = "2YnYdcZ5G6CX4MAu7q21eMz96ARZiB2STkwjjhZgxKBm"
-skill_validator = "71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX"
-spl_noop = "6YuzBthQZuZf7vVqzknDMQuDAcSHb8VecL9qS48Lqcf2"
+defios = "BnWZUV3NTmXdADnWuzSR7urEdUyT9eLG74cpoCWKypyP"
+skill_validator = "2HDrBtAm848yy8Swv92bzQdS8fmBjTbwJoN9vHLvvim7"
 
 [registry]
 url = "https://damp-ancient-forest.solana-devnet.discover.quiknode.pro/4c38979f4ca8eca0840486c9d5f3f23a986c9cd2/"
