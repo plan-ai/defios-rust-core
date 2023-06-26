@@ -1,7 +1,9 @@
 [package]
 name = "defios"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "Main github on-chain integrations by DefiOS"
+authors = ["Tanmay Munjal <tanmaymunjal64@gmail.com>"]
+repository = "https://github.com/defi-os/defios-rust-core"
 edition = "2021"
 
 [lib]
