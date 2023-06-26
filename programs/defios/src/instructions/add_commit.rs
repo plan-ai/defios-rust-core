@@ -73,7 +73,7 @@ pub struct AddCommit<'info> {
     #[account(
         init,
         payer = commit_creator,
-        space = Commit::size(),
+        space = 8+Commit::INIT_SPACE,
         seeds = [
             b"commit",
             commit_hash.as_bytes(),

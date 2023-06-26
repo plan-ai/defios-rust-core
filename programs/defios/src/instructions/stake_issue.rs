@@ -53,7 +53,7 @@ pub struct StakeIssue<'info> {
     #[account(
         init_if_needed,
         payer = issue_staker,
-        space = IssueStaker::size(),
+        space = 8+IssueStaker::INIT_SPACE,
         seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref()],
         bump
     )]

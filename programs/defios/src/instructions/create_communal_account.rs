@@ -15,7 +15,7 @@ pub struct RegisterCommunalAccount<'info> {
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,
-        space = CommunalAccount::size(),
+        space = 8+CommunalAccount::INIT_SPACE,
         seeds = [
             b"are_we_conscious",
             b"is love life ?  ",

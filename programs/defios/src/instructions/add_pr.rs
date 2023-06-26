@@ -15,7 +15,7 @@ pub struct AddPullRequest<'info> {
     #[account(
         init,
         payer = pull_request_addr,
-        space = PullRequest::size(),
+        space = 8+PullRequest::INIT_SPACE,
         seeds = [
             b"pullrequestadded",
             issue.key().as_ref(),

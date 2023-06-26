@@ -108,80 +108,58 @@ pub struct Schedule {
 }
 
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct Commit {
     pub bump: u8,
     pub index: u64,
     pub commit_creator: Pubkey,
     pub issue: Pubkey,
+    #[max_len(40)]
     pub commit_hash: String,
+    #[max_len(40)]
     pub tree_hash: String,
     pub created_at: u64,
+    #[max_len(100)]
     pub metadata_uri: String,
 }
 
-impl Commit {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // index
-            32 + // commit_creator
-            32 + // issue
-            4 +
-            40 + // commit_hash
-            4 +
-            40 + // tree_hash
-            8 + // created_at
-            4 +
-            200 // metadata_uri
-    }
-}
-
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct IssueStaker {
     pub bump: u8,
     pub staked_amount: u64,
+    #[max_len(30)]
     pub staked_at: Vec<u64>,
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
     pub issue_staker_token_account: Pubkey,
 }
 
-impl IssueStaker {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // staked_amount
-            240 + // staked_at
-            32 + // issue_staker
-            32 + // issue
-            32 // issue_staker_token_account
-    }
+#[account]
+#[derive(InitSpace)]
+pub struct PullRequest {
+    pub bump: u8,
+    pub sent_by: Pubkey,
+    #[max_len(30)]
+    pub commits: Vec<Pubkey>,
+    #[max_len(100)]
+    pub metadata_uri: String,
+    pub accepted: bool,
+    pub pull_request_token_account: Pubkey,
 }
 
 #[account]
-#[derive(Default)]
+#[derive(InitSpace)]
 pub struct PRStaker {
     pub bump: u8,
     pub staked_amount: u64,
+    #[max_len(30)]
     pub staked_at: Vec<u64>,
     pub pr_staker: Pubkey,
     pub pr: Pubkey,
     pub pr_staker_token_account: Pubkey,
 }
 
-impl PRStaker {
-    pub fn size() -> usize {
-        8 + // discriminator
-            1 + // bump
-            8 + // staked_amount
-            240 + // staked_at
-            32 + // pr_staker
-            32 + // pr
-            32 // pr_staker_token_account
-    }
-}
 
 #[account]
 pub struct RoadMapMetaDataStore {
@@ -252,36 +230,9 @@ impl Objective {
 }
 
 #[account]
-pub struct PullRequest {
-    pub bump: u8,
-    pub sent_by: Pubkey,
-    pub commits: Vec<Pubkey>,
-    pub metadata_uri: String,
-    pub accepted: bool,
-    pub pull_request_token_account: Pubkey,
-}
-
-impl PullRequest {
-    pub fn size() -> usize {
-        8 + // discriminator
-        1 + //bump
-        960 + //sent_by
-        960 + //commits
-        200 + //metadata_uri
-        32 //pull request token account
-    }
-}
-
-#[account]
+#[derive(InitSpace)]
 pub struct CommunalAccount {
     pub bump: u8,
-}
-
-impl CommunalAccount {
-    pub fn size() -> usize {
-        8 + // discriminator
-        1 //bump
-    }
 }
 
 #[event]

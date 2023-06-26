@@ -40,7 +40,7 @@ pub struct StakePR<'info> {
     #[account(
         init_if_needed,
         payer = pull_request_staker,
-        space = PRStaker::size(),
+        space = 8+PRStaker::INIT_SPACE,
         seeds = [b"pullrestaker", pull_request_metadata_account.key().as_ref(), pull_request_staker.key().as_ref()],
         bump
     )]
