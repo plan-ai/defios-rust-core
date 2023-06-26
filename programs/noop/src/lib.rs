@@ -3,7 +3,7 @@ use solana_program::{
     pubkey::Pubkey,
 };
 
-declare_id!("noopb9bkMVfRPU8AsbpTUg8AQkHtKwMYZiFUjNRtMmV");
+declare_id!("6YuzBthQZuZf7vVqzknDMQuDAcSHb8VecL9qS48Lqcf2");
 
 #[cfg(not(feature = "no-entrypoint"))]
 use solana_program::entrypoint;

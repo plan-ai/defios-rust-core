@@ -2,15 +2,19 @@
 seeds = true
 skip-lint = false
 [programs.localnet]
-defios = "4UwHr76zjJaLxtbCmFmrWbkaZVVSujcumXjsFNhkBw3s"
+defios = "2YnYdcZ5G6CX4MAu7q21eMz96ARZiB2STkwjjhZgxKBm"
+skill_validator = "71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX"
+spl_noop = "6YuzBthQZuZf7vVqzknDMQuDAcSHb8VecL9qS48Lqcf2"
 [programs.devnet]
-defios = "4UwHr76zjJaLxtbCmFmrWbkaZVVSujcumXjsFNhkBw3s"
+defios = "2YnYdcZ5G6CX4MAu7q21eMz96ARZiB2STkwjjhZgxKBm"
+skill_validator = "71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX"
+spl_noop = "6YuzBthQZuZf7vVqzknDMQuDAcSHb8VecL9qS48Lqcf2"
 
 [registry]
 url = "https://damp-ancient-forest.solana-devnet.discover.quiknode.pro/4c38979f4ca8eca0840486c9d5f3f23a986c9cd2/"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "/home/admin/.config/solana/id.json"
 
 [scripts]

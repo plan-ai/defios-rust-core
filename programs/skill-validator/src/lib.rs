@@ -57,10 +57,10 @@ pub use spl_concurrent_merkle_tree::{
     concurrent_merkle_tree::ConcurrentMerkleTree, error::ConcurrentMerkleTreeError, node::Node,
 };
 
-declare_id!("cmtDvXumGCrqC1Age74AVPhSRVXJMd8PJS91L8KbNCK");
+declare_id!("71so9uUK4KPGmv8PiumAuuPKExXHGVRDD95PGCB5MdvX");
 
 #[program]
-pub mod spl_account_compression {
+pub mod skill_validator {
     use super::*;
 
     pub fn init_empty_merkle_tree(
