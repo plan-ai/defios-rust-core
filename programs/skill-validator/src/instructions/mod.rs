@@ -1,6 +1,5 @@
 pub mod accept_complaint;
 pub mod accept_job;
-pub mod add_indexed_data;
 pub mod add_job;
 pub mod add_name_router;
 pub mod add_review;
@@ -20,11 +19,11 @@ pub mod stake_job;
 pub mod stake_leaf;
 pub mod transfer_merkle_tree;
 pub mod unstake_leaf;
+pub mod validate_fit;
 pub mod verify_leaf;
 
 pub use accept_complaint::*;
 pub use accept_job::*;
-pub use add_indexed_data::*;
 pub use add_job::*;
 pub use add_name_router::*;
 pub use add_review::*;
@@ -44,4 +43,5 @@ pub use stake_job::*;
 pub use stake_leaf::*;
 pub use transfer_merkle_tree::*;
 pub use unstake_leaf::*;
+pub use validate_fit::*;
 pub use verify_leaf::*;

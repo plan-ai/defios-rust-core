@@ -201,7 +201,7 @@ pub mod spl_account_compression {
         destroy_skill::handler(ctx)
     }
 
-    pub fn add_indexed_data(ctx: Context<AddIndexedData>) -> Result<()> {
-        add_indexed_data::handler(ctx)
+    pub fn validate_fit(ctx: Context<AddIndexedData>) -> Result<()> {
+        validate_fit::handler(ctx)
     }
 }
