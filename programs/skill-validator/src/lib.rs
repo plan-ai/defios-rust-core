@@ -204,4 +204,8 @@ pub mod spl_account_compression {
     pub fn validate_fit(ctx: Context<ValidateFit>) -> Result<()> {
         validate_fit::handler(ctx)
     }
+
+    pub fn index_data(ctx: Context<IndexData>, metadata_uris: Vec<String>) -> Result<()> {
+        index_data::handler(ctx, metadata_uris)
+    }
 }

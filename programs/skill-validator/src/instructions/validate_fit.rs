@@ -1,5 +1,5 @@
 use crate::events::fit::FitDataAdded;
-use crate::state::{freelancer::Freelancer, fit::ValidatedFit, job::Job};
+use crate::state::{fit::ValidatedFit, freelancer::Freelancer, job::Job};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
