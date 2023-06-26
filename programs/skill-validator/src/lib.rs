@@ -212,4 +212,8 @@ pub mod spl_account_compression {
     pub fn accept_freelancer(ctx: Context<AcceptFreelancer>) -> Result<()> {
         accept_freelancer::handler(ctx)
     }
+
+    pub fn claim_freelance_reward(ctx: Context<ClaimFreelanceReward>) -> Result<()> {
+        claim_freelance_reward::handler(ctx)
+    }
 }

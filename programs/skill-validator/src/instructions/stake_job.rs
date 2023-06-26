@@ -17,7 +17,7 @@ pub struct StakeJob<'info> {
         mut,
         constraint = job_addr_usdc_account.mint==rewards_mint.key()@ApplicationError::NonUSDCStakingNotSupported,
         constraint = job_addr_usdc_account.owner == job_addr.key() @ApplicationError::IncorrectTokenAccount,
-        constraint = job_addr_usdc_account.amount > stake_amount @ApplicationError::InsufficientBalance
+        constraint = job_addr_usdc_account.amount >= stake_amount @ApplicationError::InsufficientBalance
     )]
     pub job_addr_usdc_account: Account<'info, TokenAccount>,
     #[account(
