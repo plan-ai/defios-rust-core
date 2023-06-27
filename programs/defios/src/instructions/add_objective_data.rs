@@ -13,7 +13,7 @@ pub struct AddObjective<'info> {
     #[account(
         init,
         payer = objective_data_addr,
-        space = Objective::size(),
+        space = 8+Objective::INIT_SPACE,
         seeds = [
             b"objectivedataadd",
             objective_issue.key().as_ref(),

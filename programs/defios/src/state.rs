@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 //to do :make of same type root and leaves
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 #[repr(u8)]
 pub enum ObjectiveState {
     Locked,
@@ -10,7 +10,7 @@ pub enum ObjectiveState {
     Deprecated,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 #[repr(u8)]
 pub enum ObjectiveDeliverable {
     Infrastructure,
@@ -20,7 +20,7 @@ pub enum ObjectiveDeliverable {
     Other,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 #[repr(u8)]
 pub enum RoadmapOutlook {
     Next2,
@@ -160,73 +160,45 @@ pub struct PRStaker {
     pub pr_staker_token_account: Pubkey,
 }
 
-
 #[account]
+#[derive(InitSpace)]
 pub struct RoadMapMetaDataStore {
     pub bump: u8,
+    #[max_len(50)]
     pub roadmap_title: String,
     pub roadmap_creation_unix: i64,
     pub roadmap_creator_id: Pubkey,
+    #[max_len(100)]
     pub roadmap_description_link: String,
+    #[max_len(20)]
     pub root_objective_ids: Vec<Pubkey>,
     pub roadmap_creator: Pubkey,
     pub roadmap_outlook: RoadmapOutlook,
+    #[max_len(100)]
     pub roadmap_image_url: String,
     pub roadmap_repository: Pubkey,
 }
 
-impl RoadMapMetaDataStore {
-    pub fn size() -> usize {
-        8 + // discriminator
-        1 + //bump
-        50 + // roadmap_title
-        16 + // roadmap_creation_unix
-        32 + //roadmap_creator_id
-        640 + // root_objective_ids
-        64 + // roadmap_description_link    
-        32 +//roadmap_creator
-        1 + //roadmap_outlook
-        64 + //roadmap_image_url
-        32 //roadmap_repository
-    }
-}
-
 #[account]
+#[derive(InitSpace)]
 pub struct Objective {
     pub bump: u8,
+    #[max_len(50)]
     pub objective_title: String,
     pub objective_creation_unix: i64,
     pub objective_creator_id: Pubkey,
     pub objective_start_unix: i64,
     pub objective_end_unix: Option<i64>,
+    #[max_len(100)]
     pub objective_description_link: String,
     pub objective_state: ObjectiveState,
+    #[max_len(20)]
     pub children_objective_keys: Vec<Pubkey>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_issue: Pubkey,
+    #[max_len(50)]
     pub objective_id: String,
     pub objective_repository: Pubkey,
-}
-
-impl Objective {
-    pub fn size() -> usize {
-        8 + // discriminator
-        1 + //bump
-        50 + // objective_title
-        16 + // objective_creation_unix
-        16 + // objective_end_unix
-        16 + // objective_start_unix
-        640 + // children_objective_keys
-        32 +  //objective_creator_id
-        32 + // objective_description_link 
-        1 + //objective_state
-        1 + //objective deliverable
-        640 + //objective_staker_ids
-        160 + //objective_staker_amts
-        32 + //objective_issue
-        40 + //objective id
-        32 //objective_repository
-    }
 }
 
 #[account]

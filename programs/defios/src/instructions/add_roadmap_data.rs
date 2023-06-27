@@ -12,7 +12,7 @@ pub struct AddMetadata<'info> {
     #[account(
         init,
         payer = roadmap_data_adder,
-        space = RoadMapMetaDataStore::size(),
+        space = 8+RoadMapMetaDataStore::INIT_SPACE,
         seeds = [
             b"roadmapmetadataadd",
             repository_account.key().as_ref(),
