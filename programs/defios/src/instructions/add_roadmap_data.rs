@@ -1,7 +1,7 @@
 use crate::error::DefiOSError;
+use crate::event::AddRoadmapDataEvent;
 use crate::state::{
-    AddRoadmapDataEvent, NameRouter, Objective, Repository, RoadMapMetaDataStore, RoadmapOutlook,
-    VerifiedUser,
+    NameRouter, Objective, Repository, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser,
 };
 use anchor_lang::prelude::*;
 

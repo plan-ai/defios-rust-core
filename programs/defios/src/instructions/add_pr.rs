@@ -5,7 +5,9 @@ use anchor_spl::{
 };
 
 use crate::error::DefiOSError;
-use crate::state::{Commit, Issue, NameRouter, PullRequest, PullRequestSent, VerifiedUser};
+use crate::event::PullRequestSent;
+use crate::state::{Commit, Issue, NameRouter, PullRequest, VerifiedUser};
+
 #[derive(Accounts)]
 pub struct AddPullRequest<'info> {
     #[account(mut)]

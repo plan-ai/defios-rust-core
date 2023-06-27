@@ -1,5 +1,6 @@
 use crate::error::DefiOSError;
-use crate::state::{AddChildObjectiveEvent, Objective, RoadMapMetaDataStore};
+use crate::event::AddChildObjectiveEvent;
+use crate::state::{Objective, RoadMapMetaDataStore};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

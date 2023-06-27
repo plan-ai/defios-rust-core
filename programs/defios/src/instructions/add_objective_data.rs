@@ -1,7 +1,7 @@
 use crate::error::DefiOSError;
+use crate::event::AddObjectiveDataEvent;
 use crate::state::{
-    AddObjectiveDataEvent, Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState,
-    Repository, VerifiedUser,
+    Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState, Repository, VerifiedUser,
 };
 use anchor_lang::prelude::*;
 

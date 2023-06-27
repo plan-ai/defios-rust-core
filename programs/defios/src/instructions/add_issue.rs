@@ -6,7 +6,8 @@ use anchor_spl::{
 
 use crate::{
     error::DefiOSError,
-    state::{Issue, IssueCreated, NameRouter, Repository, VerifiedUser},
+    event::IssueCreated,
+    state::{Issue, NameRouter, Repository, VerifiedUser},
 };
 
 #[derive(Accounts)]

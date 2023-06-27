@@ -1,8 +1,8 @@
 use crate::{
     error::DefiOSError,
+    event::RepositoryCreated,
     state::{
-        DefaultVestingSchedule, NameRouter, Repository, RepositoryCreated, Schedule, VerifiedUser,
-        VestingSchedule,
+        DefaultVestingSchedule, NameRouter, Repository, Schedule, VerifiedUser, VestingSchedule,
     },
 };
 use anchor_lang::prelude::*;

@@ -1,6 +1,7 @@
 use crate::{
     error::DefiOSError,
-    state::{NameRouter, VerifiedUser, VerifiedUserAdded},
+    event::VerifiedUserAdded,
+    state::{NameRouter, VerifiedUser},
 };
 use anchor_lang::prelude::*;
 use solana_program::{

@@ -1,0 +1,161 @@
+use crate::state::{ObjectiveDeliverable, RoadmapOutlook, Schedule};
+use anchor_lang::prelude::*;
+#[event]
+pub struct PullRequestSent {
+    pub sent_by: Pubkey,
+    pub commits: Vec<Pubkey>,
+    pub metadata_uri: String,
+    pub issue: Pubkey,
+    pub pull_request: Pubkey,
+}
+
+#[event]
+pub struct AddCommitToPR {
+    pub commit: Vec<Pubkey>,
+    pub by: Pubkey,
+}
+
+#[event]
+pub struct AddChildObjectiveEvent {
+    pub parent_objective_account: Pubkey,
+    pub added_by: Pubkey,
+    pub objectives: Vec<Pubkey>,
+}
+
+#[event]
+pub struct AddObjectiveDataEvent {
+    pub objective_title: String,
+    pub objective_metadata_uri: String,
+    pub objective_start_unix: i64,
+    pub objective_creation_unix: i64,
+    pub objective_end_unix: Option<i64>,
+    pub objective_deliverable: ObjectiveDeliverable,
+    pub objective_public_key: Pubkey,
+    pub objective_issue: Pubkey,
+    pub objective_addr: Pubkey,
+    pub child_objectives: Vec<Pubkey>,
+}
+
+#[event]
+pub struct AddRoadmapDataEvent {
+    pub roadmap_title: String,
+    pub roadmap_description_link: String,
+    pub roadmap_creation_unix: u64,
+    pub roadmap_creator: Pubkey,
+    pub root_objective_ids: Vec<Pubkey>,
+    pub roadmap_outlook: RoadmapOutlook,
+    pub roadmap_image_url: String,
+    pub roadmap: Pubkey,
+    pub roadmap_repository: Pubkey,
+}
+
+#[event]
+pub struct NameRouterCreated {
+    pub router_creator: Pubkey,
+    pub name_router_account: Pubkey,
+}
+
+#[event]
+pub struct VerifiedUserAdded {
+    pub router_creator: Pubkey,
+    pub name_router_account: Pubkey,
+    pub verified_user_account: Pubkey,
+    pub user_name: String,
+    pub user_pubkey: Pubkey,
+}
+
+#[event]
+pub struct CommitAdded {
+    pub commit_creator: Pubkey,
+    pub commit_account: Pubkey,
+    pub issue_account: Pubkey,
+    pub metadata_uri: String,
+}
+
+#[event]
+pub struct IssueCreated {
+    pub issue_creator: Pubkey,
+    pub issue_account: Pubkey,
+    pub repository_account: Pubkey,
+    pub issue_token_pool_account: Pubkey,
+    pub rewards_mint: Pubkey,
+    pub uri: String,
+}
+
+#[event]
+pub struct RepositoryCreated {
+    pub repository_creator: Pubkey,
+    pub repository_account: Pubkey,
+    pub rewards_mint: Option<Pubkey>,
+    pub uri: String,
+    pub id: String,
+    pub description: String,
+    pub token_name: Option<String>,
+    pub token_symbol: Option<String>,
+    pub token_metadata_uri: Option<String>,
+    pub vesting_account: Option<Pubkey>,
+}
+
+#[event]
+pub struct IssueStaked {
+    pub issue_staker: Pubkey,
+    pub issue_staker_token_account: Pubkey,
+    pub issue_account: Pubkey,
+    pub staked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub issue_contribution_link: String,
+}
+
+#[event]
+pub struct IssueUnstaked {
+    pub issue_staker: Pubkey,
+    pub issue_staker_token_account: Pubkey,
+    pub issue_account: Pubkey,
+    pub unstaked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub issue_contribution_link: String,
+}
+
+#[event]
+pub struct PullRequestAccepted {
+    pub pull_request_addr: Pubkey,
+    pub repository: Pubkey,
+    pub repository_name: String,
+    pub issue: Pubkey,
+    pub repository_creator: Pubkey,
+}
+
+#[event]
+pub struct VestingScheduleChanged {
+    pub repository_account: Pubkey,
+    pub repository_creator: Pubkey,
+    pub old_vesting_schedule: Vec<Schedule>,
+    pub new_vesting_schedule: Vec<Schedule>,
+}
+
+#[event]
+pub struct DefaultVestingScheduleChanged {
+    pub number_of_schedules: u32,
+    pub per_vesting_amount: u64,
+    pub unix_change: u64,
+}
+
+#[event]
+pub struct PullRequestStaked {
+    pub pr_staker: Pubkey,
+    pub pr_staker_token_account: Pubkey,
+    pub pr_account: Pubkey,
+    pub staked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub pr_contribution_link: String,
+}
+
+#[event]
+pub struct PullRequestUnstaked {
+    pub pr_staker: Pubkey,
+    pub pr_staker_token_account: Pubkey,
+    pub pr_account: Pubkey,
+    pub staked_amount: u64,
+    pub rewards_mint: Pubkey,
+    pub pr_contribution_link: String,
+}

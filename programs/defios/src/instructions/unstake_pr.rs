@@ -1,5 +1,6 @@
 use crate::error::DefiOSError;
-use crate::state::{Issue, PRStaker, PullRequest, PullRequestUnstaked};
+use crate::event::PullRequestUnstaked;
+use crate::state::{Issue, PRStaker, PullRequest};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,

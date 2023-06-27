@@ -1,4 +1,5 @@
-use crate::state::*;
+use crate::event::NameRouterCreated;
+use crate::state::NameRouter;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

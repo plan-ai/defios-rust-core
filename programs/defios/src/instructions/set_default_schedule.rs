@@ -1,6 +1,7 @@
 use crate::constants::AUTHORIZED_PUBLIC_KEY;
 use crate::error::DefiOSError;
-use crate::state::{DefaultVestingSchedule, DefaultVestingScheduleChanged};
+use crate::event::DefaultVestingScheduleChanged;
+use crate::state::DefaultVestingSchedule;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

@@ -1,5 +1,6 @@
 use crate::error::DefiOSError;
-use crate::state::{Issue, PullRequest, PullRequestAccepted, Repository};
+use crate::event::PullRequestAccepted;
+use crate::state::{Issue, PullRequest, Repository};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
