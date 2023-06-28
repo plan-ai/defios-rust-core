@@ -15,7 +15,7 @@ pub struct StakeJob<'info> {
     pub job_addr: Signer<'info>,
     #[account(
         mut,
-        constraint = job_addr_usdc_account.mint==rewards_mint.key()@ApplicationError::NonUSDCStakingNotSupported,
+        constraint = job_addr_usdc_account.mint==usdc_mint.key()@ApplicationError::NonUSDCStakingNotSupported,
         constraint = job_addr_usdc_account.owner == job_addr.key() @ApplicationError::IncorrectTokenAccount,
         constraint = job_addr_usdc_account.amount >= stake_amount @ApplicationError::InsufficientBalance
     )]
@@ -29,10 +29,11 @@ pub struct StakeJob<'info> {
     bump=job.bump)
     ]
     pub job: Account<'info, Job>,
+    #[account(mut)]
     /// CHECK: Check done at function level
     pub job_usdc_account: AccountInfo<'info>,
-    #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]
-    pub rewards_mint: Account<'info, Mint>,
+    // #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]
+    pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -43,7 +44,7 @@ pub fn handler(ctx: Context<StakeJob>, stake_amount: u64) -> Result<()> {
     let job_usdc_account = &mut ctx.accounts.job_usdc_account;
     let job_addr_usdc_account = &mut ctx.accounts.job_addr_usdc_account;
     let job_addr = &mut ctx.accounts.job_addr;
-    let rewards_mint = &ctx.accounts.rewards_mint;
+    let usdc_mint = &ctx.accounts.usdc_mint;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let token_program = &ctx.accounts.token_program;
     let system_program = &ctx.accounts.system_program;
@@ -53,17 +54,25 @@ pub fn handler(ctx: Context<StakeJob>, stake_amount: u64) -> Result<()> {
         ApplicationError::InvalidStakeAmount
     );
 
+    let signer_seeds: &[&[&[u8]]] = &[&[
+        b"boringlif",
+        job.job_creator.as_ref(),
+        job.job_name.as_bytes(),
+        &[job.bump],
+    ]];
+
     if job_usdc_account.data_is_empty() {
-        create_associated_token_account(CpiContext::new(
+        create_associated_token_account(CpiContext::new_with_signer(
             associated_token_program.to_account_info(),
             Create {
                 payer: job_addr.to_account_info(),
                 associated_token: job_usdc_account.to_account_info(),
                 authority: job.to_account_info(),
-                mint: rewards_mint.to_account_info(),
+                mint: usdc_mint.to_account_info(),
                 system_program: system_program.to_account_info(),
                 token_program: token_program.to_account_info(),
             },
+            signer_seeds,
         ))?;
     }
 

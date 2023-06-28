@@ -35,7 +35,7 @@ pub struct UnStakeLeaf<'info> {
         constraint = stake_account.stake_amount>=unstake_amount
     )]
     pub stake_account: Account<'info, LeafStake>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     #[account(
         mut,
