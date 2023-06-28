@@ -33,10 +33,10 @@ describe("skill_validator", () => {
       program.programId
     );
   }
-  const jobName = "Solana dev"
-  const jobDesc = "Build smart contracts"
-  const jobMetadataUri = "https://github.com/defi-os/Issues"
-  const jobLength = { LongTerm: {}}
+  const jobLength = { longTerm: {}};
+  const jobName:string = "Solana dev";
+  const jobDesc = "Build smart contracts";
+  const jobMetadataUri = "https://github.com/defi-os/Issues";
   it("Create a job posting", async()=> {
     const jobPoster = await create_keypair();
     const [job] = await get_pda_from_seeds([
@@ -50,6 +50,6 @@ describe("skill_validator", () => {
         job: job,
         systemProgram: web3.SystemProgram.programId
     }).signers([jobPoster])
-    .rpc();
+    .rpc({skipPreflight: true});
   })
 })
