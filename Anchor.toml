@@ -8,9 +8,6 @@ skill_validator = "J1YMNvSjANboNn6WNJUW5Wc7Jg5EuuHMQC1tZN5q1Rdo"
 defios = "FNktGFqB6zpngB4HuJR4Q7VtThWVSBfvs4dGRZfZRAp1"
 skill_validator = "J1YMNvSjANboNn6WNJUW5Wc7Jg5EuuHMQC1tZN5q1Rdo"
 
-[registry]
-url = "https://damp-ancient-forest.solana-devnet.discover.quiknode.pro/4c38979f4ca8eca0840486c9d5f3f23a986c9cd2/"
-
 [provider]
 cluster = "localnet"
 wallet = "/home/ubuntu/.config/solana/id.json"
