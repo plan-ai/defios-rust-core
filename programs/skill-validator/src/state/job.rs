@@ -1,16 +1,12 @@
 use anchor_lang::prelude::*;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 #[repr(u8)]
 pub enum JobLength {
     CoupleOfDays,
     ShortTerm,
     MediumTerm,
     LongTerm,
-}
-
-impl Space for JobLength {
-    const INIT_SPACE: usize = 1;
 }
 
 #[account]
