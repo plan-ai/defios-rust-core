@@ -11,7 +11,7 @@ use anchor_spl::{
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key
-    #[account(mut, signer,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
+    #[account(mut, signer)]//constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,
@@ -32,7 +32,7 @@ pub struct RegisterCommunalAccount<'info> {
     #[account(mut)]
     pub communal_usdc_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,

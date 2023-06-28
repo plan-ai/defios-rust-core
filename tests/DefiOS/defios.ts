@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { Defios } from "../target/types/defios";
+import { Defios } from "../../target/types/defios";
 
 import * as ed from "@noble/ed25519";
 import { PublicKey } from "@saberhq/solana-contrib";
