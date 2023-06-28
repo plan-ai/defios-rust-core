@@ -136,4 +136,8 @@ pub enum ApplicationError {
     ///Can't destroy a skill in use
     #[msg("Can't destroy a skill in use")]
     CantDestorySkillInUse,
+
+    ///Send your usdc account to get refund when closing job
+    #[msg("Send your usdc account to get refund when closing job")]
+    USDCAccountNotSent,
 }

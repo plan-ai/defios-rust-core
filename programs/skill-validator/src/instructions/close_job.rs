@@ -12,12 +12,8 @@ use anchor_spl::{
 pub struct CloseJob<'info> {
     #[account(mut,address=job.job_creator@ApplicationError::UnauthorizedStakeAttempt)]
     pub job_addr: Signer<'info>,
-    #[account(
-        mut,
-        constraint = job_addr_usdc_account.mint==rewards_mint.key()@ApplicationError::NonUSDCStakingNotSupported,
-        constraint = job_addr_usdc_account.owner == job_addr.key() @ApplicationError::IncorrectTokenAccount,
-    )]
-    pub job_addr_usdc_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub job_addr_usdc_account: Option<Account<'info, TokenAccount>>,
     #[account(
     mut,
     seeds = [
@@ -30,9 +26,9 @@ pub struct CloseJob<'info> {
     ]
     pub job: Account<'info, Job>,
     #[account(mut,close=job)]
-    pub job_usdc_account: Account<'info, TokenAccount>,
-    #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]
-    pub rewards_mint: Account<'info, Mint>,
+    pub job_usdc_account: Option<Account<'info, TokenAccount>>,
+    // #[account(address=USDC@ApplicationError::NonUSDCStakingNotSupported)]
+    pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -44,28 +40,39 @@ pub fn handler(ctx: Context<CloseJob>) -> Result<()> {
     let job_usdc_account = &ctx.accounts.job_usdc_account;
     let job_addr_usdc_account = &ctx.accounts.job_addr_usdc_account;
     let job_addr = &ctx.accounts.job_addr;
+    let usdc_mint = &ctx.accounts.usdc_mint;
 
     require!(!job.job_completed, ApplicationError::CantCloseJob);
-    let job_key = job_addr.key();
-    let signer_seeds: &[&[&[u8]]] = &[&[
-        b"boringlif",
-        job_key.as_ref(),
-        job.job_name.as_bytes(),
-        &[job.bump],
-    ]];
 
-    transfer(
-        CpiContext::new_with_signer(
-            token_program.to_account_info(),
-            Transfer {
-                from: job_usdc_account.to_account_info(),
-                to: job_addr_usdc_account.to_account_info(),
-                authority: job.to_account_info(),
+    match job_usdc_account {
+        Some(job_usdc_account) => match job_addr_usdc_account {
+            Some(job_addr_usdc_account) => {
+                require!(job_addr_usdc_account.mint==usdc_mint.key(),ApplicationError::NonUSDCStakingNotSupported);
+                require!(job_addr_usdc_account.owner == job_addr.key(),ApplicationError::IncorrectTokenAccount);
+                let job_key = job_addr.key();
+                let signer_seeds: &[&[&[u8]]] = &[&[
+                    b"boringlif",
+                    job_key.as_ref(),
+                    job.job_name.as_bytes(),
+                    &[job.bump],
+                ]];
+                transfer(
+                    CpiContext::new_with_signer(
+                        token_program.to_account_info(),
+                        Transfer {
+                            from: job_usdc_account.to_account_info(),
+                            to: job_addr_usdc_account.to_account_info(),
+                            authority: job.to_account_info(),
+                        },
+                        signer_seeds,
+                    ),
+                    job.job_stake,
+                )?;
             },
-            signer_seeds,
-        ),
-        job.job_stake,
-    )?;
+            None => {require!(job.job_stake==0,ApplicationError::USDCAccountNotSent)}
+        },
+        None => {}
+    };
 
     emit!(JobClosed {
         job: ctx.accounts.job.key()
