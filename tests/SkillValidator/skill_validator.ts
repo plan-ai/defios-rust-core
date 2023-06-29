@@ -104,7 +104,7 @@ describe("skill_validator", () => {
     });
 
     //gets public key from seeds
-    const [verifiedUserAccount] = await get_pda_from_seeds([
+    const [verifiedFreelanceAccount] = await get_pda_from_seeds([
       Buffer.from(userMetadataUri),
       pubKey.toBuffer(),
       nameRouterAccount.toBuffer(),
@@ -120,7 +120,7 @@ describe("skill_validator", () => {
       )
       .accounts({
         nameRouterAccount,
-        verifiedUserAccount,
+        verifiedFreelanceAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
         systemProgram: web3.SystemProgram.programId,
@@ -128,7 +128,7 @@ describe("skill_validator", () => {
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
       .rpc({ commitment: "confirmed" });
-    return [verifiedUserAccount];
+    return [verifiedFreelanceAccount];
   }
 
   it("Create a job posting", async () => {
@@ -340,10 +340,92 @@ describe("skill_validator", () => {
     const [routerCreatorKeypair, nameRouterAccount] =
       await create_name_router();
 
-    const [verifiedUserAccount] = await create_verified_user(
+    const [verifiedFreelanceAccount] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
       userPubkey
     );
+  });
+
+  it("Apply to job", async () => {
+    const jobPoster = await create_keypair();
+    const mintAuthority = await create_keypair();
+    const [job] = await get_pda_from_seeds([
+      Buffer.from("boringlif"),
+      jobPoster.publicKey.toBuffer(),
+      Buffer.from(jobName),
+    ]);
+    await program.methods
+      .addJob(jobName, jobDesc, jobLength, jobMetadataUri)
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        job: job,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+
+    //creating spl token
+    const mintAddress = await createMint(
+      connection,
+      mintAuthority,
+      mintAuthority.publicKey,
+      mintAuthority.publicKey,
+      6
+    );
+    const jobPosterTokenAddress = await createAssociatedTokenAccount(
+      connection,
+      jobPoster,
+      mintAddress,
+      jobPoster.publicKey
+    );
+    const jobTokenAddress = await getAssociatedTokenAddress(
+      mintAddress,
+      job,
+      true
+    );
+    await mintTo(
+      connection,
+      jobPoster,
+      mintAddress,
+      jobPosterTokenAddress,
+      mintAuthority,
+      mintAmount
+    );
+    await program.methods
+      .stakeJob(stakeAmmount)
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        job: job,
+        jobAddrUsdcAccount: jobPosterTokenAddress,
+        jobUsdcAccount: jobTokenAddress,
+        usdcMint: mintAddress,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+
+    const freelancer = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+
+    const [verifiedFreelanceAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      freelancer.publicKey
+    );
+
+    await program.methods
+      .applyJob()
+      .accounts({
+        freelancer: freelancer.publicKey,
+        verifiedFreelancerAccount: verifiedFreelanceAccount,
+        job: job,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([freelancer])
+      .rpc({ skipPreflight: false });
   });
 });
