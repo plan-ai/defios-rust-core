@@ -87,7 +87,7 @@ describe("skill_validator", () => {
       mintAuthority,
       mintAuthority.publicKey,
       mintAuthority.publicKey,
-      9
+      6
     );
     const jobPosterTokenAddress = await createAssociatedTokenAccount(
       connection,
@@ -115,6 +115,121 @@ describe("skill_validator", () => {
         job: job,
         jobAddrUsdcAccount: jobPosterTokenAddress,
         jobUsdcAccount: jobTokenAddress,
+        usdcMint: mintAddress,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+  });
+  it("Close a job posting after staking on it", async () => {
+    const jobPoster = await create_keypair();
+    const mintAuthority = await create_keypair();
+    const [job] = await get_pda_from_seeds([
+      Buffer.from("boringlif"),
+      jobPoster.publicKey.toBuffer(),
+      Buffer.from(jobName),
+    ]);
+    await program.methods
+      .addJob(jobName, jobDesc, jobLength, jobMetadataUri)
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        job: job,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+
+    //creating spl token
+    const mintAddress = await createMint(
+      connection,
+      mintAuthority,
+      mintAuthority.publicKey,
+      mintAuthority.publicKey,
+      6
+    );
+    const jobPosterTokenAddress = await createAssociatedTokenAccount(
+      connection,
+      jobPoster,
+      mintAddress,
+      jobPoster.publicKey
+    );
+    const jobTokenAddress = await getAssociatedTokenAddress(
+      mintAddress,
+      job,
+      true
+    );
+    await mintTo(
+      connection,
+      jobPoster,
+      mintAddress,
+      jobPosterTokenAddress,
+      mintAuthority,
+      mintAmount
+    );
+    await program.methods
+      .stakeJob(stakeAmmount)
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        job: job,
+        jobAddrUsdcAccount: jobPosterTokenAddress,
+        jobUsdcAccount: jobTokenAddress,
+        usdcMint: mintAddress,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+    await program.methods
+      .closeJob()
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        jobAddrUsdcAccount: jobPosterTokenAddress,
+        job: job,
+        jobUsdcAccount: jobTokenAddress,
+        usdcMint: mintAddress,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+  });
+  it("Close a job posting without staking on it", async () => {
+    const jobPoster = await create_keypair();
+    const mintAuthority = await create_keypair();
+    const [job] = await get_pda_from_seeds([
+      Buffer.from("boringlif"),
+      jobPoster.publicKey.toBuffer(),
+      Buffer.from(jobName),
+    ]);
+    await program.methods
+      .addJob(jobName, jobDesc, jobLength, jobMetadataUri)
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        job: job,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([jobPoster])
+      .rpc({ skipPreflight: false });
+
+    //creating spl token
+    const mintAddress = await createMint(
+      connection,
+      mintAuthority,
+      mintAuthority.publicKey,
+      mintAuthority.publicKey,
+      6
+    );
+    await program.methods
+      .closeJob()
+      .accounts({
+        jobAddr: jobPoster.publicKey,
+        jobAddrUsdcAccount: null,
+        job: job,
+        jobUsdcAccount: null,
         usdcMint: mintAddress,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
