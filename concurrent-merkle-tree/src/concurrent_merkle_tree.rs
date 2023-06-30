@@ -8,6 +8,7 @@ use crate::{
 use bytemuck::{Pod, Zeroable};
 use log_compute;
 use solana_logging;
+use solana_program::pubkey::Pubkey;
 
 /// Enforce constraints on max depth and buffer size
 #[inline(always)]
@@ -55,6 +56,7 @@ pub struct ConcurrentMerkleTree<const MAX_DEPTH: usize, const MAX_BUFFER_SIZE: u
     pub buffer_size: u64,
     /// Proof for respective root
     pub change_logs: [ChangeLog<MAX_DEPTH>; MAX_BUFFER_SIZE],
+    pub freelancer: Pubkey,
     pub rightmost_proof: Path<MAX_DEPTH>,
 }
 
@@ -67,33 +69,15 @@ unsafe impl<const MAX_DEPTH: usize, const MAX_BUFFER_SIZE: usize> Pod
 {
 }
 
-impl<const MAX_DEPTH: usize, const MAX_BUFFER_SIZE: usize> Default
-    for ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>
-{
-    fn default() -> Self {
-        Self {
-            sequence_number: 0,
-            active_index: 0,
-            buffer_size: 0,
-            change_logs: [ChangeLog::<MAX_DEPTH>::default(); MAX_BUFFER_SIZE],
-            rightmost_proof: Path::<MAX_DEPTH>::default(),
-        }
-    }
-}
-
 impl<const MAX_DEPTH: usize, const MAX_BUFFER_SIZE: usize>
     ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>
 {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     pub fn is_initialized(&self) -> bool {
         !(self.buffer_size == 0 && self.sequence_number == 0 && self.active_index == 0)
     }
 
     /// This is the trustless initialization method that should be used in most cases.
-    pub fn initialize(&mut self) -> Result<Node, ConcurrentMerkleTreeError> {
+    pub fn initialize(&mut self, freelancer: Pubkey) -> Result<Node, ConcurrentMerkleTreeError> {
         check_bounds(MAX_DEPTH, MAX_BUFFER_SIZE);
         if self.is_initialized() {
             return Err(ConcurrentMerkleTreeError::TreeAlreadyInitialized);
@@ -113,46 +97,12 @@ impl<const MAX_DEPTH: usize, const MAX_BUFFER_SIZE: usize>
         self.active_index = 0;
         self.buffer_size = 1;
         self.rightmost_proof = rightmost_proof;
+        self.freelancer = freelancer;
         Ok(self.change_logs[0].root)
     }
 
-    /// This is a trustful initialization method that assumes the root contains the expected
-    /// leaves.
-    ///
-    /// At the time of this crate's publishing, there is no supported way to efficiently verify
-    /// a pre-initialized root on-chain. Using this method before having a method for on-chain verification
-    /// will prevent other applications from indexing the leaf data stored in this tree.
-    pub fn initialize_with_root(
-        &mut self,
-        root: Node,
-        rightmost_leaf: Node,
-        proof_vec: &[Node],
-        index: u32,
-    ) -> Result<Node, ConcurrentMerkleTreeError> {
-        check_bounds(MAX_DEPTH, MAX_BUFFER_SIZE);
-        check_leaf_index(index, MAX_DEPTH)?;
-
-        if self.is_initialized() {
-            return Err(ConcurrentMerkleTreeError::TreeAlreadyInitialized);
-        }
-        let mut proof: [Node; MAX_DEPTH] = [Node::default(); MAX_DEPTH];
-        proof.copy_from_slice(proof_vec);
-        let rightmost_proof = Path {
-            proof,
-            index: index + 1,
-            leaf: rightmost_leaf,
-            _padding: 0,
-        };
-        self.change_logs[0].root = root;
-        self.sequence_number = 1;
-        self.active_index = 0;
-        self.buffer_size = 1;
-        self.rightmost_proof = rightmost_proof;
-        if root != recompute(rightmost_leaf, &proof, index) {
-            solana_logging!("Proof failed to verify");
-            return Err(ConcurrentMerkleTreeError::InvalidProof);
-        }
-        Ok(root)
+    pub fn get_freelncer(&self) -> Pubkey {
+        self.freelancer
     }
 
     /// Errors if one of the leaves of the current merkle tree is non-EMPTY
