@@ -1,10 +1,12 @@
 use crate::error::AccountCompressionError;
+use crate::state::graph_data::GraphData;
 use crate::{
     fill_in_proof_from_canopy, merkle_tree_get_size, update_canopy, wrap_event,
     zero_copy::ZeroCopy, AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1,
     ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 use anchor_lang::prelude::*;
+use solana_program::keccak::hashv;
 use spl_concurrent_merkle_tree::concurrent_merkle_tree::ConcurrentMerkleTree;
 /// Context for inserting, appending, or replacing a leaf in the tree
 ///
@@ -17,7 +19,6 @@ pub struct Modify<'info> {
     pub merkle_tree: UncheckedAccount<'info>,
 
     /// Authority that controls write-access to the tree
-    /// Typically a program, e.g., the Bubblegum contract validates that leaves are valid NFTs.
     pub authority: Signer<'info>,
 
     /// Program used to emit changelogs as cpi instruction data.
@@ -28,13 +29,7 @@ pub struct Modify<'info> {
 /// to the specified index in the tree. If the insert operation fails, the leaf will be `append`-ed
 /// to the tree.
 /// It is up to the indexer to parse the final location of the leaf from the emitted changelog.
-pub fn handler(
-    ctx: Context<Modify>,
-    root: [u8; 32],
-    leaf: [u8; 32],
-    index: u32,
-    data: String,
-) -> Result<()> {
+pub fn handler(ctx: Context<Modify>, data: GraphData) -> Result<()> {
     require_eq!(
         *ctx.accounts.merkle_tree.owner,
         crate::id(),
@@ -44,6 +39,9 @@ pub fn handler(
     let (header_bytes, rest) =
         merkle_tree_bytes.split_at_mut(CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1);
 
+    let leaf = hashv(&[data.from.leaf.as_bytes()]).to_bytes();
+    let index = data.from.index;
+    let root = hashv(&[data.from.root.as_bytes()]).to_bytes();
     let header = ConcurrentMerkleTreeHeader::try_from_slice(header_bytes)?;
     header.assert_valid_authority(&ctx.accounts.authority.key())?;
     header.assert_valid_leaf_index(index)?;
@@ -80,7 +78,7 @@ pub fn handler(
     wrap_event(
         &AccountCompressionEvent::ApplicationData(ApplicationDataEvent::V1(
             ApplicationDataEventV1 {
-                application_data: data.into_bytes(),
+                application_data: data.new.into_bytes(),
             },
         )),
         &ctx.accounts.noop,

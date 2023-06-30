@@ -56,9 +56,6 @@ pub struct ConcurrentMerkleTreeHeaderDataV1 {
     /// Tree capacity can be calculated as power(2, max_depth).
     /// See above table for valid options.
     max_depth: u32,
-
-    /// Authority that validates the content of the trees.
-    /// Typically a program, e.g., the Bubblegum contract validates that leaves are valid NFTs.
     authority: Pubkey,
 
     /// Slot corresponding to when the Merkle tree was created.
