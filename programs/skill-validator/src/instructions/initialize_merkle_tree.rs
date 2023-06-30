@@ -1,8 +1,9 @@
-use crate::error::AccountCompressionError;
+use crate::error::{AccountCompressionError,ApplicationError};
 use crate::{
     merkle_tree_get_size, update_canopy, wrap_event, zero_copy::ZeroCopy, AccountCompressionEvent,
-    ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1
 };
+use crate::state::freelancer::Freelancer;
 use anchor_lang::prelude::*;
 use spl_concurrent_merkle_tree::concurrent_merkle_tree::ConcurrentMerkleTree;
 /// Context for initializing a new SPL ConcurrentMerkleTree
@@ -18,6 +19,11 @@ pub struct Initialize<'info> {
 
     /// Program used to emit changelogs as cpi instruction data.
     pub noop: Program<'info, Noop>,
+    ///CHECK: Check done in constraint level
+    pub freelancer: AccountInfo<'info>,
+    #[account(
+        constraint = verified_freelancer_account.user_pubkey == freelancer.key()@ApplicationError::UnauthorizedJobAction)]
+    pub verified_freelancer_account: Account<'info, Freelancer>,
 }
 
 /// Creates a new merkle tree with maximum leaf capacity of `power(2, max_depth)`
@@ -118,7 +124,7 @@ pub fn handler(ctx: Context<Initialize>, max_depth: u32, max_buffer_size: u32) -
     let merkle_tree_size = merkle_tree_get_size(&header)?;
     let (tree_bytes, canopy_bytes) = rest.split_at_mut(merkle_tree_size);
     let id = ctx.accounts.merkle_tree.key();
-    let change_log_event = merkle_tree_apply_fn_mut!(header, id, tree_bytes, initialize,)?;
+    let change_log_event = merkle_tree_apply_fn_mut!(header, id, tree_bytes, initialize,ctx.accounts.verified_freelancer_account.user_pubkey)?;
     wrap_event(
         &AccountCompressionEvent::ChangeLog(*change_log_event),
         &ctx.accounts.noop,
