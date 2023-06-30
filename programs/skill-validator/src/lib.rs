@@ -85,10 +85,6 @@ pub mod skill_validator {
         replace_leaf::handler(ctx, root, previous_leaf, new_leaf, index)
     }
 
-    pub fn transfer_tree(ctx: Context<TransferAuthority>, new_authority: Pubkey) -> Result<()> {
-        transfer_merkle_tree::handler(ctx, new_authority)
-    }
-
     pub fn verify_leaf(
         ctx: Context<VerifyLeaf>,
         root: [u8; 32],
