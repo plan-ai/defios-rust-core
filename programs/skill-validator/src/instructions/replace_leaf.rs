@@ -40,8 +40,8 @@ pub fn handler(ctx: Context<ReplaceLeaf>, replace_leaf: ReplaceLeafArg) -> Resul
         merkle_tree_bytes.split_at_mut(CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1);
 
     let index = replace_leaf.index;
-    let root = hashv(&[replace_leaf.root.as_bytes()]).to_bytes();
-    let previous_leaf = hashv(&[replace_leaf.previous_leaf.as_bytes()]).to_bytes();
+    let root = replace_leaf.root;
+    let previous_leaf = replace_leaf.previous_leaf;
     let new_leaf = hashv(&[replace_leaf.new_leaf.as_bytes()]).to_bytes();
     let header = ConcurrentMerkleTreeHeader::try_from_slice(header_bytes)?;
     header.assert_valid_authority(&ctx.accounts.authority.key())?;
