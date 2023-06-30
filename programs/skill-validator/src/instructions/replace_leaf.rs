@@ -2,8 +2,8 @@ use crate::error::AccountCompressionError;
 use crate::state::replace_leaf::ReplaceLeafArg;
 use crate::{
     fill_in_proof_from_canopy, merkle_tree_get_size, update_canopy, wrap_event,
-    zero_copy::ZeroCopy, AccountCompressionEvent, ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop,
-    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,ApplicationDataEvent, ApplicationDataEventV1
+    zero_copy::ZeroCopy, AccountCompressionEvent, ApplicationDataEvent, ApplicationDataEventV1,
+    ChangeLogEvent, ConcurrentMerkleTreeHeader, Noop, CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
 };
 use anchor_lang::prelude::*;
 use solana_program::keccak::hashv;
@@ -77,10 +77,13 @@ pub fn handler(ctx: Context<ReplaceLeaf>, replace_leaf: ReplaceLeafArg) -> Resul
         &AccountCompressionEvent::ChangeLog(*change_log_event),
         &ctx.accounts.noop,
     )?;
+
+    let mut buffer: Vec<u8> = Vec::new();
+    replace_leaf.serialize(&mut buffer).unwrap();
     wrap_event(
         &AccountCompressionEvent::ApplicationData(ApplicationDataEvent::V1(
             ApplicationDataEventV1 {
-                application_data: replace_leaf.new_leaf.into_bytes(),
+                application_data: buffer,
             },
         )),
         &ctx.accounts.noop,

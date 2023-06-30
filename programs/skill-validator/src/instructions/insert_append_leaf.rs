@@ -39,9 +39,9 @@ pub fn handler(ctx: Context<Modify>, data: GraphData) -> Result<()> {
     let (header_bytes, rest) =
         merkle_tree_bytes.split_at_mut(CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1);
 
-    let leaf = hashv(&[data.from.leaf.as_bytes()]).to_bytes();
-    let index = data.from.index;
-    let root = hashv(&[data.from.root.as_bytes()]).to_bytes();
+    let leaf = hashv(&[data.to.leaf.as_bytes()]).to_bytes();
+    let index = data.to.index;
+    let root = data.root;
     let header = ConcurrentMerkleTreeHeader::try_from_slice(header_bytes)?;
     header.assert_valid_authority(&ctx.accounts.authority.key())?;
     header.assert_valid_leaf_index(index)?;
@@ -75,10 +75,13 @@ pub fn handler(ctx: Context<Modify>, data: GraphData) -> Result<()> {
         &AccountCompressionEvent::ChangeLog(*change_log_event),
         &ctx.accounts.noop,
     )?;
+
+    let mut buffer: Vec<u8> = Vec::new();
+    data.serialize(&mut buffer).unwrap();
     wrap_event(
         &AccountCompressionEvent::ApplicationData(ApplicationDataEvent::V1(
             ApplicationDataEventV1 {
-                application_data: data.new.into_bytes(),
+                application_data: buffer,
             },
         )),
         &ctx.accounts.noop,
