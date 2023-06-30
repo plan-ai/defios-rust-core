@@ -1,5 +1,4 @@
 use crate::error::ApplicationError;
-use crate::helpers::Bytes;
 use crate::{LeafStake, LeafUnStaked};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -27,7 +26,6 @@ pub struct UnStakeLeaf<'info> {
         mut,
         seeds = [
         b"Stak",    
-        &stake_account.leaf.leading_bits().to_be_bytes(),
         merkle_tree.key().as_ref(),
         &stake_account.index.to_be_bytes()
         ],
@@ -58,9 +56,7 @@ pub fn handler(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
 
     let merkle_tree_key = merkle_tree.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
-        b"issue",
         b"Stak",
-        &stake_account.leaf.leading_bits().to_be_bytes(),
         merkle_tree_key.as_ref(),
         &stake_account.index.to_be_bytes(),
         &[stake_account.bump],
