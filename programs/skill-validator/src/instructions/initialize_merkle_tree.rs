@@ -19,8 +19,7 @@ pub struct Initialize<'info> {
 
     /// Program used to emit changelogs as cpi instruction data.
     pub noop: Program<'info, Noop>,
-    ///CHECK: Check done in constraint level
-    pub freelancer: AccountInfo<'info>,
+    pub freelancer: SystemAccount<'info>,
     #[account(
         constraint = verified_freelancer_account.user_pubkey == freelancer.key()@ApplicationError::UnauthorizedJobAction)]
     pub verified_freelancer_account: Account<'info, Freelancer>,

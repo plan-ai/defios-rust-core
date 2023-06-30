@@ -8,12 +8,12 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    metadata::Metadata,
+    metadata::{Metadata,create_metadata_accounts_v3,CreateMetadataAccountsV3},
     token,
     token::{Mint, Token},
 };
 use mpl_token_metadata;
-use mpl_token_metadata::{instruction as token_instruction, pda::find_metadata_account};
+use mpl_token_metadata::{instruction as token_instruction, pda::find_metadata_account,state::DataV2};
 use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
@@ -44,7 +44,7 @@ pub struct CreateRepository<'info> {
         ],
         bump = name_router_account.bump
     )]
-    pub name_router_account: Account<'info, NameRouter>,
+    pub name_router_account: Box<Account<'info, NameRouter>>,
 
     #[account(
         address = name_router_account.router_creator
@@ -107,6 +107,7 @@ pub struct CreateRepository<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_metadata_program: Program<'info, Metadata>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 pub fn handler(
@@ -131,6 +132,8 @@ pub fn handler(
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
     let metadata = &mut ctx.accounts.metadata;
+    let token_metadata_program = &ctx.accounts.token_metadata_program;
+    let rent = &ctx.accounts.rent;
 
     //fills repository account data
     repository_account.bump = *ctx.bumps.get("repository_account").unwrap();
@@ -271,34 +274,38 @@ pub fn handler(
                                                     * (default_schedule.number_of_schedules as u64),
                                             )?;
 
-                                            invoke_signed(
-                                                &token_instruction::create_metadata_accounts_v3(
-                                                    mpl_token_metadata::id(), // program_id
-                                                    metadata.key(),           // metadata_account
-                                                    rewards_mint.key(),       // mint
-                                                    rewards_mint.key(),       // mint_authority
-                                                    repository_creator.key(), // payer
-                                                    rewards_mint.key(),       // update_authority
-                                                    name,                     // name
-                                                    symbol,                   // symbol
-                                                    uri,                      // uri
-                                                    None,                     // creators
-                                                    0,     // seller_fee_basis_points
-                                                    false, // update_authority_is_signer
-                                                    true,  // is_mutable
-                                                    None,  // collection
-                                                    None,  // uses
-                                                    None,  // collection_details
-                                                ),
-                                                &[
-                                                    metadata.to_account_info(),           // Metadata account
-                                                    rewards_mint.to_account_info(), // Mint account
-                                                    rewards_mint.to_account_info(), // Mint authority
-                                                    repository_creator.to_account_info(), // Payer
-                                                    rewards_mint.to_account_info(), // Update authority
-                                                    system_program.to_account_info(), // System program
-                                                ],
+                                            // On-chain token metadata for the mint
+                                            let data_v2 = DataV2 {
+                                                name: name,
+                                                symbol: symbol,
+                                                uri: uri,
+                                                seller_fee_basis_points: 0,
+                                                creators: None,
+                                                collection: None,
+                                                uses: None,
+                                            };
+
+                                            let cpi_ctx = CpiContext::new_with_signer(
+                                                token_metadata_program.to_account_info(),
+                                                CreateMetadataAccountsV3 {
+                                                    metadata: metadata.to_account_info(), // the metadata account being created
+                                                    mint: rewards_mint.to_account_info(), // the mint account of the metadata account
+                                                    mint_authority: rewards_mint.to_account_info(), // the mint authority of the mint account
+                                                    update_authority: rewards_mint.to_account_info(), // the update authority of the metadata account
+                                                    payer: repository_creator.to_account_info(), // the payer for creating the metadata account
+                                                    system_program: system_program
+                                                        .to_account_info(), // the system program account
+                                                    rent: rent.to_account_info(), // the rent sysvar account
+                                                },
                                                 signer_seeds,
+                                            );
+
+                                            create_metadata_accounts_v3(
+                                                cpi_ctx, // cpi context
+                                                data_v2, // token metadata
+                                                true,    // is_mutable
+                                                true,    // update_authority_is_signer
+                                                None,    // collection details
                                             )?;
 
                                             // Add data to token vesting account

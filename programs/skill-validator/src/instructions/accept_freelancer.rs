@@ -8,8 +8,7 @@ use anchor_lang::prelude::*;
 pub struct AcceptFreelancer<'info> {
     #[account(constraint = (accepter.key().eq(&job.job_creator) || accepter.key().eq(&AUTHORIZED_PUBLIC_KEY)))]
     pub accepter: Signer<'info>,
-    ///CHECK: Check done in constraint level
-    pub freelancer: AccountInfo<'info>,
+    pub freelancer: SystemAccount<'info>,
     #[account(
          constraint = verified_freelancer_account.user_pubkey == freelancer.key()@ApplicationError::UnauthorizedJobAction)]
     pub verified_freelancer_account: Account<'info, Freelancer>,
