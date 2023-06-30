@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use solana_program::pubkey::Pubkey;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct Leaf {
@@ -12,5 +11,4 @@ pub struct Leaf {
 pub struct GraphData {
     pub from: Leaf,
     pub new: String,
-    pub merkle_tree: Pubkey,
 }

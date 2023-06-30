@@ -8,6 +8,7 @@ pub mod job;
 pub mod leaf_stake;
 pub mod name_router;
 mod path_node;
+pub mod replace_leaf;
 pub mod skill;
 
 pub use complaint::*;
@@ -19,4 +20,5 @@ pub use job::*;
 pub use leaf_stake::*;
 pub use name_router::*;
 pub use path_node::PathNode;
+pub use replace_leaf::*;
 pub use skill::*;

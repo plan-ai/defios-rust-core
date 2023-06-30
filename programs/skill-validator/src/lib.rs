@@ -46,7 +46,7 @@ use crate::noop::wrap_event;
 pub use crate::noop::{wrap_application_data_v1, Noop};
 use crate::state::{
     merkle_tree_get_size, ConcurrentMerkleTreeHeader, GraphData, JobLength, LeafStake,
-    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,
+    CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1,ReplaceLeafArg
 };
 
 pub mod instructions;
@@ -77,12 +77,9 @@ pub mod skill_validator {
 
     pub fn replace_leaf(
         ctx: Context<ReplaceLeaf>,
-        root: [u8; 32],
-        previous_leaf: [u8; 32],
-        new_leaf: [u8; 32],
-        index: u32,
+        replace_leaf: ReplaceLeafArg
     ) -> Result<()> {
-        replace_leaf::handler(ctx, root, previous_leaf, new_leaf, index)
+        replace_leaf::handler(ctx, replace_leaf)
     }
 
     pub fn verify_leaf(
