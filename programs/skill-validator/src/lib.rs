@@ -137,7 +137,7 @@ pub mod skill_validator {
         root: [u8; 32],
         stake_amount: u64,
     ) -> Result<()> {
-        stake_leaf::handler(ctx, index,leaf, root, stake_amount)
+        stake_leaf::handler(ctx, index, leaf, root, stake_amount)
     }
 
     pub fn unstake_leaf(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
@@ -168,12 +168,10 @@ pub mod skill_validator {
 
     pub fn create_skill(
         ctx: Context<CreateSkill>,
-        roots: Box<Vec<Vec<u8>>>,
-        leafs: Box<Vec<Vec<u8>>>,
         indexes: Box<Vec<u32>>,
         merkle_trees: Box<Vec<Pubkey>>,
     ) -> Result<()> {
-        create_skill::handler(ctx, roots, leafs, indexes, merkle_trees)
+        create_skill::handler(ctx, indexes, merkle_trees)
     }
 
     pub fn destroy_skill(ctx: Context<DestroySkill>) -> Result<()> {

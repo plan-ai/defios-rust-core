@@ -30,8 +30,6 @@ pub struct CreateSkill<'info> {
 
 pub fn handler(
     ctx: Context<CreateSkill>,
-    roots: Box<Vec<Vec<u8>>>,
-    leafs: Box<Vec<Vec<u8>>>,
     indexes: Box<Vec<u32>>,
     merkle_trees: Box<Vec<Pubkey>>,
 ) -> Result<()> {
@@ -40,17 +38,13 @@ pub fn handler(
     let freelancer = &ctx.accounts.freelancer;
 
     skill.bump = *ctx.bumps.get("skill").unwrap();
-    skill.roots.extend(*roots.clone());
     skill.indexes.extend(*indexes.clone());
-    skill.leafs.extend(*leafs.clone());
     skill.merkle_trees.extend(*merkle_trees.clone());
     skill.freelancer = freelancer.key();
     skill.skill_creator = skill_creator.key();
     skill.in_use = false;
 
     emit_cpi!(SkillCreated {
-        roots: *roots,
-        leafs: *leafs,
         indexes: *indexes,
         merkle_trees: *merkle_trees,
         freelancer: freelancer.key(),
