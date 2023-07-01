@@ -125,7 +125,6 @@ pub fn handler(
     )?;
 
     emit!(LeafStaked {
-        leaf: leaf,
         index: index,
         stake_amount: stake_amount,
         tree: merkle_tree.key()

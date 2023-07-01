@@ -11,9 +11,6 @@ pub struct UnStakeLeaf<'info> {
     #[account(mut)]
     /// CHECK: This account is validated in the instruction
     pub merkle_tree: UncheckedAccount<'info>,
-
-    /// Authority that controls write-access to the tree
-    /// Typically a program, e.g., the Bubblegum contract validates that leaves are valid NFTs.
     #[account(mut)]
     pub authority: Signer<'info>,
     #[account(
@@ -78,7 +75,6 @@ pub fn handler(ctx: Context<UnStakeLeaf>, unstake_amount: u64) -> Result<()> {
     stake_account.stake_amount -= unstake_amount;
 
     emit!(LeafUnStaked {
-        leaf: stake_account.leaf,
         index: stake_account.index,
         unstake_amount: unstake_amount,
         tree: merkle_tree.key()
