@@ -13,7 +13,7 @@ use anchor_spl::{
     token::{Mint, Token},
 };
 use mpl_token_metadata;
-use mpl_token_metadata::{instruction as token_instruction, pda::find_metadata_account,state::DataV2};
+use mpl_token_metadata::{pda::find_metadata_account,state::DataV2};
 use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
