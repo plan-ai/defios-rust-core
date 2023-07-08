@@ -11,7 +11,7 @@ on:
 jobs:
   tests:
     name: Reusable
-    uses: ./.github/workflows/reusable-tests.yaml
+    uses: ./.github/workflows/reusable_tests.yaml
     with:
       cache: true
       solana_cli_version: 1.14.20
