@@ -1,70 +1,19 @@
 name: Tests
 
 on:
-  workflow_call:
-    inputs:
-      cache:
-        required: true
-        type: boolean
-      solana_cli_version:
-        required: true
-        type: string
-      node_version:
-        required: true
-        type: string
-      cargo_profile:
-        required: true
-        type: string
-      anchor_binary_name:
-        required: true
-        type: string
-env:
-  SOLANA_CLI_VERSION: ${{ inputs.solana_cli_version }}
-  NODE_VERSION: ${{ inputs.node_version }}
-  CARGO_PROFILE: ${{ inputs.cargo_profile }}
-  ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  test-core:
-    name: Formatting tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup/
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - run: cargo fmt -- --check
-
-  test-defios:
-    name: Test DefiOS contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup/
-      - run: cargo install --path cli anchor-cli --locked --force
-      - run: chmod +x ~/.cargo/bin/anchor
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ANCHOR_BINARY_NAME }}
-          path: ~/.cargo/bin/anchor
-      - run: anchor test --arch sbf --skip-local-validator --run tests/DefiOS
-      - uses: ./.github/actions/git-diff/
-
-  test-skill-validator:
-    name: Test SkillValidator contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup/
-      - run: cargo install --path cli anchor-cli --locked --force
-      - run: chmod +x ~/.cargo/bin/anchor
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ANCHOR_BINARY_NAME }}
-          path: ~/.cargo/bin/anchor
-      - run: anchor test --arch sbf --skip-local-validator --run tests/SkillValidator
-      - uses: ./.github/actions/git-diff/
+  tests:
+    name: Reusable
+    uses: ./.github/workflows/reusable-tests.yaml
+    with:
+      cache: true
+      solana_cli_version: 1.14.20
+      node_version: 17.0.1
+      anchor_binary_name: anchor-binary
