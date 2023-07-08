@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup/
-      - run: cargo install anchor-cli --version 0.28.0 --locked --force
+      - run: cargo install anchor-cli --version 0.27.0 --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup/
-      - run: cargo install anchor-cli --version 0.28.0 --locked --force
+      - run: cargo install anchor-cli --version 0.27.0 --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
