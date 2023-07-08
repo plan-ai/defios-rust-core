@@ -43,7 +43,8 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor test --skip-local-validator --run tests/DefiOS
+      - run: rm -rf ~/.cache/solana/*
+      - run: anchor test --arch sbf --skip-local-validator --run tests/DefiOS
       - uses: ./.github/actions/git-diff/
 
   test-skill-validator:
@@ -59,5 +60,6 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor test --skip-local-validator --run tests/SkillValidator
+      - run: rm -rf ~/.cache/solana/*
+      - run: anchor test --arch sbf --skip-local-validator --run tests/SkillValidator
       - uses: ./.github/actions/git-diff/
