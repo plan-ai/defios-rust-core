@@ -3,16 +3,10 @@ name: Tests
 on:
   workflow_call:
     inputs:
-      cache:
-        required: true
-        type: boolean
       solana_cli_version:
         required: true
         type: string
       node_version:
-        required: true
-        type: string
-      cargo_profile:
         required: true
         type: string
       anchor_binary_name:
