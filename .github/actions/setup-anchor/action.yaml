@@ -7,7 +7,3 @@ runs:
       shell: bash
     - run: chmod +x ~/.cargo/bin/anchor
       shell: bash
-    - uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.ANCHOR_BINARY_NAME }}
-        path: ~/.cargo/bin/anchor
