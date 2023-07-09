@@ -16,3 +16,4 @@ jobs:
       solana_cli_version: 1.14.20
       node_version: 17.0.1
       anchor_binary_name: anchor-binary
+      anchor_version: 0.28.0

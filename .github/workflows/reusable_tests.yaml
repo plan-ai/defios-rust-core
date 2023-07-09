@@ -12,6 +12,9 @@ on:
       anchor_binary_name:
         required: true
         type: string
+      anchor_version:
+        required: true
+        type: string
 env:
   SOLANA_CLI_VERSION: ${{ inputs.solana_cli_version }}
   NODE_VERSION: ${{ inputs.node_version }}
@@ -42,13 +45,16 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v0.28.0 anchor-cli --version 0.28.0 --locked --force
+      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.anchor_version }} anchor-cli --version ${{ env.anchor_version }} --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor test --arch sbf --skip-local-validator --run tests/DefiOS
+      - run: anchor deploy
+      - run: anchor keys sync
+      - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --run tests/DefiOS
+      - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
 
   test-skill-validator:
@@ -61,11 +67,14 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v0.28.0 anchor-cli --version 0.28.0 --locked --force
+      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.anchor_version }} anchor-cli --version ${{ env.anchor_version }} --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor test --arch sbf --skip-local-validator --run tests/SkillValidator
+      - run: anchor deploy
+      - run: anchor keys sync
+      - run: anchor test --arch sbf --skip-local-validator --skip-deploy --run tests/SkillValidator
+      - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
