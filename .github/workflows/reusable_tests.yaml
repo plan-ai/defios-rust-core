@@ -55,6 +55,7 @@ jobs:
       - run: anchor build --arch sbf -p defios
       - run: anchor deploy -p defios
       - run: anchor keys sync
+      - run: anchor build --arch sbf -p defios
       - run: anchor deploy -p defios
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
       - uses: ./.github/actions/shutdown-validator/
@@ -79,6 +80,7 @@ jobs:
       - run: anchor build --arch sbf -p skill_validator
       - run: anchor deploy -p skill_validator
       - run: anchor keys sync
+      - run: anchor build --arch sbf -p skill_validator
       - run: anchor deploy -p skill_validator
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
       - uses: ./.github/actions/shutdown-validator/
