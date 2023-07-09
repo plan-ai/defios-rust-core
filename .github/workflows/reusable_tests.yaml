@@ -43,7 +43,7 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: source ~./bashrc
+      - run: source ~/.bashrc
       - run: anchor test --arch sbf --skip-local-validator --run tests/DefiOS
       - uses: ./.github/actions/git-diff/
 
@@ -60,6 +60,6 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: source ~./bashrc
+      - run: source ~/.bashrc
       - run: anchor test --arch sbf --skip-local-validator --run tests/SkillValidator
       - uses: ./.github/actions/git-diff/
