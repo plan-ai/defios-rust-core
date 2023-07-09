@@ -52,7 +52,8 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor deploy
+      - run: anchor deploy --arch sbf -p defios
+      - run: anchor deploy --arch sbf -p skill-validator
       - run: anchor keys sync
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --run tests/DefiOS
       - uses: ./.github/actions/shutdown-validator/
@@ -74,7 +75,8 @@ jobs:
         with:
           name: ${{ env.ANCHOR_BINARY_NAME }}
           path: ~/.cargo/bin/anchor
-      - run: anchor deploy
+      - run: anchor deploy --arch sbf -p defios
+      - run: anchor deploy --arch sbf -p skill-validator
       - run: anchor keys sync
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --run tests/SkillValidator
       - uses: ./.github/actions/shutdown-validator/
