@@ -15,3 +15,4 @@ runs:
         key: solana-${{ runner.os }}-v0000-${{ env.NODE_VERSION }}-${{ hashFiles('./yarn.lock') }}
     - run: yarn --frozen-lockfile && yarn build && yarn link
       shell: bash
+
