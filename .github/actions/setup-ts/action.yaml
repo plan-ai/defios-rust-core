@@ -13,7 +13,9 @@ runs:
         path: |
           ./node_modules/
         key: solana-${{ runner.os }}-v0000-${{ env.NODE_VERSION }}-${{ hashFiles('./yarn.lock') }}
-    - run: git config --global url.https://github.com/.insteadOf git@github.com
+    - run: >
+          git config --global url."https://github.com/".insteadOf
+          ssh://git@github.com/
       shell: bash
     - run: yarn --frozen-lockfile && yarn build && yarn link
       shell: bash
