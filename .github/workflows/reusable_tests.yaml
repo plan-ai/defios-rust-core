@@ -39,7 +39,7 @@ jobs:
   test-defios:
     name: Test DefiOS contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup/
@@ -55,6 +55,7 @@ jobs:
       - run: anchor build --arch sbf -p defios
       - run: anchor deploy -p defios
       - run: anchor keys sync
+      - run: anchor deploy -p defios
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
       - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
@@ -62,7 +63,7 @@ jobs:
   test-skill-validator:
     name: Test SkillValidator contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup/
@@ -78,6 +79,7 @@ jobs:
       - run: anchor build --arch sbf -p skill_validator
       - run: anchor deploy -p skill_validator
       - run: anchor keys sync
+      - run: anchor deploy -p skill_validator
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
       - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
