@@ -17,6 +17,6 @@ runs:
           git config --global url."https://github.com/".insteadOf
           ssh://git@github.com/
       shell: bash
-    - run: yarn --frozen-lockfile
+    - run: yarn
       shell: bash
 
