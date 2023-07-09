@@ -8,12 +8,12 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
-    metadata::{Metadata,create_metadata_accounts_v3,CreateMetadataAccountsV3},
+    metadata::{create_metadata_accounts_v3, CreateMetadataAccountsV3, Metadata},
     token,
     token::{Mint, Token},
 };
 use mpl_token_metadata;
-use mpl_token_metadata::{pda::find_metadata_account,state::DataV2};
+use mpl_token_metadata::{pda::find_metadata_account, state::DataV2};
 use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
@@ -291,7 +291,8 @@ pub fn handler(
                                                     metadata: metadata.to_account_info(), // the metadata account being created
                                                     mint: rewards_mint.to_account_info(), // the mint account of the metadata account
                                                     mint_authority: rewards_mint.to_account_info(), // the mint authority of the mint account
-                                                    update_authority: rewards_mint.to_account_info(), // the update authority of the metadata account
+                                                    update_authority: rewards_mint
+                                                        .to_account_info(), // the update authority of the metadata account
                                                     payer: repository_creator.to_account_info(), // the payer for creating the metadata account
                                                     system_program: system_program
                                                         .to_account_info(), // the system program account

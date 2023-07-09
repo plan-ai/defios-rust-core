@@ -1,4 +1,4 @@
-use anchor_lang::prelude::{Pubkey,constant};
+use anchor_lang::prelude::{constant, Pubkey};
 use solana_program::pubkey;
 
 #[constant]
