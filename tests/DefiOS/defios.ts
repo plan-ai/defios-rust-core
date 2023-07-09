@@ -17,6 +17,7 @@ describe("defios", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   //testing defios workspace here
+  console.log(anchor.workspace)
   const program = anchor.workspace.Defios as Program<Defios>;
   const {
     provider: { connection },
