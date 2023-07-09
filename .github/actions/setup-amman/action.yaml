@@ -3,7 +3,5 @@ description: "Setup test amman validator"
 runs:
   using: "composite"
   steps:
-    - run: git clone https://github.com/metaplex-foundation/js.git
-      shell: bash
-    - run: cd js && yarn && yarn amman:start && cd..
+    - run: DEBUG=amman* yarn amman start
       shell: bash
