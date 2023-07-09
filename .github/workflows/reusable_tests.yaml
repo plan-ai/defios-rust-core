@@ -45,7 +45,7 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.anchor_version }} anchor-cli --version ${{ env.anchor_version }} --locked --force
+      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.ANCHOR_VERSION }} anchor-cli --version ${{ env.ANCHOR_VERSION }} --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
@@ -67,7 +67,7 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.anchor_version }} anchor-cli --version ${{ env.anchor_version }} --locked --force
+      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.ANCHOR_VERSION }} anchor-cli --version ${{ env.ANCHOR_VERSION }} --locked --force
       - run: chmod +x ~/.cargo/bin/anchor
       - uses: actions/upload-artifact@v3
         with:
