@@ -19,6 +19,7 @@ env:
   SOLANA_CLI_VERSION: ${{ inputs.solana_cli_version }}
   NODE_VERSION: ${{ inputs.node_version }}
   ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
+  ANCHOR_VERSION: ${{ inputs.anchor_version }}
 
 jobs:
   test-core:
