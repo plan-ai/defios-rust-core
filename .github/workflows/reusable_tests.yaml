@@ -29,6 +29,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: cargo fmt -- --check
+      - run: npm i prettier
+      - run: npm run lint 
 
   test-defios:
     name: Test DefiOS contracts
