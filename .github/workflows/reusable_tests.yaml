@@ -20,6 +20,12 @@ env:
   NODE_VERSION: ${{ inputs.node_version }}
   ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
   ANCHOR_VERSION: ${{ inputs.anchor_version }}
+  CARGO_CACHE_PATH: |
+    ~/.cargo/bin/
+    ~/.cargo/registry/index/
+    ~/.cargo/registry/cache/
+    ~/.cargo/git/db/
+    ./target/
 
 jobs:
   test-core:
