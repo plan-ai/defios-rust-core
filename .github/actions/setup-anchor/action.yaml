@@ -13,7 +13,7 @@ runs:
       if: steps.cache-anchor.outputs.cache-hit != 'true'
       with:
         retry_wait_seconds: 300
-        timeout_minutes: 2
+        timeout_minutes: 20
         max_attempts: 10
         retry_on: error
         shell: bash
