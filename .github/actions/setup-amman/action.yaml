@@ -9,5 +9,7 @@ runs:
       shell: bash
     - run: git clone https://github.com/metaplex-foundation/js.git
       shell: bash
-    - run: cd js && yarn --frozen-lockfile && yarn amman:start && cd..
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+    - run: cd js && pnpm install --frozen-lockfile && pnpm amman:start && cd..
       shell: bash
