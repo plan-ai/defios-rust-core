@@ -54,10 +54,10 @@ jobs:
       - uses: ./.github/actions/setup-amman/
       - uses: ./.github/actions/setup-anchor/
       - run: anchor build --arch sbf 
-      - run: anchor deploy -p defios
+      - run: anchor deploy
       - run: anchor keys sync
       - run: anchor build --arch sbf
-      - run: anchor deploy -p defios
+      - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
       - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
@@ -74,10 +74,10 @@ jobs:
       - uses: ./.github/actions/setup-amman/
       - uses: ./.github/actions/setup-anchor/
       - run: anchor build --arch sbf
-      - run: anchor deploy -p skill_validator
+      - run: anchor deploy
       - run: anchor keys sync
       - run: anchor build --arch sbf
-      - run: anchor deploy -p skill_validator
+      - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
       - uses: ./.github/actions/shutdown-validator/
       - uses: ./.github/actions/git-diff/
