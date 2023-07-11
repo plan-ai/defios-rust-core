@@ -297,6 +297,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: true });
@@ -344,6 +345,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: null,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -393,6 +395,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -491,6 +494,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: metadataAddress,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -629,6 +633,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: metadataAddress,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -780,6 +785,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc();
@@ -918,6 +924,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -987,6 +994,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1137,6 +1145,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1300,6 +1309,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1492,6 +1502,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1653,6 +1664,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -1850,6 +1862,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2066,6 +2079,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2270,6 +2284,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2476,6 +2491,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: metadataAddress,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2541,6 +2557,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
       .rpc();
@@ -2830,6 +2847,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -2907,6 +2925,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3018,6 +3037,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         metadata: metadataAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3136,6 +3156,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: metadataAddress,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
@@ -3172,6 +3193,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: null,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator2])
       .rpc({ skipPreflight: false });
@@ -3476,6 +3498,7 @@ describe("defios", () => {
         defaultSchedule: defaultVestingSchedule,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         metadata: metadataAddress,
+        rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc({ skipPreflight: false });
