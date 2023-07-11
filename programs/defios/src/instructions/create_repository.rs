@@ -132,7 +132,6 @@ pub fn handler(
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
     let metadata = &mut ctx.accounts.metadata;
-    let token_metadata_program = &ctx.accounts.token_metadata_program;
     let rent = &ctx.accounts.rent;
 
     //fills repository account data
@@ -286,7 +285,7 @@ pub fn handler(
                                             };
 
                                             let cpi_ctx = CpiContext::new_with_signer(
-                                                token_metadata_program.to_account_info(),
+                                                rewards_mint.to_account_info(),
                                                 CreateMetadataAccountsV3 {
                                                     metadata: metadata.to_account_info(), // the metadata account being created
                                                     mint: rewards_mint.to_account_info(), // the mint account of the metadata account
