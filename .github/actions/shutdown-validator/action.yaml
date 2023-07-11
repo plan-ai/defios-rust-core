@@ -3,5 +3,5 @@ description: "Shutdown test amman validator"
 runs:
   using: "composite"
   steps:
-    - run: DEBUG=amman* yarn amman stop
+    - run: pnpm amman:stop
       shell: bash
