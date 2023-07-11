@@ -9,5 +9,5 @@ runs:
       shell: bash
     - run: git clone https://github.com/metaplex-foundation/js.git
       shell: bash
-    - run: cd js && yarn amman:start && cd..
+    - run: cd js && yarn && yarn amman:start && cd..
       shell: bash
