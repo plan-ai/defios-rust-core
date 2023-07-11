@@ -1,5 +1,5 @@
 [package]
-name = "spl_noop"
+name = "noop"
 version = "0.1.3"
 description = "Solana Program Library No-op Program"
 authors = ["Solana Labs Maintainers <maintainers@solanalabs.com>"]

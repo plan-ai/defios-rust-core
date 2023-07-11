@@ -15,7 +15,7 @@ pub struct Noop;
 
 impl anchor_lang::Id for Noop {
     fn id() -> Pubkey {
-        spl_noop::id()
+        noop::id()
     }
 }
 
@@ -24,7 +24,7 @@ pub fn wrap_event<'info>(
     noop_program: &Program<'info, Noop>,
 ) -> Result<()> {
     invoke(
-        &spl_noop::instruction(event.try_to_vec()?),
+        &noop::instruction(event.try_to_vec()?),
         &[noop_program.to_account_info()],
     )?;
     Ok(())
