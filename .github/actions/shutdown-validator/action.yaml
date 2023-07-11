@@ -1,7 +1,0 @@
-name: "Shutdown Amman validator"
-description: "Shutdown test amman validator"
-runs:
-  using: "composite"
-  steps:
-    - run: pnpm amman:stop
-      shell: bash

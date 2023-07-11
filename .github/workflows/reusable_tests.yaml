@@ -59,7 +59,6 @@ jobs:
       - run: anchor build --arch sbf
       - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
-      - uses: ./.github/actions/shutdown-validator/
 
   test-skill-validator:
     name: Test SkillValidator contracts
@@ -78,4 +77,3 @@ jobs:
       - run: anchor build --arch sbf
       - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
-      - uses: ./.github/actions/shutdown-validator/
