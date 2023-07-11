@@ -20,6 +20,12 @@ env:
   NODE_VERSION: ${{ inputs.node_version }}
   ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
   ANCHOR_VERSION: ${{ inputs.anchor_version }}
+  CARGO_CACHE_PATH: |
+    ~/.cargo/bin/
+    ~/.cargo/registry/index/
+    ~/.cargo/registry/cache/
+    ~/.cargo/git/db/
+    ./target/
 
 jobs:
   test-core:
@@ -46,20 +52,14 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.ANCHOR_VERSION }} anchor-cli --version ${{ env.ANCHOR_VERSION }} --locked --force
-      - run: chmod +x ~/.cargo/bin/anchor
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ANCHOR_BINARY_NAME }}
-          path: ~/.cargo/bin/anchor
-      - run: anchor build --arch sbf -p defios
-      - run: anchor deploy -p defios
+      - uses: ./.github/actions/setup-anchor/
+      - run: anchor build --arch sbf 
+      - run: anchor deploy
       - run: anchor keys sync
-      - run: anchor build --arch sbf -p defios
-      - run: anchor deploy -p defios
+      - run: anchor build --arch sbf
+      - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
       - uses: ./.github/actions/shutdown-validator/
-      - uses: ./.github/actions/git-diff/
 
   test-skill-validator:
     name: Test SkillValidator contracts
@@ -71,17 +71,11 @@ jobs:
       - uses: ./.github/actions/setup-solana/
       - uses: ./.github/actions/setup-ts/
       - uses: ./.github/actions/setup-amman/
-      - run: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.ANCHOR_VERSION }} anchor-cli --version ${{ env.ANCHOR_VERSION }} --locked --force
-      - run: chmod +x ~/.cargo/bin/anchor
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ANCHOR_BINARY_NAME }}
-          path: ~/.cargo/bin/anchor
-      - run: anchor build --arch sbf -p skill_validator
-      - run: anchor deploy -p skill_validator
+      - uses: ./.github/actions/setup-anchor/
+      - run: anchor build --arch sbf
+      - run: anchor deploy
       - run: anchor keys sync
-      - run: anchor build --arch sbf -p skill_validator
-      - run: anchor deploy -p skill_validator
+      - run: anchor build --arch sbf
+      - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
       - uses: ./.github/actions/shutdown-validator/
-      - uses: ./.github/actions/git-diff/

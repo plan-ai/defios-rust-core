@@ -1,0 +1,22 @@
+name: "Setup anchor"
+description: "Setup Anchor"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v3
+      name: Cache Anchor build
+      id: cache-anchor
+      with:
+        path: ${{ env.CARGO_CACHE_PATH }}
+        key: anchor-${{ runner.os }}-v0000-${{ hashFiles('**/Cargo.lock') }}
+    - uses: nick-fields/retry@v2
+      if: steps.cache-anchor.outputs.cache-hit != 'true'
+      with:
+        retry_wait_seconds: 300
+        timeout_minutes: 20
+        max_attempts: 10
+        retry_on: error
+        shell: bash
+        command: cargo install --git https://github.com/project-serum/anchor --tag v${{ env.ANCHOR_VERSION }} anchor-cli --version ${{ env.ANCHOR_VERSION }} --locked --force
+    - run: chmod +x ~/.cargo/bin/anchor
+      shell: bash
