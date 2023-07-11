@@ -286,7 +286,7 @@ pub fn handler(
                                             };
 
                                             let cpi_ctx = CpiContext::new_with_signer(
-                                                token_metadata_program.to_account_info(),
+                                                rewards_mint.to_account_info(),
                                                 CreateMetadataAccountsV3 {
                                                     metadata: metadata.to_account_info(), // the metadata account being created
                                                     mint: rewards_mint.to_account_info(), // the mint account of the metadata account
