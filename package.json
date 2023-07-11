@@ -16,7 +16,6 @@
         "sha256": "^0.2.0"
     },
     "devDependencies": {
-        "@metaplex-foundation/amman": "^0.12.1",
         "@metaplex-foundation/solita": "^0.19.4",
         "@types/bn.js": "^5.1.0",
         "@types/chai": "^4.3.0",

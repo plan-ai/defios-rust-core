@@ -132,7 +132,6 @@ pub fn handler(
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
     let default_schedule = &ctx.accounts.default_schedule;
     let metadata = &mut ctx.accounts.metadata;
-    let token_metadata_program = &ctx.accounts.token_metadata_program;
     let rent = &ctx.accounts.rent;
 
     //fills repository account data

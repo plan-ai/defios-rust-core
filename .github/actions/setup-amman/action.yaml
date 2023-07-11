@@ -3,5 +3,11 @@ description: "Setup test amman validator"
 runs:
   using: "composite"
   steps:
-    - run: DEBUG=amman* yarn amman start
+    - run: >
+        git config --global url."https://github.com/".insteadOf
+        ssh://git@github.com/
+      shell: bash
+    - run: git clone https://github.com/metaplex-foundation/js.git
+      shell: bash
+    - run: cd js && yarn amman:start && cd..
       shell: bash
