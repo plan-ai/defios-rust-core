@@ -11,7 +11,7 @@ import {
 } from "@solana/spl-token";
 import { PublicKey } from "@saberhq/solana-contrib";
 import * as ed from "@noble/ed25519";
-
+import { rpcConfig } from "../test_config";
 describe("skill_validator", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
@@ -75,7 +75,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     return [routerCreatorKeypair, nameRouterAccount];
   }
 
@@ -127,7 +127,7 @@ describe("skill_validator", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     return [verifiedFreelanceAccount];
   }
 
@@ -146,7 +146,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Stake a job posting", async () => {
     const jobPoster = await create_keypair();
@@ -164,8 +164,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
-
+      .rpc(rpcConfig);
     //creating spl token
     const mintAddress = await createMint(
       connection,
@@ -206,7 +205,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Close a job posting after staking on it", async () => {
     const jobPoster = await create_keypair();
@@ -224,7 +223,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     //creating spl token
     const mintAddress = await createMint(
@@ -266,7 +265,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     await program.methods
       .closeJob()
       .accounts({
@@ -280,7 +279,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Close a job posting without staking on it", async () => {
     const jobPoster = await create_keypair();
@@ -298,7 +297,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     //creating spl token
     const mintAddress = await createMint(
@@ -321,7 +320,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Creates a name router!", async () => {
     const [routerCreatorKeypair, nameRouterAccount] =
@@ -363,7 +362,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     //creating spl token
     const mintAddress = await createMint(
@@ -405,7 +404,7 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const freelancer = await create_keypair();
     const [routerCreatorKeypair, nameRouterAccount] =
@@ -426,6 +425,6 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([freelancer])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 });

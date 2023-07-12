@@ -11,6 +11,7 @@ import {
 } from "@solana/spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
 import sha256 from "sha256";
+import { rpcConfig } from "../test_config";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -115,7 +116,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([routerCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     return [routerCreatorKeypair, nameRouterAccount];
   }
 
@@ -167,7 +168,7 @@ describe("defios", () => {
       })
       .signers([routerCreatorKeypair])
       .preInstructions([createED25519Ix])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     return [verifiedUserAccount];
   }
 
@@ -216,7 +217,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     return [
       repositoryAccount,
@@ -300,7 +301,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Creates a repository without new spl token", async () => {
@@ -348,7 +349,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Creates a issue", async () => {
@@ -398,7 +399,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -445,7 +446,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Stakes on a issue", async () => {
@@ -497,7 +498,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -542,7 +543,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.account.issue.fetch(issueAccount);
 
@@ -565,7 +566,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakeIssue(new anchor.BN(10))
@@ -582,7 +583,7 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Unstakes on a issue", async () => {
@@ -636,7 +637,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -680,7 +681,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.account.issue.fetch(issueAccount);
 
@@ -703,7 +704,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakeIssue(new anchor.BN(10))
@@ -720,7 +721,7 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .unstakeIssue()
@@ -736,7 +737,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Adds a commit to an issue", async () => {
@@ -788,7 +789,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const { issueIndex } = await program.account.repository.fetch(
       repositoryAccount
@@ -833,7 +834,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.account.issue.fetch(issueAccount);
 
@@ -872,7 +873,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([commitCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Creates a roadmap!", async () => {
@@ -927,7 +928,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addRoadmapData(
@@ -946,7 +947,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Creates an objective!", async () => {
     //generates key pairs and airdrops solana to them
@@ -997,7 +998,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1044,7 +1045,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
@@ -1068,7 +1069,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
     let objective_number = 1;
     const objectiveId: string = objective_number.toString();
     const [objectiveAccount] = await get_pda_from_seeds([
@@ -1097,7 +1098,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Add an objective to a roadmap!", async () => {
     //generates key pairs and airdrops solana to them
@@ -1148,7 +1149,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1195,7 +1196,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
@@ -1219,7 +1220,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
@@ -1247,7 +1248,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addChildObjective()
@@ -1261,7 +1262,7 @@ describe("defios", () => {
         { pubkey: objectiveAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Add a child objective to an objective", async () => {
     //generates key pairs and airdrops solana to them
@@ -1312,7 +1313,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1359,7 +1360,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
@@ -1383,7 +1384,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
@@ -1411,7 +1412,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [objectiveAccount2] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
@@ -1439,7 +1440,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addChildObjective()
@@ -1454,7 +1455,7 @@ describe("defios", () => {
         { pubkey: objectiveAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Adds a PR to an issue", async () => {
     //generates key pairs and airdrops solana to them
@@ -1505,7 +1506,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1552,7 +1553,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -1582,7 +1583,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -1616,7 +1617,7 @@ describe("defios", () => {
         { pubkey: commitAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Stakes on a PR", async () => {
     //generates key pairs and airdrops solana to them
@@ -1667,7 +1668,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1714,7 +1715,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -1744,7 +1745,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -1777,7 +1778,7 @@ describe("defios", () => {
         { pubkey: commitAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestStakerAccount] = await get_pda_from_seeds([
       Buffer.from("pullrestaker"),
@@ -1797,7 +1798,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakePr(new anchor.BN(1))
@@ -1815,7 +1816,7 @@ describe("defios", () => {
         pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Unstakes on a PR", async () => {
     //generates key pairs and airdrops solana to them
@@ -1865,7 +1866,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -1912,7 +1913,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -1942,7 +1943,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -1975,7 +1976,7 @@ describe("defios", () => {
         { pubkey: commitAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestStakerAccount] = await get_pda_from_seeds([
       Buffer.from("pullrestaker"),
@@ -1995,7 +1996,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakePr(new anchor.BN(1))
@@ -2013,7 +2014,7 @@ describe("defios", () => {
         pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .unstakePr()
@@ -2031,7 +2032,7 @@ describe("defios", () => {
         pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Add commit to PR", async () => {
     //generates key pairs and airdrops solana to them
@@ -2082,7 +2083,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -2129,7 +2130,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -2159,7 +2160,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -2201,7 +2202,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2223,7 +2224,7 @@ describe("defios", () => {
         { pubkey: commitAccount, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addCommitToPr()
@@ -2236,7 +2237,7 @@ describe("defios", () => {
         { pubkey: commitAccount2, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Accepts a PR", async () => {
@@ -2287,7 +2288,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -2334,7 +2335,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -2364,7 +2365,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -2406,7 +2407,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2429,7 +2430,7 @@ describe("defios", () => {
         { pubkey: commitAccount2, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .acceptPr(repositoryId)
@@ -2442,7 +2443,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Creates a Repository and claims first vesting amount", async () => {
@@ -2494,7 +2495,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .unlockTokens()
@@ -2508,7 +2509,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Getting a PR accepted and getting rewarded for it", async () => {
@@ -2560,7 +2561,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -2607,7 +2608,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -2637,7 +2638,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -2679,7 +2680,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -2702,7 +2703,7 @@ describe("defios", () => {
         { pubkey: commitAccount2, isWritable: true, isSigner: false },
       ])
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
       mintKeypair,
@@ -2727,7 +2728,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakeIssue(new anchor.BN(10))
@@ -2744,7 +2745,7 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestStakerAccount] = await get_pda_from_seeds([
       Buffer.from("pullrestaker"),
@@ -2768,7 +2769,7 @@ describe("defios", () => {
         pullRequestStakerAccount,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .acceptPr(repositoryId)
@@ -2781,7 +2782,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .claimReward()
@@ -2801,7 +2802,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Create communal account to store tokens", async () => {
@@ -2850,7 +2851,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
@@ -2879,7 +2880,7 @@ describe("defios", () => {
         communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Sends a buy transaction", async () => {
@@ -2928,7 +2929,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
@@ -2957,7 +2958,7 @@ describe("defios", () => {
         communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .unlockTokens()
@@ -2971,7 +2972,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .buyTokens(new anchor.BN(1), new anchor.BN(1))
@@ -2991,7 +2992,7 @@ describe("defios", () => {
         usdcMint: mintKeypair,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Sends a sell transaction", async () => {
@@ -3040,7 +3041,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
@@ -3069,7 +3070,7 @@ describe("defios", () => {
         communalUsdcAccount: communalTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .unlockTokens()
@@ -3083,7 +3084,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .sellTokens(new anchor.BN(0), new anchor.BN(1))
@@ -3103,7 +3104,7 @@ describe("defios", () => {
         usdcMint: mintKeypair,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 
   it("Custom SPL Token integration test", async () => {
@@ -3159,7 +3160,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [
       repositoryAccount2,
@@ -3196,7 +3197,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -3243,7 +3244,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     // Adding a commit
     const treeHash = sha256("Tree hash 1").slice(0, 8);
@@ -3273,7 +3274,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
@@ -3315,7 +3316,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .addPr(pull_request_metadata_uri)
@@ -3338,7 +3339,7 @@ describe("defios", () => {
         { pubkey: commitAccount2, isWritable: true, isSigner: false },
       ])
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
       mintKeypair,
@@ -3370,7 +3371,7 @@ describe("defios", () => {
         vestingTokenAccount: vestingTokenAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .stakeIssue(new anchor.BN(10))
@@ -3387,7 +3388,7 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [pullRequestStakerAccount] = await get_pda_from_seeds([
       Buffer.from("pullrestaker"),
@@ -3416,7 +3417,7 @@ describe("defios", () => {
         pullRequestStakerAccount,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .acceptPr(repositoryId)
@@ -3429,7 +3430,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     await program.methods
       .claimReward()
@@ -3453,7 +3454,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
   it("Change vesting schedule", async () => {
     //generates key pairs and airdrops solana to them
@@ -3501,7 +3502,7 @@ describe("defios", () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
 
     const [vestingSchedule] = await get_pda_from_seeds([
       Buffer.from("vesting"),
@@ -3517,6 +3518,6 @@ describe("defios", () => {
         vestingSchedule: vestingSchedule,
       })
       .signers([repositoryCreator])
-      .rpc({ skipPreflight: true, maxRetries: 5 });
+      .rpc(rpcConfig);
   });
 });
