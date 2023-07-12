@@ -146,7 +146,11 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
+<<<<<<< HEAD
       .rpc({ skipPreflight: true, maxRetries: 5 });
+=======
+      .rpc(testConfig);
+>>>>>>> 7cc69a6 (added central test configs)
   });
   it("Stake a job posting", async () => {
     const jobPoster = await create_keypair();
@@ -164,8 +168,12 @@ describe("skill_validator", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([jobPoster])
+<<<<<<< HEAD
       .rpc({ skipPreflight: true, maxRetries: 5 });
 
+=======
+      .rpc(testConfig);
+>>>>>>> 7cc69a6 (added central test configs)
     //creating spl token
     const mintAddress = await createMint(
       connection,
