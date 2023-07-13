@@ -33,7 +33,7 @@ print(os.listdir(program_log_directory))
 for program in configuration:
     program_key = configuration[program].strip('"')
     program_log_file = f"{program_key}.{program}.log"
-    print("Program log file of data: {program_log_file}")
+    print(f"Program log file of data: {program_log_file}")
     try:
         result = read_compute_units(f"{program_log_directory}/{program_log_file}")
         for line in result:
