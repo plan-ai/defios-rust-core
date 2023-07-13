@@ -57,7 +57,7 @@ python-debian===0.1.43ubuntu1
 python-magic==0.4.24
 pytz==2022.1
 PyYAML==5.4.1
-requests==2.25.1
+requests==2.31.0
 SecretStorage==3.3.1
 service-identity==18.1.0
 six==1.16.0
