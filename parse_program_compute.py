@@ -1,5 +1,6 @@
 import re
 import configparser
+import os
 
 
 def read_compute_units(filename):
@@ -27,9 +28,10 @@ def read_configuration(filename):
 
 
 configuration = read_configuration("Anchor.toml")
+program_log_directory = ".anchor/program-logs"
+print(os.listdir(program_log_directory))
 for program in configuration:
     program_key = configuration[program].strip('"')
-    program_log_directory = ".anchor/program-logs"
     program_log_file = f"{program_key}.{program}.log"
     try:
         result = read_compute_units(f"{program_log_directory}/{program_log_file}")
