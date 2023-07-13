@@ -15,11 +15,15 @@ on:
       anchor_version:
         required: true
         type: string
+      solana_rpc:
+        required: true
+        type: string
 env:
   SOLANA_CLI_VERSION: ${{ inputs.solana_cli_version }}
   NODE_VERSION: ${{ inputs.node_version }}
   ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
   ANCHOR_VERSION: ${{ inputs.anchor_version }}
+  SOLANA_RPC: ${{ inputs.solana_rpc }}
   CARGO_CACHE_PATH: |
     ~/.cargo/bin/
     ~/.cargo/registry/index/

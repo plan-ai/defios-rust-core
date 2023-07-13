@@ -6,12 +6,12 @@ defios = "vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7"
 skill_validator = "4BDizvrL519ChrLV8cpKhpCCPZUdpLcV9Q7mipKBHSLr"
 
 [programs.localnet]
-defios = "FNktGFqB6zpngB4HuJR4Q7VtThWVSBfvs4dGRZfZRAp1"
-skill_validator = "J1YMNvSjANboNn6WNJUW5Wc7Jg5EuuHMQC1tZN5q1Rdo"
+defios = "vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7"
+skill_validator = "4BDizvrL519ChrLV8cpKhpCCPZUdpLcV9Q7mipKBHSLr"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "/home/runner/.config/solana/id.json"
