@@ -31,6 +31,9 @@ for program in configuration:
     program_key = configuration[program].strip('"')
     program_log_directory = ".anchor/program-logs"
     program_log_file = f"{program_key}.{program}.log"
-    result = read_compute_units(f"{program_log_directory}/{program_log_file}")
-    for line in result:
-        print(line)
+    try:
+        result = read_compute_units(f"{program_log_directory}/{program_log_file}")
+        for line in result:
+            print(line)
+    except:
+        pass
