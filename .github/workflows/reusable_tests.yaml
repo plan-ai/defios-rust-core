@@ -63,7 +63,7 @@ jobs:
       - run: anchor build --arch sbf
       - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator  --skip-deploy --skip-build --run tests/DefiOS
-      - run: ./.github/actions/parse-program-compute/
+      - uses: ./.github/actions/parse-program-compute/
 
   test-skill-validator:
     name: Test SkillValidator contracts
@@ -82,4 +82,4 @@ jobs:
       - run: anchor build --arch sbf
       - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
-      - run: ./.github/actions/parse-program-compute/
+      - uses: ./.github/actions/parse-program-compute/
