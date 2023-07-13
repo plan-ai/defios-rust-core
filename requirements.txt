@@ -65,7 +65,7 @@ sos==4.4
 ssh-import-id==5.11
 systemd-python==234
 tomli==2.0.1
-Twisted==22.1.0
+Twisted==22.10.0
 ubuntu-advantage-tools==8001
 ufw==0.36.1
 unattended-upgrades==0.1
