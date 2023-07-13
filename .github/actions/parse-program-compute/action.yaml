@@ -3,7 +3,7 @@ description: "Tests and outputs program compute on each instruction"
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }} 
     - name: Install dependencies
