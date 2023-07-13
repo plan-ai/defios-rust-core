@@ -26,5 +26,3 @@ runs:
       shell: bash
     - run: solana config set --url ${{ env.SOLANA_RPC }}
       shell: bash
-    - run: solana airdrop 1
-      shell: bash
