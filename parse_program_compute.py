@@ -35,5 +35,5 @@ for program in configuration:
         result = read_compute_units(f"{program_log_directory}/{program_log_file}")
         for line in result:
             print(line)
-    except:
-        pass
+    except Exception as err:
+        print(repr(err))
