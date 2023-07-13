@@ -2,6 +2,7 @@ name: "Setup Python Program Compute check"
 description: "Tests and outputs program compute on each instruction"
 runs:
   using: "composite"
+  steps:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ env.PYTHON_VERSION }} 
