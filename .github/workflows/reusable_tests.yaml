@@ -9,9 +9,6 @@ on:
       node_version:
         required: true
         type: string
-      anchor_binary_name:
-        required: true
-        type: string
       anchor_version:
         required: true
         type: string
@@ -24,7 +21,6 @@ on:
 env:
   SOLANA_CLI_VERSION: ${{ inputs.solana_cli_version }}
   NODE_VERSION: ${{ inputs.node_version }}
-  ANCHOR_BINARY_NAME: ${{ inputs.anchor_binary_name }}
   ANCHOR_VERSION: ${{ inputs.anchor_version }}
   SOLANA_RPC: ${{ inputs.solana_rpc }}
   PYTHON_VERSION: ${{ inputs.python_version }}
