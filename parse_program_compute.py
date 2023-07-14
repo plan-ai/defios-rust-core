@@ -1,9 +1,10 @@
 import re
 import os
+from collections import defaultdict
 
 
 def read_compute_units(filename):
-    lines = {}
+    lines = defaultdict(list)
     call = ""
     with open(filename, "r") as file:
         for line in file:
@@ -14,7 +15,9 @@ def read_compute_units(filename):
             if call_match:
                 call = line.split("Instruction:")[1].strip()
             if match:
-                lines[call] = int(line.split("consumed")[1].split("of")[0].strip())
+                lines[call].append(
+                    int(line.split("consumed")[1].split("of")[0].strip())
+                )
     return lines
 
 
