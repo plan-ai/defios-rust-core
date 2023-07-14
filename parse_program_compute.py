@@ -1,9 +1,10 @@
 import re
-import configparser
+import os
+from collections import defaultdict
 
 
 def read_compute_units(filename):
-    lines = []
+    lines = defaultdict(list)
     call = ""
     with open(filename, "r") as file:
         for line in file:
@@ -14,23 +15,14 @@ def read_compute_units(filename):
             if call_match:
                 call = line.split("Instruction:")[1].strip()
             if match:
-                lines.append(
-                    {call: int(line.split("consumed")[1].split("of")[0].strip())}
+                lines[call].append(
+                    int(line.split("consumed")[1].split("of")[0].strip())
                 )
     return lines
 
 
-def read_configuration(filename):
-    config = configparser.ConfigParser()
-    config.read(filename)
-    return dict(config.items("programs.localnet"))
-
-
-configuration = read_configuration("Anchor.toml")
-for program in configuration:
-    program_key = configuration[program].strip('"')
-    program_log_directory = ".anchor/program-logs"
-    program_log_file = f"{program_key}.{program}.log"
-    result = read_compute_units(f"{program_log_directory}/{program_log_file}")
-    for line in result:
-        print(line)
+program_log_directory = ".anchor/program-logs"
+for program_log_file in os.listdir(program_log_directory):
+    program_log = {}
+    print(f"Program log file of data: {program_log_file}")
+    print(read_compute_units(f"{program_log_directory}/{program_log_file}"))

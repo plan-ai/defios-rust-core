@@ -16,5 +16,5 @@ jobs:
       solana_cli_version: 1.14.20
       node_version: 17.0.1
       anchor_version: 0.28.0
-      python_version: 3.10.2
+      python_version: 3.10.6
       solana_rpc: localhost
