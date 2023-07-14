@@ -21,22 +21,9 @@ def read_compute_units(filename):
     return lines
 
 
-def read_configuration(filename):
-    config = configparser.ConfigParser()
-    config.read(filename)
-    return dict(config.items("programs.localnet"))
-
-
-configuration = read_configuration("Anchor.toml")
 program_log_directory = ".anchor/program-logs"
-print(os.listdir(program_log_directory))
-for program in configuration:
-    program_key = configuration[program].strip('"')
-    program_log_file = f"{program_key}.{program}.log"
+for program_log_file in os.listdir(program_log_directory):
     print(f"Program log file of data: {program_log_file}")
-    try:
-        result = read_compute_units(f"{program_log_directory}/{program_log_file}")
-        for line in result:
-            print(line)
-    except Exception as err:
-        print(repr(err))
+    result = read_compute_units(f"{program_log_directory}/{program_log_file}")
+    for line in result:
+        print(line)
