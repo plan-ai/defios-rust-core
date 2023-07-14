@@ -1,10 +1,9 @@
 import re
-import configparser
 import os
 
 
 def read_compute_units(filename):
-    lines = []
+    lines = {}
     call = ""
     with open(filename, "r") as file:
         for line in file:
@@ -15,15 +14,12 @@ def read_compute_units(filename):
             if call_match:
                 call = line.split("Instruction:")[1].strip()
             if match:
-                lines.append(
-                    {call: int(line.split("consumed")[1].split("of")[0].strip())}
-                )
+                lines[call] = int(line.split("consumed")[1].split("of")[0].strip())
     return lines
 
 
 program_log_directory = ".anchor/program-logs"
 for program_log_file in os.listdir(program_log_directory):
+    program_log = {}
     print(f"Program log file of data: {program_log_file}")
-    result = read_compute_units(f"{program_log_directory}/{program_log_file}")
-    for line in result:
-        print(line)
+    print(read_compute_units(f"{program_log_directory}/{program_log_file}"))
