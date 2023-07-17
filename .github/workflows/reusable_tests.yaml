@@ -83,3 +83,13 @@ jobs:
       - run: anchor deploy
       - run: anchor test --arch sbf --skip-local-validator --skip-deploy --skip-build --run tests/SkillValidator
       - uses: ./.github/actions/parse-program-compute/
+
+  clippy-format:
+    name: Uses cargo clippy for linting help
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup/
+      - run: cargo clippy
+
