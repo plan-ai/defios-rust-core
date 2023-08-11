@@ -139,23 +139,3 @@ pub struct DefaultVestingScheduleChanged {
     pub per_vesting_amount: u64,
     pub unix_change: u64,
 }
-
-#[event]
-pub struct PullRequestStaked {
-    pub pr_staker: Pubkey,
-    pub pr_staker_token_account: Pubkey,
-    pub pr_account: Pubkey,
-    pub staked_amount: u64,
-    pub rewards_mint: Pubkey,
-    pub pr_contribution_link: String,
-}
-
-#[event]
-pub struct PullRequestUnstaked {
-    pub pr_staker: Pubkey,
-    pub pr_staker_token_account: Pubkey,
-    pub pr_account: Pubkey,
-    pub staked_amount: u64,
-    pub rewards_mint: Pubkey,
-    pub pr_contribution_link: String,
-}

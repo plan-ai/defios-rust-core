@@ -133,6 +133,7 @@ pub struct IssueStaker {
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
     pub issue_staker_token_account: Pubkey,
+    pub pr_voting_power: u64,
 }
 
 #[account]
@@ -146,18 +147,7 @@ pub struct PullRequest {
     pub metadata_uri: String,
     pub accepted: bool,
     pub pull_request_token_account: Pubkey,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct PRStaker {
-    pub bump: u8,
-    pub staked_amount: u64,
-    #[max_len(30)]
-    pub staked_at: Vec<u64>,
-    pub pr_staker: Pubkey,
-    pub pr: Pubkey,
-    pub pr_staker_token_account: Pubkey,
+    pub total_voted_amount: u64,
 }
 
 #[account]

@@ -170,11 +170,7 @@ pub mod defios {
         set_default_schedule::handler(ctx, number_of_schedules, per_vesting_amount, unix_change)
     }
 
-    pub fn stake_pr(ctx: Context<StakePR>, transfer_amount: u64) -> Result<()> {
-        stake_pr::handler(ctx, transfer_amount)
-    }
-
-    pub fn unstake_pr(ctx: Context<UnStakePR>) -> Result<()> {
-        unstake_pr::handler(ctx)
+    pub fn vote_pr(ctx: Context<VotePRs>) -> Result<()> {
+        vote_pr::handler(ctx)
     }
 }
