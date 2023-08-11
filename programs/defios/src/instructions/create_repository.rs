@@ -14,7 +14,6 @@ use anchor_spl::{
 };
 use mpl_token_metadata;
 use mpl_token_metadata::{pda::find_metadata_account, state::DataV2};
-use solana_program::program::invoke_signed;
 
 #[derive(Accounts)]
 #[instruction(id: String)]

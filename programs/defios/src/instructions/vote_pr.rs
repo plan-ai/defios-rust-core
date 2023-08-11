@@ -1,5 +1,5 @@
 use crate::error::DefiOSError;
-use crate::state::{Issue, PullRequest, Repository};
+use crate::state::{Issue, IssueStaker, PullRequest, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
 
@@ -8,6 +8,15 @@ pub struct VotePRs<'info> {
     pub issue_staker: Signer<'info>,
     #[account(mut)]
     pub repository: Account<'info, Repository>,
+    #[account(
+        seeds = [
+            b"pullrequestadded",
+            issue_account.key().as_ref(),
+            pull_request_metadata_account.sent_by.key().as_ref()
+        ],
+        bump=pull_request_metadata_account.bump
+    )]
+    pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
         seeds = [
             b"issue",

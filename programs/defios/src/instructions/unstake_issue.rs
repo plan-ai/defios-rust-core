@@ -56,7 +56,8 @@ pub struct UnstakeIssue<'info> {
         seeds = [
             b"issuestaker",
             issue_account.key().as_ref(),
-            issue_staker.key().as_ref()
+            issue_staker.key().as_ref(),
+            rewards_mint.key().as_ref()
         ],
         bump = issue_staker_account.bump
     )]

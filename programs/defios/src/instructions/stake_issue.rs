@@ -55,7 +55,7 @@ pub struct StakeIssue<'info> {
         init_if_needed,
         payer = issue_staker,
         space = 8+IssueStaker::INIT_SPACE,
-        seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref()],
+        seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref(), rewards_mint.key().as_ref()],
         bump
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
