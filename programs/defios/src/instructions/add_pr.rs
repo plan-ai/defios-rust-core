@@ -64,7 +64,7 @@ pub struct AddPullRequest<'info> {
 
 pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()> {
     let pull_request_addr = &ctx.accounts.pull_request_addr;
-    let issue = &ctx.accounts.issue;
+    let issue = &mut ctx.accounts.issue;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
     let rewards_mint = &ctx.accounts.rewards_mint;
     let associated_token_program = &ctx.accounts.associated_token_program;
@@ -101,6 +101,10 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
             DefiOSError::UnauthorizedPR
         );
         pull_request_metadata_account.commits.push(commit.key());
+    }
+
+    if issue.first_pr_time == None {
+        issue.first_pr_time = Some(Clock::get()?.unix_timestamp);
     }
 
     emit!(PullRequestSent {

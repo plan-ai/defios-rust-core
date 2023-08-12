@@ -9,7 +9,7 @@ pub mod helper;
 pub mod instructions;
 pub mod state;
 
-declare_id!("vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7");
+declare_id!("Gc6Awsa6tT2V7trbUr89FLd6rAtznUsED8aKufZyejLf");
 
 #[program]
 pub mod defios {

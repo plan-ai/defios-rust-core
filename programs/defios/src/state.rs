@@ -89,6 +89,7 @@ pub struct Issue {
     pub closed_at: Option<u64>,
     #[max_len(100)]
     pub uri: String,
+    pub first_pr_time: Option<i64>,
 }
 
 #[account]
@@ -127,12 +128,12 @@ pub struct Commit {
 #[derive(InitSpace)]
 pub struct IssueStaker {
     pub bump: u8,
-    pub staked_amount: u64,
     #[max_len(30)]
-    pub staked_at: Vec<u64>,
+    pub staked_amount: Vec<u64>,
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
-    pub issue_staker_token_account: Pubkey,
+    #[max_len(30)]
+    pub issue_staker_token_account: Vec<Pubkey>,
     pub pr_voting_power: u64,
 }
 

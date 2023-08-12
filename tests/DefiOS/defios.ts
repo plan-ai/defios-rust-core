@@ -18,12 +18,10 @@ describe("defios", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   //testing defios workspace here
-  console.log(anchor.workspace);
   const program = anchor.workspace.Defios as Program<Defios>;
   const {
     provider: { connection },
   } = program;
-  console.log(program.programId);
   const { web3 } = anchor;
   const metaplex = Metaplex.make(connection);
   //global variables for tests

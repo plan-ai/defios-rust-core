@@ -10,6 +10,7 @@ use anchor_spl::{
 use crate::{
     error::DefiOSError,
     event::IssueStaked,
+    helper::find_index,
     state::{Issue, IssueStaker, Repository},
 };
 
@@ -55,7 +56,7 @@ pub struct StakeIssue<'info> {
         init_if_needed,
         payer = issue_staker,
         space = 8+IssueStaker::INIT_SPACE,
-        seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref(), rewards_mint.key().as_ref()],
+        seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref()],
         bump
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
@@ -123,12 +124,21 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         transfer_amount,
     )?;
 
+    if let Some(index) = find_index(
+        &issue_staker_account.issue_staker_token_account,
+        &issue_token_pool_account.key(),
+    ) {
+        issue_staker_account.staked_amount[index] += transfer_amount;
+    } else {
+        issue_staker_account.staked_amount.push(transfer_amount);
+        issue_staker_account
+            .issue_staker_token_account
+            .push(issue_token_pool_account.key())
+    }
+
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
-    issue_staker_account.staked_amount += transfer_amount;
-    issue_staker_account.staked_at.push(staked_at as u64);
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
-    issue_staker_account.issue_staker_token_account = issue_token_pool_account.key();
     issue_staker_account.pr_voting_power = 0;
 
     emit!(IssueStaked {
@@ -137,7 +147,8 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         staked_amount: transfer_amount,
         rewards_mint: rewards_mint.key(),
         issue_staker_token_account: issue_token_pool_account.key(),
-        issue_contribution_link: issue_account.uri.clone()
+        issue_contribution_link: issue_account.uri.clone(),
+        staked_at: staked_at
     });
 
     Ok(())

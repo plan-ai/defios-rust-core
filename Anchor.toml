@@ -2,8 +2,8 @@
 seeds = true
 skip-lint = false
 [programs.devnet]
-defios = "vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7"
-skill_validator = "4BDizvrL519ChrLV8cpKhpCCPZUdpLcV9Q7mipKBHSLr"
+defios = "Gc6Awsa6tT2V7trbUr89FLd6rAtznUsED8aKufZyejLf"
+skill_validator = "ExFAfQjXV8Z1zyjJ7Ji9ktt9yXRFBS35nycEnxN4aYGS"
 
 [programs.localnet]
 defios = "vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7"
