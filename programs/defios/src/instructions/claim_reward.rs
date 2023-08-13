@@ -8,6 +8,7 @@ use anchor_spl::{
         create as create_associated_token_account, get_associated_token_address, AssociatedToken,
         Create,
     },
+    mint::USDC,
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
@@ -29,7 +30,7 @@ pub struct ClaimReward<'info> {
     /// CHECK: PDA check is done at the handler function
     #[account(mut)]
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
-    #[account(mut)]
+    #[account(mut,constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC)]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
         address = repository_account.repository_creator

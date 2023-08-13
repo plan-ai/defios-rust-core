@@ -113,4 +113,8 @@ pub enum DefiOSError {
     //6027
     #[msg("Can't unstake after voting")]
     CantUnstakeAfterVoting,
+
+    //6028
+    #[msg("Either need to import to create a token")]
+    NoRepoTokenSpecified,
 }

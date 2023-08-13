@@ -57,7 +57,7 @@ pub struct Repository {
     pub issue_index: u64,
     pub name_router: Pubkey,
     pub repository_creator: Pubkey,
-    pub rewards_mint: Option<Pubkey>,
+    pub rewards_mint: Pubkey,
     #[max_len(50)]
     pub id: String,
     #[max_len(250)]

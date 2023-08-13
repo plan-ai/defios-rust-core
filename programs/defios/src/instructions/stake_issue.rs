@@ -4,13 +4,14 @@ use anchor_spl::{
         create as create_associated_token_account, get_associated_token_address, AssociatedToken,
         Create,
     },
+    mint::USDC,
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
 use crate::{
     error::DefiOSError,
     event::IssueStaked,
-    helper::find_index,
+    helper::{calculate_sell_amount, find_index},
     state::{Issue, IssueStaker, Repository},
 };
 
@@ -61,7 +62,7 @@ pub struct StakeIssue<'info> {
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
 
-    #[account(mut)]
+    #[account(mut,constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC)]
     pub rewards_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -139,7 +140,13 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
-    issue_staker_account.pr_voting_power = 0;
+    if rewards_mint.key() == USDC {
+        issue_staker_account.pr_voting_power += transfer_amount as u64
+    } else {
+        issue_staker_account.pr_voting_power +=
+            calculate_sell_amount(rewards_mint.supply, transfer_amount as u64) as u64;
+    };
+
     issue_staker_account.issue_unstakable = true;
 
     emit!(IssueStaked {
