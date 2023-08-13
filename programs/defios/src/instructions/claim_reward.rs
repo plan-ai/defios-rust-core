@@ -30,7 +30,10 @@ pub struct ClaimReward<'info> {
     /// CHECK: PDA check is done at the handler function
     #[account(mut)]
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
-    #[account(mut,constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC)]
+    #[account(
+        constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC,
+        constraint = rewards_mint.key().eq(&issue_token_pool_account.mint)
+    )]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
         address = repository_account.repository_creator

@@ -94,6 +94,7 @@ pub struct RepositoryCreated {
     pub token_symbol: Option<String>,
     pub token_metadata_uri: Option<String>,
     pub vesting_account: Option<Pubkey>,
+    pub token_imported: bool,
 }
 
 #[event]
@@ -105,6 +106,7 @@ pub struct IssueStaked {
     pub rewards_mint: Pubkey,
     pub issue_contribution_link: String,
     pub staked_at: i64,
+    pub pr_voting_power: u64,
 }
 
 #[event]

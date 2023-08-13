@@ -147,6 +147,7 @@ pub fn handler(
     let repository_account_key = repository_account.key();
     let mut rewards_mint_key: Option<Pubkey> = None;
     let mut vesting_schedule_key: Option<Pubkey> = None;
+    let mut token_imported: bool = false;
     if let (
         Some(rewards_mint),
         Some(vesting_account),
@@ -312,6 +313,7 @@ pub fn handler(
     } else {
         if let Some(imported_mint) = imported_mint {
             rewards_mint_key = Some(imported_mint.key());
+            token_imported = true;
         }
     }
 
@@ -336,7 +338,8 @@ pub fn handler(
         token_name: *token_name,
         token_symbol: *token_symbol,
         token_metadata_uri: *token_metadata_uri,
-        vesting_account: vesting_schedule_key
+        vesting_account: vesting_schedule_key,
+        token_imported: token_imported
     });
     Ok(())
 }

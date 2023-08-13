@@ -128,11 +128,11 @@ pub struct Commit {
 #[derive(InitSpace)]
 pub struct IssueStaker {
     pub bump: u8,
-    #[max_len(30)]
+    #[max_len(2)]
     pub staked_amount: Vec<u64>,
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
-    #[max_len(30)]
+    #[max_len(2)]
     pub issue_staker_token_account: Vec<Pubkey>,
     pub pr_voting_power: u64,
     pub issue_unstakable: bool,

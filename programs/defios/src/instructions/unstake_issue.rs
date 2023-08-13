@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{
     close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer,
 };
-
+use anchor_spl::mint::USDC;
 use crate::{
     error::DefiOSError,
     event::IssueUnstaked,
@@ -61,10 +61,10 @@ pub struct UnstakeIssue<'info> {
     pub issue_staker_account: Account<'info, IssueStaker>,
 
     #[account(
+        constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC,
         constraint = rewards_mint.key().eq(&issue_token_pool_account.mint)
     )]
     pub rewards_mint: Account<'info, Mint>,
-
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
 }
