@@ -65,8 +65,6 @@ pub struct ClaimReward<'info> {
 
     #[account(mut)]
     pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,
-    #[account(mut)]
-    pub pull_request_token_account: Account<'info, TokenAccount>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
@@ -83,7 +81,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let system_program = &ctx.accounts.system_program;
     let token_program = &ctx.accounts.token_program;
     let pull_request = &mut ctx.accounts.pull_request;
-    let pull_request_token_account = &mut ctx.accounts.pull_request_token_account;
 
     //Creating token account if empty
     if pull_request_creator_reward_account.data_is_empty() {
@@ -104,17 +101,13 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let expected_issue_token_pool_account =
         get_associated_token_address(&issue_account.key(), &rewards_mint.key());
 
-    let expected_pull_reuquest_token_account =
-        get_associated_token_address(&pull_request.key(), &rewards_mint.key());
-
     let expected_pull_request_creator_reward_account =
         get_associated_token_address(&pull_request_creator.key(), &rewards_mint.key());
 
     require!(
         expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
             && expected_pull_request_creator_reward_account
-                .eq(&pull_request_creator_reward_account.key())
-            && expected_pull_reuquest_token_account.eq(&pull_request_token_account.key()),
+                .eq(&pull_request_creator_reward_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 
@@ -128,8 +121,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let issue_index_str = issue_account.index.to_string();
     let repository_account_key = repository_account.key();
     let issue_creator_key = issue_account.issue_creator.key();
-    let pull_request_creator_key = pull_request_creator.key();
-    let issue_key = issue_account.key();
 
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"issue",
@@ -139,19 +130,8 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
         &[issue_account.bump],
     ]];
 
-    let pull_request_signer_seeds: &[&[&[u8]]] = &[&[
-        b"pullrequestadded",
-        issue_key.as_ref(),
-        pull_request_creator_key.as_ref(),
-        &[pull_request.bump],
-    ]];
-
     let issue_token_balance = issue_token_pool_account.amount;
-    let pull_request_token_balance = pull_request_token_account.amount;
-    require!(
-        (issue_token_balance + pull_request_token_balance) > 0,
-        DefiOSError::NoMoneyStakedOnIssue
-    );
+    require!(issue_token_balance > 0, DefiOSError::NoMoneyStakedOnIssue);
 
     if issue_token_balance > 0 {
         transfer(
@@ -165,21 +145,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
                 signer_seeds,
             ),
             issue_token_balance,
-        )?;
-    };
-
-    if pull_request_token_balance > 0 {
-        transfer(
-            CpiContext::new_with_signer(
-                token_program.to_account_info(),
-                Transfer {
-                    from: pull_request_token_account.to_account_info(),
-                    to: pull_request_creator_reward_account.to_account_info(),
-                    authority: pull_request.to_account_info(),
-                },
-                pull_request_signer_seeds,
-            ),
-            pull_request_token_balance,
         )?;
     };
 

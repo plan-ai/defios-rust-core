@@ -14,4 +14,4 @@ url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "/home/runner/.config/solana/id.json"
+wallet = "/home/ubuntu/.config/solana/id.json"

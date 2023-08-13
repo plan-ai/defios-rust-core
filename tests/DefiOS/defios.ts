@@ -2357,7 +2357,6 @@ describe("defios", () => {
         issueCreator: issueCreatorKeypair.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestTokenAccount: pullRequestTokenAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])
@@ -2980,7 +2979,6 @@ describe("defios", () => {
         routerCreator: routerCreatorKeypair.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestTokenAccount: pullRequestTokenAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([repositoryCreator2])

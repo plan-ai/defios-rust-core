@@ -140,6 +140,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
     issue_staker_account.pr_voting_power = 0;
+    issue_staker_account.issue_unstakable = true;
 
     emit!(IssueStaked {
         issue_staker: issue_staker.key(),

@@ -140,3 +140,10 @@ pub struct DefaultVestingScheduleChanged {
     pub per_vesting_amount: u64,
     pub unix_change: u64,
 }
+
+#[event]
+pub struct PRVoted {
+    pub pull_request: Pubkey,
+    pub vote_amount: u64,
+    pub voter: Pubkey,
+}

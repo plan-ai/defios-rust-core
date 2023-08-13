@@ -1,7 +1,8 @@
+use crate::constants::VOTING_END;
 use crate::error::DefiOSError;
+use crate::event::PRVoted;
 use crate::state::{Issue, IssueStaker, PullRequest, Repository};
 use anchor_lang::prelude::*;
-use anchor_spl::token::Mint;
 
 #[derive(Accounts)]
 pub struct VotePRs<'info> {
@@ -24,14 +25,42 @@ pub struct VotePRs<'info> {
             issue_account.repository.key().as_ref(),
             issue_account.issue_creator.key().as_ref(),
         ],
-        bump
+        bump=issue_account.bump
     )]
     pub issue_account: Account<'info, Issue>,
-    #[account(mut)]
-    pub rewards_mint: Account<'info, Mint>,
+    #[account(
+        mut,
+        seeds = [b"issuestaker", issue_account.key().as_ref(), issue_staker.key().as_ref()],
+        bump=issue_staker_account.bump
+    )]
+    pub issue_staker_account: Account<'info, IssueStaker>,
     pub system_program: Program<'info, System>,
 }
 
 pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
+    let current_time = Clock::get()?.unix_timestamp;
+    let issue_account = &ctx.accounts.issue_account;
+    let issue_staker_account = &mut ctx.accounts.issue_staker_account;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
+    match issue_account.first_pr_time {
+        Some(first_pr_time) => {
+            require!(
+                current_time - first_pr_time <= VOTING_END,
+                DefiOSError::VotingPeriodEnded
+            );
+            pull_request_metadata_account.total_voted_amount +=
+                issue_staker_account.pr_voting_power;
+            emit!(PRVoted {
+                pull_request: ctx.accounts.pull_request_metadata_account.key(),
+                vote_amount: issue_staker_account.pr_voting_power,
+                voter: ctx.accounts.issue_staker.key()
+            });
+            issue_staker_account.pr_voting_power = 0;
+            issue_staker_account.issue_unstakable = false;
+        }
+        None => {
+            require!(1 == 0, DefiOSError::NoPRFound)
+        }
+    }
     Ok(())
 }

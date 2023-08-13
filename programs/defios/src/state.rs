@@ -135,6 +135,7 @@ pub struct IssueStaker {
     #[max_len(30)]
     pub issue_staker_token_account: Vec<Pubkey>,
     pub pr_voting_power: u64,
+    pub issue_unstakable: bool,
 }
 
 #[account]
@@ -147,7 +148,6 @@ pub struct PullRequest {
     #[max_len(100)]
     pub metadata_uri: String,
     pub accepted: bool,
-    pub pull_request_token_account: Pubkey,
     pub total_voted_amount: u64,
 }
 

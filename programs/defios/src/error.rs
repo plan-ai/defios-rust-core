@@ -101,4 +101,16 @@ pub enum DefiOSError {
     //6024
     #[msg("Cant enter time below 0")]
     CantEnterTimeBelowZero,
+
+    //6025
+    #[msg("No PR on this issue to vote on")]
+    NoPRFound,
+
+    //6026
+    #[msg("Voting period has ended")]
+    VotingPeriodEnded,
+
+    //6027
+    #[msg("Can't unstake after voting")]
+    CantUnstakeAfterVoting,
 }

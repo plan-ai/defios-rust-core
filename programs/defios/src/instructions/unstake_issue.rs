@@ -97,6 +97,12 @@ pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
                 issue_staker_account.staked_amount[index] > 0,
                 DefiOSError::InsufficientStakingFunds
             );
+
+            require!(
+                issue_staker_account.issue_unstakable == true,
+                DefiOSError::CantUnstakeAfterVoting
+            );
+
             let signer_seeds: &[&[&[u8]]] = &[&[
                 b"issue",
                 issue_index_str.as_bytes(),
