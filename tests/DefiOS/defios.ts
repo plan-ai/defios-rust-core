@@ -8,7 +8,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
   TOKEN_PROGRAM_ID,
-  createMint
+  createMint,
 } from "@solana/spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
 import sha256 from "sha256";
@@ -2382,6 +2382,251 @@ describe("defios", () => {
         issueCreator: issueCreatorKeypair.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+  });
+
+  it("Voting on a PR", async () => {
+    //generates key pairs and airdrops solana to them
+    const roadmapDataAdder = await create_keypair();
+    const [routerCreatorKeypair, nameRouterAccount] =
+      await create_name_router();
+    const [verifiedUserAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      roadmapDataAdder.publicKey
+    );
+
+    //adds logs to keypair
+
+    const [
+      repositoryAccount,
+      repositoryCreatorTokenAccount,
+      vestingTokenAccount,
+      mintKeypair,
+      vestingAccount,
+      defaultVestingSchedule,
+    ] = await create_spl_token(roadmapDataAdder);
+    const metadataAddress = await get_metadata_account(mintKeypair);
+
+    await program.methods
+      .createRepository(
+        repositoryId,
+        "Open source revolution",
+        "https://github.com/sunguru98/defios",
+        tokenName,
+        tokenimage,
+        tokenMetadata
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryCreatorTokenAccount,
+        repositoryVerifiedUser: verifiedUserAccount,
+        rewardsMint: mintKeypair,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        vestingTokenAccount: vestingTokenAccount,
+        defaultSchedule: defaultVestingSchedule,
+        metadata: metadataAddress,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        importedMint: null,
+        rent: web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    const issueCreatorKeypair = await create_keypair();
+
+    const { issueIndex } = await program.account.repository.fetch(
+      repositoryAccount
+    );
+
+    // Adding issue creator user
+
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
+    );
+    // Creating issue
+    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
+
+    const issueTokenPoolAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      issueAccount,
+      true
+    );
+
+    await program.methods
+      .addIssue(issueURI)
+      .accounts({
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        issueTokenPoolAccount,
+        issueVerifiedUser,
+        nameRouterAccount,
+        repositoryAccount,
+        rewardsMint: mintKeypair,
+        routerCreator: routerCreatorKeypair.publicKey,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([issueCreatorKeypair])
+      .rpc(rpcConfig);
+
+    // Adding a commit
+    const treeHash = sha256("Tree hash 1").slice(0, 8);
+    const commitHash = sha256("Commit hash 1").slice(0, 8);
+    const metadataURI =
+      "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
+
+    const [commitAccount] = await get_pda_from_seeds([
+      Buffer.from("commit"),
+      Buffer.from(commitHash),
+      roadmapDataAdder.publicKey.toBuffer(),
+      issueAccount.toBuffer(),
+    ]);
+
+    await program.methods
+      .addCommit(commitHash, treeHash, metadataURI)
+      .accounts({
+        commitAccount,
+        commitCreator: roadmapDataAdder.publicKey,
+        commitVerifiedUser: verifiedUserAccount,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        nameRouterAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
+      Buffer.from("pullrequestadded"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+
+    const pullRequestTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      pullRequestMetadataAccount,
+      true
+    );
+
+    // Adding a commit
+    const treeHash2 = sha256("Tree hash 2").slice(0, 8);
+    const commitHash2 = sha256("Commit hash 2").slice(0, 8);
+    const metadataURI2 =
+      "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
+
+    const [commitAccount2] = await get_pda_from_seeds([
+      Buffer.from("commit"),
+      Buffer.from(commitHash2),
+      roadmapDataAdder.publicKey.toBuffer(),
+      issueAccount.toBuffer(),
+    ]);
+
+    await program.methods
+      .addCommit(commitHash2, treeHash2, metadataURI2)
+      .accounts({
+        commitAccount: commitAccount2,
+        commitCreator: roadmapDataAdder.publicKey,
+        commitVerifiedUser: verifiedUserAccount,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        nameRouterAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    await program.methods
+      .addPr(pull_request_metadata_uri)
+      .accounts({
+        pullRequestVerifiedUser: verifiedUserAccount,
+        issue: issueAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        nameRouterAccount,
+        pullRequestTokenAccount,
+        rewardsMint: mintKeypair,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        pullRequestAddr: roadmapDataAdder.publicKey,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .remainingAccounts([
+        { pubkey: commitAccount, isWritable: true, isSigner: false },
+        { pubkey: commitAccount2, isWritable: true, isSigner: false },
+      ])
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      roadmapDataAdder.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
+      .unlockTokens()
+      .accounts({
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: roadmapDataAdder.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: vestingAccount,
+        tokenMint: mintKeypair,
+        vestingTokenAccount: vestingTokenAccount,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
+      .accounts({
+        issueAccount,
+        repositoryAccount,
+        issueTokenPoolAccount,
+        issueStaker: roadmapDataAdder.publicKey,
+        issueStakerAccount,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    await program.methods
+      .votePr()
+      .accounts({
+        issueStaker: roadmapDataAdder.publicKey,
+        repository: repositoryAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        issueAccount: issueAccount,
+        issueStakerAccount: issueStakerAccount,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([roadmapDataAdder])

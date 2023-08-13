@@ -21,8 +21,8 @@ pub struct VotePRs<'info> {
     #[account(
         seeds = [
             b"issue",
-            repository.issue_index.to_string().as_bytes(),
-            issue_account.repository.key().as_ref(),
+            issue_account.index.to_string().as_bytes(),
+            repository.key().as_ref(),
             issue_account.issue_creator.key().as_ref(),
         ],
         bump=issue_account.bump
@@ -47,6 +47,12 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
             require!(
                 current_time - first_pr_time <= VOTING_END,
                 DefiOSError::VotingPeriodEnded
+            );
+
+            require!(
+                pull_request_metadata_account.accepted == false
+                    && issue_account.closed_at.is_none(),
+                DefiOSError::PullRequestVotingClosedAlready
             );
             pull_request_metadata_account.total_voted_amount +=
                 issue_staker_account.pr_voting_power;

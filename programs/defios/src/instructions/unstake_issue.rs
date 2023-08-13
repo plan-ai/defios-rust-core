@@ -1,13 +1,13 @@
-use anchor_lang::prelude::*;
-use anchor_spl::token::{
-    close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer,
-};
-use anchor_spl::mint::USDC;
 use crate::{
     error::DefiOSError,
     event::IssueUnstaked,
     helper::find_index,
     state::{Issue, IssueStaker, Repository},
+};
+use anchor_lang::prelude::*;
+use anchor_spl::mint::USDC;
+use anchor_spl::token::{
+    close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer,
 };
 
 #[derive(Accounts)]

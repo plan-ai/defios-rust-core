@@ -91,8 +91,8 @@ pub enum DefiOSError {
     IncorrectMetadataAccount,
 
     // 6022
-    #[msg("Cannot  for a closed pull request")]
-    PullRequestClosedAlready,
+    #[msg("Cannot vote on a closed issue")]
+    PullRequestVotingClosedAlready,
 
     //6023
     #[msg("Unauthorized objective addition")]
