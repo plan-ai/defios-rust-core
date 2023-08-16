@@ -77,8 +77,6 @@ pub struct IssueCreated {
     pub issue_creator: Pubkey,
     pub issue_account: Pubkey,
     pub repository_account: Pubkey,
-    pub issue_token_pool_account: Pubkey,
-    pub rewards_mint: Pubkey,
     pub uri: String,
 }
 

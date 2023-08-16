@@ -82,7 +82,6 @@ pub struct Issue {
     pub bump: u8,
     pub index: u64,
     pub issue_creator: Pubkey,
-    pub issue_token_pool_account: Pubkey,
     pub repository: Pubkey,
     pub commit_index: u64,
     pub created_at: u64,

@@ -446,15 +446,12 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         issueAccount,
         issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
         issueVerifiedUser,
         nameRouterAccount,
         repositoryAccount,
-        rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryCreator: repositoryCreator.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([issueCreatorKeypair])
       .rpc(rpcConfig);
