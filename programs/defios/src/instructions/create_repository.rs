@@ -229,12 +229,7 @@ pub fn handler(
                     token_program: token_program.to_account_info(),
                 },
             ))?;
-        } else {
-            if let Some(imported_mint) = imported_mint {
-            } else {
-            }
         }
-
         // Add checks to ensure token vesting accounts are correct
         let expected_vesting_token_account =
             get_associated_token_address(&vesting_account.key(), &rewards_mint.key());
