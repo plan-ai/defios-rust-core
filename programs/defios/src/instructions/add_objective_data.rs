@@ -1,7 +1,7 @@
 use crate::error::DefiOSError;
 use crate::event::AddObjectiveDataEvent;
 use crate::state::{
-    Issue, NameRouter, Objective, ObjectiveDeliverable, ObjectiveState, Repository, VerifiedUser,
+    Issue, Objective, ObjectiveDeliverable, ObjectiveState, Repository, VerifiedUser,
 };
 use anchor_lang::prelude::*;
 
@@ -39,25 +39,11 @@ pub struct AddObjective<'info> {
         seeds = [
             objective_verified_user.user_name.as_bytes(),
             objective_data_addr.key().as_ref(),
-            name_router_account.key().as_ref()
+            objective_verified_user.name_router.key().as_ref()
         ],
         bump = objective_verified_user.bump
     )]
     pub objective_verified_user: Account<'info, VerifiedUser>,
-    #[account(
-        address = objective_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 

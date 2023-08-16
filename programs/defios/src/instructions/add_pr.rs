@@ -1,6 +1,6 @@
 use crate::error::DefiOSError;
 use crate::event::PullRequestSent;
-use crate::state::{Commit, Issue, NameRouter, PullRequest, VerifiedUser};
+use crate::state::{Commit, Issue, PullRequest, VerifiedUser};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -25,25 +25,11 @@ pub struct AddPullRequest<'info> {
         seeds = [
             pull_request_verified_user.user_name.as_bytes(),
             pull_request_addr.key().as_ref(),
-            name_router_account.key().as_ref()
+            pull_request_verified_user.name_router.key().as_ref()
         ],
         bump = pull_request_verified_user.bump
     )]
     pub pull_request_verified_user: Account<'info, VerifiedUser>,
-    #[account(
-        address = pull_request_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 

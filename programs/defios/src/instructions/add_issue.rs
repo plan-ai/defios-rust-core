@@ -1,7 +1,7 @@
 use crate::{
     error::DefiOSError,
     event::IssueCreated,
-    state::{Issue, NameRouter, Repository, VerifiedUser},
+    state::{Issue, Repository, VerifiedUser},
 };
 use anchor_lang::prelude::*;
 
@@ -13,44 +13,22 @@ pub struct AddIssue<'info> {
         address = issue_verified_user.user_pubkey @ DefiOSError::UnauthorizedUser,
     )]
     pub issue_creator: Signer<'info>,
-
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
-
-    #[account(
-        address = repository_account.repository_creator
-    )]
-    pub repository_creator: SystemAccount<'info>,
-
     #[account(
         seeds = [
             issue_verified_user.user_name.as_bytes(),
             issue_creator.key().as_ref(),
-            name_router_account.key().as_ref()
+            issue_verified_user.name_router.key().as_ref()
         ],
         bump = issue_verified_user.bump
     )]
     pub issue_verified_user: Account<'info, VerifiedUser>,
 
     #[account(
-        address = issue_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-
-    #[account(
         mut,
         seeds = [
             b"repository",
             repository_account.id.as_bytes(),
-            repository_creator.key().as_ref(),
+            repository_account.repository_creator.key().as_ref(),
         ],
         bump = repository_account.bump
     )]

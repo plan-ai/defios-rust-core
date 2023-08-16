@@ -1,7 +1,7 @@
 use crate::{
     error::DefiOSError,
     event::CommitAdded,
-    state::{Commit, Issue, NameRouter, Repository, VerifiedUser},
+    state::{Commit, Issue, Repository, VerifiedUser},
 };
 use anchor_lang::prelude::*;
 
@@ -9,35 +9,10 @@ use anchor_lang::prelude::*;
 #[instruction(commit_hash: String)]
 pub struct AddCommit<'info> {
     #[account(
-        address = name_router_account.router_creator @ DefiOSError::UnauthorizedUser,
-    )]
-    pub router_creator: SystemAccount<'info>,
-
-    #[account(
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Account<'info, NameRouter>,
-
-    #[account(
-        address = repository_account.repository_creator
-    )]
-    pub repository_creator: SystemAccount<'info>,
-
-    #[account(
-        address = issue_account.issue_creator
-    )]
-    pub issue_creator: SystemAccount<'info>,
-
-    #[account(
         seeds = [
             b"repository",
             repository_account.id.as_bytes(),
-            repository_creator.key().as_ref(),
+            repository_account.repository_creator.key().as_ref(),
         ],
         bump = repository_account.bump
     )]
@@ -49,7 +24,7 @@ pub struct AddCommit<'info> {
             b"issue",
             issue_account.index.to_string().as_bytes(),
             repository_account.key().as_ref(),
-            issue_creator.key().as_ref(),
+            issue_account.issue_creator.key().as_ref(),
         ],
         bump = issue_account.bump
     )]
@@ -65,7 +40,7 @@ pub struct AddCommit<'info> {
         seeds = [
             commit_verified_user.user_name.as_bytes(),
             commit_creator.key().as_ref(),
-            name_router_account.key().as_ref(),
+            commit_verified_user.name_router.key().as_ref(),
         ],
         bump = commit_verified_user.bump,
     )]
