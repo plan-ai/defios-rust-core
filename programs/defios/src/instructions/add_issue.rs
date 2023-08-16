@@ -1,14 +1,9 @@
-use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token::{create as create_associated_token_account, AssociatedToken, Create},
-    token::{Mint, Token},
-};
-
 use crate::{
     error::DefiOSError,
     event::IssueCreated,
     state::{Issue, NameRouter, Repository, VerifiedUser},
 };
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
