@@ -12,7 +12,7 @@ use crate::{
     error::DefiOSError,
     event::IssueStaked,
     helper::{calculate_sell_amount, find_index},
-    state::{Issue, IssueStaker, Repository},
+    state::{Issue, IssueStaker, PullRequest, Repository},
 };
 
 #[derive(Accounts)]
@@ -37,7 +37,7 @@ pub struct StakeIssue<'info> {
         ],
         bump = repository_account.bump
     )]
-    pub repository_account: Account<'info, Repository>,
+    pub repository_account: Box<Account<'info, Repository>>,
 
     #[account(
         seeds = [
@@ -64,6 +64,15 @@ pub struct StakeIssue<'info> {
 
     #[account(mut,constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC)]
     pub rewards_mint: Account<'info, Mint>,
+    #[account(
+        seeds = [
+            b"pullrequestadded",
+            issue_account.key().as_ref(),
+            pull_request_metadata_account.sent_by.key().as_ref()
+        ],
+        bump=pull_request_metadata_account.bump
+    )]
+    pub pull_request_metadata_account: Option<Account<'info, PullRequest>>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -80,6 +89,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let staked_at = Clock::get()?.unix_timestamp;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
 
     require!(
         issue_account.closed_at.is_none(),
@@ -140,11 +150,28 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
+    let voting_power: u64;
     if rewards_mint.key() == USDC {
-        issue_staker_account.pr_voting_power += transfer_amount as u64
+        voting_power = transfer_amount as u64
     } else {
-        issue_staker_account.pr_voting_power +=
-            calculate_sell_amount(rewards_mint.supply, transfer_amount as u64) as u64;
+        voting_power = calculate_sell_amount(rewards_mint.supply, transfer_amount as u64) as u64;
+    };
+
+    if issue_staker_account.has_voted == false {
+        issue_staker_account.pr_voting_power += voting_power
+    } else {
+        let voted_on: Option<Pubkey> = issue_staker_account.voted_on;
+        if let (Some(pull_request_metadata_account), Some(voted_on)) =
+            (pull_request_metadata_account, voted_on)
+        {
+            require!(
+                voted_on == pull_request_metadata_account.key(),
+                DefiOSError::PullRequestAutoUpdate
+            );
+            pull_request_metadata_account.total_voted_amount += voting_power;
+        } else {
+            require!(1 == 0, DefiOSError::PullRequestAutoUpdate);
+        }
     };
 
     issue_staker_account.issue_unstakable = true;
@@ -157,7 +184,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         issue_staker_token_account: issue_token_pool_account.key(),
         issue_contribution_link: issue_account.uri.clone(),
         staked_at: staked_at,
-        pr_voting_power: issue_staker_account.pr_voting_power
+        pr_voting_power: voting_power
     });
 
     Ok(())

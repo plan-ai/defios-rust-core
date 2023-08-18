@@ -590,6 +590,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
@@ -729,6 +730,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
@@ -745,6 +747,7 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
@@ -2348,6 +2351,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([roadmapDataAdder])
       .rpc(rpcConfig);
@@ -2612,6 +2616,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([roadmapDataAdder])
       .rpc(rpcConfig);
@@ -2625,6 +2630,24 @@ describe("defios", () => {
         issueAccount: issueAccount,
         issueStakerAccount: issueStakerAccount,
         systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([roadmapDataAdder])
+      .rpc(rpcConfig);
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
+      .accounts({
+        issueAccount,
+        repositoryAccount,
+        issueTokenPoolAccount,
+        issueStaker: roadmapDataAdder.publicKey,
+        issueStakerAccount,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
       })
       .signers([roadmapDataAdder])
       .rpc(rpcConfig);
@@ -3216,6 +3239,7 @@ describe("defios", () => {
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);

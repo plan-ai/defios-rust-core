@@ -57,12 +57,14 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
             pull_request_metadata_account.total_voted_amount +=
                 issue_staker_account.pr_voting_power;
             emit!(PRVoted {
-                pull_request: ctx.accounts.pull_request_metadata_account.key(),
+                pull_request: pull_request_metadata_account.key(),
                 vote_amount: issue_staker_account.pr_voting_power,
                 voter: ctx.accounts.issue_staker.key()
             });
             issue_staker_account.pr_voting_power = 0;
             issue_staker_account.issue_unstakable = false;
+            issue_staker_account.has_voted = true;
+            issue_staker_account.voted_on = Some(pull_request_metadata_account.key());
         }
         None => {
             require!(1 == 0, DefiOSError::NoPRFound)

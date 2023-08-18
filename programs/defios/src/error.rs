@@ -117,4 +117,8 @@ pub enum DefiOSError {
     //6028
     #[msg("Either need to import to create a token")]
     NoRepoTokenSpecified,
+
+    //6029
+    #[msg("Pull request account not sent to auto charge votes")]
+    PullRequestAutoUpdate,
 }

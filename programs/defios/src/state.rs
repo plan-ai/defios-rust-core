@@ -134,7 +134,9 @@ pub struct IssueStaker {
     #[max_len(2)]
     pub issue_staker_token_account: Vec<Pubkey>,
     pub pr_voting_power: u64,
+    pub voted_on: Option<Pubkey>,
     pub issue_unstakable: bool,
+    pub has_voted: bool,
 }
 
 #[account]
