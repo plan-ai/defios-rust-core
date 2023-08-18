@@ -1,4 +1,3 @@
-use crate::error::DefiOSError;
 use crate::event::AddRoadmapDataEvent;
 use crate::state::{Objective, Repository, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser};
 use anchor_lang::prelude::*;

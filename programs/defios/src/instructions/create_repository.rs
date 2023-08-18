@@ -1,9 +1,7 @@
 use crate::{
     error::DefiOSError,
     event::RepositoryCreated,
-    state::{
-        DefaultVestingSchedule, NameRouter, Repository, Schedule, VerifiedUser, VestingSchedule,
-    },
+    state::{DefaultVestingSchedule, Repository, Schedule, VerifiedUser, VestingSchedule},
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -28,27 +26,11 @@ pub struct CreateRepository<'info> {
         seeds = [
             repository_verified_user.user_name.as_bytes(),
             repository_creator.key().as_ref(),
-            name_router_account.key().as_ref()
+            repository_verified_user.name_router.key().as_ref()
         ],
         bump = repository_verified_user.bump
     )]
     pub repository_verified_user: Account<'info, VerifiedUser>,
-
-    #[account(
-        address = repository_verified_user.name_router @ DefiOSError::InvalidNameRouter,
-        seeds = [
-            name_router_account.signing_domain.as_bytes(),
-            name_router_account.signature_version.to_string().as_bytes(),
-            router_creator.key().as_ref()
-        ],
-        bump = name_router_account.bump
-    )]
-    pub name_router_account: Box<Account<'info, NameRouter>>,
-
-    #[account(
-        address = name_router_account.router_creator
-    )]
-    pub router_creator: SystemAccount<'info>,
 
     #[account(
         init,
@@ -120,7 +102,6 @@ pub fn handler(
     token_metadata_uri: Box<Option<String>>,
 ) -> Result<()> {
     let repository_account = &mut ctx.accounts.repository_account;
-    let name_router_account = &ctx.accounts.name_router_account;
     let repository_verified_user = &ctx.accounts.repository_verified_user;
     let rewards_mint = &ctx.accounts.rewards_mint;
     let vesting_account = &mut ctx.accounts.vesting_account;
@@ -137,7 +118,7 @@ pub fn handler(
 
     //fills repository account data
     repository_account.bump = *ctx.bumps.get("repository_account").unwrap();
-    repository_account.name_router = name_router_account.key();
+    repository_account.name_router = repository_verified_user.name_router.key();
     repository_account.repository_creator = repository_verified_user.user_pubkey.key();
     repository_account.id = id;
     repository_account.description = description;
