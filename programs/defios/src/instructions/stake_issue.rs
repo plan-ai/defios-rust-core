@@ -17,6 +17,7 @@ use crate::{
 
 #[derive(Accounts)]
 #[instruction(transfer_amount: u64)]
+#[event_cpi]
 pub struct StakeIssue<'info> {
     #[account(mut)]
     pub issue_staker: Signer<'info>,
@@ -176,7 +177,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
 
     issue_staker_account.issue_unstakable = true;
 
-    emit!(IssueStaked {
+    emit_cpi!(IssueStaked {
         issue_staker: issue_staker.key(),
         issue_account: issue_account.key(),
         staked_amount: transfer_amount,

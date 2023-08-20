@@ -15,6 +15,7 @@ use mpl_token_metadata::{pda::find_metadata_account, state::DataV2};
 
 #[derive(Accounts)]
 #[instruction(id: String)]
+#[event_cpi]
 pub struct CreateRepository<'info> {
     #[account(
         mut,
@@ -304,7 +305,7 @@ pub fn handler(
         }
     }
     //emits event of repository created
-    emit!(RepositoryCreated {
+    emit_cpi!(RepositoryCreated {
         repository_creator: repository_verified_user.user_pubkey.key(),
         repository_account: repository_account.key(),
         uri: repository_account.uri.clone(),
