@@ -7,7 +7,6 @@ use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
-#[event_cpi]
 pub struct AddIssue<'info> {
     #[account(
         mut,
@@ -68,7 +67,7 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
 
     repository_account.issue_index = repository_account.issue_index.saturating_add(1);
 
-    emit_cpi!(IssueCreated {
+    emit!(IssueCreated {
         issue_creator: issue_creator.key(),
         issue_account: issue_account.key(),
         repository_account: repository_account.key(),
