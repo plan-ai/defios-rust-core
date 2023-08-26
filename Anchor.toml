@@ -2,16 +2,16 @@
 seeds = true
 skip-lint = false
 [programs.devnet]
-defios = "Gc6Awsa6tT2V7trbUr89FLd6rAtznUsED8aKufZyejLf"
-skill_validator = "ExFAfQjXV8Z1zyjJ7Ji9ktt9yXRFBS35nycEnxN4aYGS"
+defios = "7DjMy7URNwjKa7xEsCxqrxdk7BkfTyvDjeZTJJHs9dpF"
+skill_validator = "CvGFAXiVhmxzHjxPAjKUf85sAQfrtFmP3Ei7kNqMNzrX"
 
 [programs.localnet]
-defios = "vKAnobLTFv7uSdtjQWZohUSwW9NAH2XYfThYvkYhJz7"
-skill_validator = "4BDizvrL519ChrLV8cpKhpCCPZUdpLcV9Q7mipKBHSLr"
+defios = "7DjMy7URNwjKa7xEsCxqrxdk7BkfTyvDjeZTJJHs9dpF"
+skill_validator = "CvGFAXiVhmxzHjxPAjKUf85sAQfrtFmP3Ei7kNqMNzrX"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "/home/runner/.config/solana/id.json"
+wallet = "/home/ubuntu/.config/solana/id.json"

@@ -2,3 +2,9 @@ extends = ["../Test.base.toml"]
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/DefiOS/*.ts"
+
+[test.validator]
+url = "https://api.devnet.solana.com"
+
+[[test.validator.clone]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" # implicitly also clones PwDiXFxQsGra4sFFTT8r1QWRMd4vfumiWC1jfWNfdYT
