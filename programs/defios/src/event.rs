@@ -147,3 +147,10 @@ pub struct PRVoted {
     pub vote_amount: u64,
     pub voter: Pubkey,
 }
+
+#[event]
+pub struct RewardClaimed {
+    pub reward_claimmee: Pubkey,
+    pub reward_amount: u64,
+    pub pull_request: Pubkey,
+}

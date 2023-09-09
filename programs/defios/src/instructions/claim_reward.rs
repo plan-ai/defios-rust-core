@@ -1,5 +1,6 @@
 use crate::{
     error::DefiOSError,
+    event::RewardClaimed,
     state::{Issue, PullRequest, Repository},
 };
 use anchor_lang::prelude::*;
@@ -151,6 +152,12 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
             issue_token_balance,
         )?;
     };
+
+    emit!(RewardClaimed {
+        reward_claimmee: pull_request_creator.key(),
+        reward_amount: issue_token_balance,
+        pull_request: pull_request.key()
+    });
 
     Ok(())
 }
