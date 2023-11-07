@@ -62,7 +62,7 @@ pub struct StakeIssue<'info> {
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
 
-    #[account(mut,constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC)]
+    #[account(mut,constraint = rewards_mint.key()==issue_account.issue_token)]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
         seeds = [
@@ -135,27 +135,12 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         transfer_amount,
     )?;
 
-    if let Some(index) = find_index(
-        &issue_staker_account.issue_staker_token_account,
-        &issue_token_pool_account.key(),
-    ) {
-        issue_staker_account.staked_amount[index] += transfer_amount;
-    } else {
-        issue_staker_account.staked_amount.push(transfer_amount);
-        issue_staker_account
-            .issue_staker_token_account
-            .push(issue_token_pool_account.key())
-    }
-
+    issue_staker_account.staked_amount += transfer_amount;
+    issue_staker_account.issue_staker_token_account = issue_staker_token_account.key();
     issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
-    let voting_power: u64;
-    if rewards_mint.key() == USDC {
-        voting_power = transfer_amount as u64
-    } else {
-        voting_power = calculate_sell_amount(rewards_mint.supply, transfer_amount as u64) as u64;
-    };
+    let voting_power = transfer_amount;
 
     if issue_staker_account.has_voted == false {
         issue_staker_account.pr_voting_power += voting_power
@@ -174,8 +159,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
         }
     };
 
-    issue_staker_account.issue_unstakable = true;
-
+    issue_account.total_stake_amount += transfer_amount;
     emit!(IssueStaked {
         issue_staker: issue_staker.key(),
         issue_account: issue_account.key(),

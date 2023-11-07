@@ -118,7 +118,6 @@ pub fn handler(
 
     //fills repository account data
     repository_account.bump = *ctx.bumps.get("repository_account").unwrap();
-    repository_account.name_router = repository_verified_user.name_router.key();
     repository_account.repository_creator = repository_verified_user.user_pubkey.key();
     repository_account.id = id;
     repository_account.description = description;
@@ -297,12 +296,14 @@ pub fn handler(
     repository_account.vesting_schedule = vesting_schedule_key;
     match rewards_mint_key {
         Some(rewards_mint_key) => {
-            repository_account.rewards_mint = rewards_mint_key;
+            repository_account.repo_token = Some(rewards_mint_key);
         }
         None => {
             require!(1 == 0, DefiOSError::NoRepoTokenSpecified)
         }
     }
+
+    repository_account.new_token = !token_imported;
     //emits event of repository created
     emit!(RepositoryCreated {
         repository_creator: repository_verified_user.user_pubkey.key(),

@@ -1,6 +1,6 @@
 use crate::error::DefiOSError;
 use crate::event::PullRequestSent;
-use crate::state::{Commit, Issue, PullRequest, VerifiedUser};
+use crate::state::{Issue, PullRequest, VerifiedUser};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -44,17 +44,6 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
     pull_request_metadata_account.sent_by = pull_request_addr.key();
     pull_request_metadata_account.metadata_uri = metadata_uri.clone();
     pull_request_metadata_account.accepted = false;
-    pull_request_metadata_account.commits = vec![];
-
-    let mut commit: Account<Commit>;
-    for account in ctx.remaining_accounts.to_vec().iter() {
-        commit = Account::try_from(account)?;
-        require!(
-            pull_request_addr.key().eq(&commit.commit_creator) & issue.key().eq(&commit.issue),
-            DefiOSError::UnauthorizedPR
-        );
-        pull_request_metadata_account.commits.push(commit.key());
-    }
 
     if issue.first_pr_time == None {
         issue.first_pr_time = Some(Clock::get()?.unix_timestamp);
@@ -62,7 +51,6 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
 
     emit!(PullRequestSent {
         sent_by: pull_request_addr.key(),
-        commits: pull_request_metadata_account.commits.clone(),
         metadata_uri: metadata_uri,
         issue: issue.key(),
         pull_request: pull_request_metadata_account.key()

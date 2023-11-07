@@ -61,7 +61,7 @@ pub struct UnstakeIssue<'info> {
     pub issue_staker_account: Account<'info, IssueStaker>,
 
     #[account(
-        constraint = rewards_mint.key()==repository_account.rewards_mint || rewards_mint.key() == USDC,
+        constraint = rewards_mint.key()==issue_account.issue_token,
         constraint = rewards_mint.key().eq(&issue_token_pool_account.mint)
     )]
     pub rewards_mint: Account<'info, Mint>,
@@ -86,69 +86,59 @@ pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
     let issue_index_str = issue_account.index.to_string();
     let repository_account_key = repository_account.key();
     let issue_creator_key = issue_account.issue_creator.key();
-    let index = find_index(
-        &issue_staker_account.issue_staker_token_account,
-        &issue_token_pool_account.key(),
+
+    require!(
+        issue_staker_account.staked_amount != 0,
+        DefiOSError::InsufficientStakingFunds
     );
 
-    match index {
-        Some(index) => {
-            require!(
-                issue_staker_account.staked_amount[index] > 0,
-                DefiOSError::InsufficientStakingFunds
-            );
+    require!(
+        issue_staker_account.has_voted == false,
+        DefiOSError::CantUnstakeAfterVoting
+    );
 
-            require!(
-                issue_staker_account.issue_unstakable == true,
-                DefiOSError::CantUnstakeAfterVoting
-            );
+    let signer_seeds: &[&[&[u8]]] = &[&[
+        b"issue",
+        issue_index_str.as_bytes(),
+        repository_account_key.as_ref(),
+        issue_creator_key.as_ref(),
+        &[issue_account.bump],
+    ]];
 
-            let signer_seeds: &[&[&[u8]]] = &[&[
-                b"issue",
-                issue_index_str.as_bytes(),
-                repository_account_key.as_ref(),
-                issue_creator_key.as_ref(),
-                &[issue_account.bump],
-            ]];
+    transfer(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            Transfer {
+                from: issue_token_pool_account.to_account_info(),
+                to: issue_staker_token_account.to_account_info(),
+                authority: issue_account.to_account_info(),
+            },
+            signer_seeds,
+        ),
+        issue_staker_account.staked_amount,
+    )?;
 
-            transfer(
-                CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
-                    Transfer {
-                        from: issue_token_pool_account.to_account_info(),
-                        to: issue_staker_token_account.to_account_info(),
-                        authority: issue_account.to_account_info(),
-                    },
-                    signer_seeds,
-                ),
-                issue_staker_account.staked_amount[index],
-            )?;
+    close_account(CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        CloseAccount {
+            account: issue_token_pool_account.to_account_info(),
+            authority: issue_account.to_account_info(),
+            destination: issue_staker.to_account_info(),
+        },
+        signer_seeds,
+    ))?;
 
-            close_account(CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
-                CloseAccount {
-                    account: issue_token_pool_account.to_account_info(),
-                    authority: issue_account.to_account_info(),
-                    destination: issue_staker.to_account_info(),
-                },
-                signer_seeds,
-            ))?;
+    emit!(IssueUnstaked {
+        issue_account: issue_account.key(),
+        issue_staker: issue_staker.key(),
+        issue_staker_token_account: issue_staker_token_account.key(),
+        rewards_mint: rewards_mint.key(),
+        unstaked_amount: issue_staker_account.staked_amount,
+        issue_contribution_link: issue_account.uri.clone()
+    });
 
-            emit!(IssueUnstaked {
-                issue_account: issue_account.key(),
-                issue_staker: issue_staker.key(),
-                issue_staker_token_account: issue_staker_token_account.key(),
-                rewards_mint: rewards_mint.key(),
-                unstaked_amount: issue_staker_account.staked_amount[index],
-                issue_contribution_link: issue_account.uri.clone()
-            });
-
-            issue_staker_account.staked_amount[index] = 0;
-        }
-        None => {
-            require!(1 == 0, DefiOSError::InsufficientStakingFunds)
-        }
-    }
+    issue_account.total_stake_amount -= issue_staker_account.staked_amount;
+    issue_staker_account.staked_amount = 0;
 
     Ok(())
 }
