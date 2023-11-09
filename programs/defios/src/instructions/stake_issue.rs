@@ -11,7 +11,6 @@ use anchor_spl::{
 use crate::{
     error::DefiOSError,
     event::IssueStaked,
-    helper::{calculate_sell_amount, find_index},
     state::{Issue, IssueStaker, PullRequest, Repository},
 };
 
@@ -40,6 +39,7 @@ pub struct StakeIssue<'info> {
     pub repository_account: Box<Account<'info, Repository>>,
 
     #[account(
+        mut,
         seeds = [
             b"issue",
             issue_account.index.to_string().as_bytes(),
@@ -80,7 +80,7 @@ pub struct StakeIssue<'info> {
 
 pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     let issue_staker = &ctx.accounts.issue_staker;
-    let issue_account = &ctx.accounts.issue_account;
+    let issue_account = &mut ctx.accounts.issue_account;
     let issue_staker_account = &mut ctx.accounts.issue_staker_account;
     let issue_staker_token_account = &ctx.accounts.issue_staker_token_account;
     let issue_token_pool_account = &ctx.accounts.issue_token_pool_account;

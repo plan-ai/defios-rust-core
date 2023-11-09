@@ -1,7 +1,7 @@
 use crate::error::DefiOSError;
 use crate::event::AddObjectiveDataEvent;
 use crate::state::{
-    Issue, Objective, ObjectiveDeliverable, ObjectiveState, Repository, VerifiedUser,
+    Objective, ObjectiveDeliverable, ObjectiveState, Repository, RoadMapMetaDataStore, VerifiedUser,
 };
 use anchor_lang::prelude::*;
 
@@ -16,15 +16,12 @@ pub struct AddObjective<'info> {
         space = 8+Objective::INIT_SPACE,
         seeds = [
             b"objectivedataadd",
-            objective_issue.key().as_ref(),
             objective_data_addr.key().as_ref(),
             objective_id.as_bytes()
             ],
         bump
     )]
     pub metadata_account: Account<'info, Objective>,
-    #[account(mut)]
-    pub objective_issue: Account<'info, Issue>,
     #[account(
         mut,
         seeds = [
@@ -44,6 +41,10 @@ pub struct AddObjective<'info> {
         bump = objective_verified_user.bump
     )]
     pub objective_verified_user: Account<'info, VerifiedUser>,
+    #[account(mut)]
+    pub roadmap_metadata_account: Option<Account<'info, RoadMapMetaDataStore>>,
+    #[account[mut]]
+    pub parent_objective_account: Option<Account<'info, Objective>>,
     pub system_program: Program<'info, System>,
 }
 
@@ -59,9 +60,10 @@ pub fn handler(
     let objective_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_data_addr = &mut ctx.accounts.objective_data_addr;
-    let objective_issue = &ctx.accounts.objective_issue;
     let repository_account = &ctx.accounts.repository_account;
     let objective_state = ObjectiveState::InProgress;
+    let roadmap_metadata_account = &mut ctx.accounts.roadmap_metadata_account;
+    let parent_objective_account = &mut ctx.accounts.parent_objective_account;
 
     require!(
         objective_start_unix > 0,
@@ -84,41 +86,37 @@ pub fn handler(
     metadata_account.objective_end_unix = objective_end_unix;
     metadata_account.objective_creation_unix = objective_creation_unix;
     metadata_account.objective_creator_id = objective_data_addr.key();
-    metadata_account.children_objective_keys = vec![];
+    metadata_account.next_obective_key = None;
     metadata_account.objective_description_link = objective_description_link.clone();
     metadata_account.objective_state = objective_state;
     metadata_account.objective_deliverable = objective_deliverable;
-    metadata_account.objective_issue = objective_issue.key();
     metadata_account.objective_id = objective_id;
     metadata_account.objective_repository = repository_account.key();
 
-    let mut objective: Account<Objective>;
-    for account in ctx.remaining_accounts.to_vec().iter() {
-        objective = Account::try_from(account)?;
-
-        if objective.objective_repository.key() != repository_account.key()
-            || !objective
-                .objective_creator_id
-                .eq(&objective_data_addr.key())
-        {
-            continue;
-        };
-
-        match objective.objective_end_unix {
-            Some(child_objective_end_unix) => {
-                if child_objective_end_unix > objective_creation_unix {
-                    metadata_account
-                        .children_objective_keys
-                        .push(objective.key());
-                }
+    let parent;
+    match roadmap_metadata_account {
+        Some(roadmap_metadata_account) => {
+            require!(
+                roadmap_metadata_account.root_objective == None,
+                DefiOSError::InvalidObjectiveParent
+            );
+            parent = roadmap_metadata_account.key();
+            roadmap_metadata_account.root_objective = Some(metadata_account.key())
+        }
+        None => match parent_objective_account {
+            Some(parent_objective_account) => {
+                require!(
+                    parent_objective_account.next_obective_key == None,
+                    DefiOSError::InvalidObjectiveParent
+                );
+                parent = parent_objective_account.key();
+                parent_objective_account.next_obective_key = Some(metadata_account.key())
             }
             None => {
-                metadata_account
-                    .children_objective_keys
-                    .push(objective.key());
+                require!(1 == 0, DefiOSError::NoParentEntered)
             }
-        }
-    }
+        },
+    };
 
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
@@ -128,9 +126,8 @@ pub fn handler(
         objective_end_unix: objective_end_unix,
         objective_deliverable: objective_deliverable,
         objective_public_key: metadata_account.key(),
-        objective_issue: objective_issue.key(),
         objective_addr: objective_data_addr.key(),
-        child_objectives: metadata_account.children_objective_keys.clone(),
+        parent_objective: parent
     });
 
     Ok(())

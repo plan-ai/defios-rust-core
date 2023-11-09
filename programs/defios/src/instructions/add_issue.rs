@@ -64,7 +64,7 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     issue_account.repository = repository_account.key();
     issue_account.uri = uri;
     issue_account.closed_at = None;
-    issue_account.issue_token = repository_account.repo_token;
+    issue_account.issue_token = repository_account.repo_token.unwrap();
     repository_account.issue_index = repository_account.issue_index.saturating_add(1);
 
     emit!(IssueCreated {

@@ -57,38 +57,16 @@ pub fn handler(
     metadata_account.roadmap_description_link = roadmap_description_link.clone();
     metadata_account.roadmap_creation_unix = roadmap_creation_unix;
     metadata_account.roadmap_creator = roadmap_data_adder.key();
-    metadata_account.root_objective_ids = vec![];
+    metadata_account.root_objective = None;
     metadata_account.roadmap_outlook = roadmap_outlook;
     metadata_account.roadmap_image_url = roadmap_image_url.clone();
     metadata_account.roadmap_repository = repository_account.key().clone();
-
-    let mut objective: Account<Objective>;
-    for account in ctx.remaining_accounts.to_vec().iter() {
-        objective = Account::try_from(account)?;
-
-        if objective.objective_repository.key() != repository_account.key() || {
-            !objective.objective_creator_id.eq(&roadmap_data_adder.key())
-        } {
-            continue;
-        };
-
-        match objective.objective_end_unix {
-            Some(child_objective_end_unix) => {
-                if child_objective_end_unix > roadmap_creation_unix {
-                    metadata_account.root_objective_ids.push(objective.key());
-                }
-            }
-            None => {
-                metadata_account.root_objective_ids.push(objective.key());
-            }
-        }
-    }
     emit!(AddRoadmapDataEvent {
         roadmap_title: roadmap_title,
         roadmap_description_link: roadmap_description_link,
         roadmap_creation_unix: roadmap_creation_unix as u64,
         roadmap_creator: roadmap_data_adder.key(),
-        root_objective_ids: metadata_account.root_objective_ids.clone(),
+        root_objective_ids: metadata_account.root_objective.clone(),
         roadmap_outlook: roadmap_outlook,
         roadmap_image_url: roadmap_image_url,
         roadmap: metadata_account.key(),

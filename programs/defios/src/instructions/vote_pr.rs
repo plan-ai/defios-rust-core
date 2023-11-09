@@ -1,4 +1,3 @@
-use crate::constants::VOTING_END;
 use crate::error::DefiOSError;
 use crate::event::PRVoted;
 use crate::state::{Issue, IssueStaker, PullRequest, Repository};
@@ -19,6 +18,7 @@ pub struct VotePRs<'info> {
     )]
     pub pull_request_metadata_account: Account<'info, PullRequest>,
     #[account(
+        mut,
         seeds = [
             b"issue",
             issue_account.index.to_string().as_bytes(),
@@ -39,7 +39,7 @@ pub struct VotePRs<'info> {
 
 pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
     let current_time = Clock::get()?.unix_timestamp;
-    let issue_account = &ctx.accounts.issue_account;
+    let issue_account = &mut ctx.accounts.issue_account;
     let issue_staker_account = &mut ctx.accounts.issue_staker_account;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
 

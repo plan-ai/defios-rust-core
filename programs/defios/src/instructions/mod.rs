@@ -1,5 +1,4 @@
 pub mod accept_pr;
-pub mod add_child_objective;
 pub mod add_issue;
 pub mod add_objective_data;
 pub mod add_pr;
@@ -19,7 +18,6 @@ pub mod unstake_issue;
 pub mod vote_pr;
 
 pub use accept_pr::*;
-pub use add_child_objective::*;
 pub use add_issue::*;
 pub use add_objective_data::*;
 pub use add_pr::*;

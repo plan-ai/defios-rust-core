@@ -1,7 +1,6 @@
 use crate::{
     error::DefiOSError,
     event::IssueUnstaked,
-    helper::find_index,
     state::{Issue, IssueStaker, Repository},
 };
 use anchor_lang::prelude::*;
@@ -35,6 +34,7 @@ pub struct UnstakeIssue<'info> {
     pub repository_account: Box<Account<'info, Repository>>,
 
     #[account(
+        mut,
         seeds = [
             b"issue",
             issue_account.index.to_string().as_bytes(),
@@ -71,7 +71,7 @@ pub struct UnstakeIssue<'info> {
 
 pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
     let issue_staker = &ctx.accounts.issue_staker;
-    let issue_account = &ctx.accounts.issue_account;
+    let issue_account = &mut ctx.accounts.issue_account;
     let repository_account = &ctx.accounts.repository_account;
     let issue_staker_account = &mut ctx.accounts.issue_staker_account;
     let issue_staker_token_account = &ctx.accounts.issue_staker_token_account;
