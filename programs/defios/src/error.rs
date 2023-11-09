@@ -121,4 +121,8 @@ pub enum DefiOSError {
     //6029
     #[msg("Pull request account not sent to auto charge votes")]
     PullRequestAutoUpdate,
+
+    //6030
+    #[msg("Invalid parent enetered")]
+    InvalidObjectiveParent,
 }

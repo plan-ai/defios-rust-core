@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
 
-//to do :make of same type root and leaves
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 #[repr(u8)]
 pub enum ObjectiveState {
@@ -55,9 +54,7 @@ pub struct VerifiedUser {
 pub struct Repository {
     pub bump: u8,
     pub issue_index: u64,
-    pub name_router: Pubkey,
     pub repository_creator: Pubkey,
-    pub rewards_mint: Pubkey,
     #[max_len(50)]
     pub id: String,
     #[max_len(250)]
@@ -65,6 +62,10 @@ pub struct Repository {
     #[max_len(100)]
     pub uri: String,
     pub vesting_schedule: Option<Pubkey>,
+    pub repo_token: Option<Pubkey>,
+    pub new_token: bool,
+    pub num_changes: u8,
+    pub num_open_issues: u32,
 }
 
 #[account]
@@ -89,6 +90,9 @@ pub struct Issue {
     #[max_len(100)]
     pub uri: String,
     pub first_pr_time: Option<i64>,
+    pub issue_token: Pubkey,
+    pub total_voted_amount: u64,
+    pub total_stake_amount: u64,
 }
 
 #[account]
@@ -109,33 +113,14 @@ pub struct Schedule {
 
 #[account]
 #[derive(InitSpace)]
-pub struct Commit {
-    pub bump: u8,
-    pub index: u64,
-    pub commit_creator: Pubkey,
-    pub issue: Pubkey,
-    #[max_len(40)]
-    pub commit_hash: String,
-    #[max_len(40)]
-    pub tree_hash: String,
-    pub created_at: u64,
-    #[max_len(100)]
-    pub metadata_uri: String,
-}
-
-#[account]
-#[derive(InitSpace)]
 pub struct IssueStaker {
     pub bump: u8,
-    #[max_len(2)]
-    pub staked_amount: Vec<u64>,
+    pub staked_amount: u64,
     pub issue_staker: Pubkey,
     pub issue: Pubkey,
-    #[max_len(2)]
-    pub issue_staker_token_account: Vec<Pubkey>,
+    pub issue_staker_token_account: Pubkey,
     pub pr_voting_power: u64,
     pub voted_on: Option<Pubkey>,
-    pub issue_unstakable: bool,
     pub has_voted: bool,
 }
 
@@ -144,8 +129,6 @@ pub struct IssueStaker {
 pub struct PullRequest {
     pub bump: u8,
     pub sent_by: Pubkey,
-    #[max_len(30)]
-    pub commits: Vec<Pubkey>,
     #[max_len(100)]
     pub metadata_uri: String,
     pub accepted: bool,
@@ -162,8 +145,7 @@ pub struct RoadMapMetaDataStore {
     pub roadmap_creator_id: Pubkey,
     #[max_len(100)]
     pub roadmap_description_link: String,
-    #[max_len(20)]
-    pub root_objective_ids: Vec<Pubkey>,
+    pub root_objective: Option<Pubkey>,
     pub roadmap_creator: Pubkey,
     pub roadmap_outlook: RoadmapOutlook,
     #[max_len(100)]
@@ -184,12 +166,12 @@ pub struct Objective {
     #[max_len(100)]
     pub objective_description_link: String,
     pub objective_state: ObjectiveState,
-    #[max_len(20)]
-    pub children_objective_keys: Vec<Pubkey>,
+    pub next_obective_key: Option<Pubkey>,
+    pub parent_objective: Pubkey,
     pub objective_deliverable: ObjectiveDeliverable,
-    pub objective_issue: Pubkey,
     #[max_len(50)]
     pub objective_id: String,
+    pub total_grant: u64,
     pub objective_repository: Pubkey,
 }
 

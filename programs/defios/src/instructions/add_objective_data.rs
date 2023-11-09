@@ -40,7 +40,7 @@ pub struct AddObjective<'info> {
         ],
         bump = objective_verified_user.bump
     )]
-    pub objective_verified_user: Account<'info, VerifiedUser>,
+    pub objective_verified_user: Box<Account<'info, VerifiedUser>>,
     #[account(mut)]
     pub roadmap_metadata_account: Option<Account<'info, RoadMapMetaDataStore>>,
     #[account[mut]]
@@ -93,7 +93,7 @@ pub fn handler(
     metadata_account.objective_id = objective_id;
     metadata_account.objective_repository = repository_account.key();
 
-    let parent;
+    let mut parent = metadata_account.key();
     match roadmap_metadata_account {
         Some(roadmap_metadata_account) => {
             require!(
@@ -118,6 +118,7 @@ pub fn handler(
         },
     };
 
+    metadata_account.parent_objective = parent;
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,

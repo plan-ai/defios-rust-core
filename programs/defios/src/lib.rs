@@ -65,15 +65,6 @@ pub mod defios {
         unstake_issue::handler(ctx)
     }
 
-    pub fn add_commit(
-        ctx: Context<AddCommit>,
-        commit_hash: String,
-        tree_hash: String,
-        metadata_uri: String,
-    ) -> Result<()> {
-        add_commit::handler(ctx, commit_hash, tree_hash, metadata_uri)
-    }
-
     pub fn claim_reward(ctx: Context<ClaimReward>) -> Result<()> {
         claim_reward::handler(ctx)
     }
@@ -114,16 +105,8 @@ pub mod defios {
         )
     }
 
-    pub fn add_child_objective(ctx: Context<AddChildObjective>) -> Result<()> {
-        add_child_objective::handler(ctx)
-    }
-
     pub fn add_pr(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()> {
         add_pr::handler(ctx, metadata_uri)
-    }
-
-    pub fn add_commit_to_pr(ctx: Context<AddCommitToPullRequest>) -> Result<()> {
-        add_commit_to_pr::handler(ctx)
     }
 
     pub fn unlock_tokens(ctx: Context<UnlockTokens>) -> Result<()> {

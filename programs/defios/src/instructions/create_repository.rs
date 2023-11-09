@@ -292,7 +292,7 @@ pub fn handler(
         }
     }
 
-    //add vestifn schedule and repository mint key to repository
+    //add vesting schedule and repository mint key to repository
     repository_account.vesting_schedule = vesting_schedule_key;
     match rewards_mint_key {
         Some(rewards_mint_key) => {

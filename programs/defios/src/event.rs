@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 #[event]
 pub struct PullRequestSent {
     pub sent_by: Pubkey,
-    pub commits: Vec<Pubkey>,
     pub metadata_uri: String,
     pub issue: Pubkey,
     pub pull_request: Pubkey,
@@ -16,13 +15,6 @@ pub struct AddCommitToPR {
 }
 
 #[event]
-pub struct AddChildObjectiveEvent {
-    pub parent_objective_account: Pubkey,
-    pub added_by: Pubkey,
-    pub objectives: Vec<Pubkey>,
-}
-
-#[event]
 pub struct AddObjectiveDataEvent {
     pub objective_title: String,
     pub objective_metadata_uri: String,
@@ -31,9 +23,8 @@ pub struct AddObjectiveDataEvent {
     pub objective_end_unix: Option<i64>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_public_key: Pubkey,
-    pub objective_issue: Pubkey,
     pub objective_addr: Pubkey,
-    pub child_objectives: Vec<Pubkey>,
+    pub parent_objective: Pubkey,
 }
 
 #[event]
@@ -42,7 +33,7 @@ pub struct AddRoadmapDataEvent {
     pub roadmap_description_link: String,
     pub roadmap_creation_unix: u64,
     pub roadmap_creator: Pubkey,
-    pub root_objective_ids: Vec<Pubkey>,
+    pub root_objective_ids: Option<Pubkey>,
     pub roadmap_outlook: RoadmapOutlook,
     pub roadmap_image_url: String,
     pub roadmap: Pubkey,
