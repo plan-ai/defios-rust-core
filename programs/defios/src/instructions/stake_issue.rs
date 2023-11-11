@@ -22,7 +22,8 @@ pub struct StakeIssue<'info> {
     #[account(
         mut,
         constraint = issue_staker_token_account.owner.eq(&issue_staker.key()),
-        constraint = issue_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds
+        constraint = issue_staker_token_account.amount >= transfer_amount @ DefiOSError::InsufficientStakingFunds,
+        constraint = issue_staker_token_account.mint == rewards_mint.key()
     )]
     pub issue_staker_token_account: Account<'info, TokenAccount>,
 

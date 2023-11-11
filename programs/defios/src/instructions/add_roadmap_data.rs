@@ -1,5 +1,5 @@
 use crate::event::AddRoadmapDataEvent;
-use crate::state::{Objective, Repository, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser};
+use crate::state::{Repository, RoadMapMetaDataStore, RoadmapOutlook, VerifiedUser};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

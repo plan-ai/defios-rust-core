@@ -180,3 +180,14 @@ pub struct Objective {
 pub struct CommunalAccount {
     pub bump: u8,
 }
+
+#[account]
+#[derive(InitSpace)]
+pub struct Grantee {
+    pub bump: u8,
+    pub grantee: Pubkey,
+    pub objective: Pubkey,
+    pub staked_amount: u64,
+    #[max_len(100)]
+    pub grant_metadata_uri: String,
+}

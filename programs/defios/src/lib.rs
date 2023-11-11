@@ -157,9 +157,24 @@ pub mod defios {
         vote_pr::handler(ctx)
     }
 
-    pub fn change_repo_token(ctx: Context<ChangeRepoToken>, token_name: Box<Option<String>>,
+    pub fn change_repo_token(
+        ctx: Context<ChangeRepoToken>,
+        token_name: Box<Option<String>>,
         token_symbol: Box<Option<String>>,
-        token_metadata_uri: Box<Option<String>>) -> Result<()> {
-        change_repo_token::handler(ctx,token_name,token_symbol,token_metadata_uri)
+        token_metadata_uri: Box<Option<String>>,
+    ) -> Result<()> {
+        change_repo_token::handler(ctx, token_name, token_symbol, token_metadata_uri)
+    }
+
+    pub fn grant_money(
+        ctx: Context<GrantMoney>,
+        transfer_amount: u64,
+        grant_metadata_uri: String,
+    ) -> Result<()> {
+        grant_money::handler(ctx, transfer_amount, grant_metadata_uri)
+    }
+
+    pub fn disperse_grant(ctx: Context<DisperseGrant>, disperse_amount: u64) -> Result<()> {
+        disperse_grant::handler(ctx, disperse_amount)
     }
 }

@@ -151,3 +151,18 @@ pub struct RepoTokenChanged {
     pub repository: Pubkey,
     pub new_token: Pubkey,
 }
+
+#[event]
+pub struct GrantProvided {
+    pub grantee: Pubkey,
+    pub grant_amount: u64,
+    pub objective: Pubkey,
+    pub grant_metadata_uri: String,
+}
+
+#[event]
+pub struct GrantDispersed {
+    pub objective: Pubkey,
+    pub issue: Pubkey,
+    pub grant_amount: u64,
+}
