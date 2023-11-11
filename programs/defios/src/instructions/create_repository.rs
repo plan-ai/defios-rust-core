@@ -26,7 +26,7 @@ pub struct CreateRepository<'info> {
         seeds = [
             repository_verified_user.user_name.as_bytes(),
             repository_creator.key().as_ref(),
-            repository_verified_user.name_router.key().as_ref()
+            repository_verified_user.name_router.as_ref()
         ],
         bump = repository_verified_user.bump
     )]

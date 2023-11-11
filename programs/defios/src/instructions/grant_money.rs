@@ -1,6 +1,7 @@
+use crate::constants::TRUSTED_NAME_ROUTERS;
 use crate::error::DefiOSError;
 use crate::event::GrantProvided;
-use crate::state::{Grantee, Objective, Repository};
+use crate::state::{Grantee, Objective, Repository, VerifiedUser};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create as create_associated_token_account, AssociatedToken, Create},
@@ -12,6 +13,16 @@ use anchor_spl::{
 pub struct GrantMoney<'info> {
     #[account(mut)]
     pub grantee: Signer<'info>,
+    #[account(
+        constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
+        seeds = [
+            grantee_verified_user.user_name.as_bytes(),
+            grantee.key().as_ref(),
+            grantee_verified_user.name_router.as_ref()
+        ],
+        bump = grantee_verified_user.bump
+    )]
+    pub grantee_verified_user: Box<Account<'info, VerifiedUser>>,
     #[account(
         mut,
         constraint = objective.objective_repository == repository.key()
