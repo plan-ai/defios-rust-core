@@ -145,3 +145,9 @@ pub struct RewardClaimed {
     pub reward_amount: u64,
     pub pull_request: Pubkey,
 }
+
+#[event]
+pub struct RepoTokenChanged {
+    pub repository: Pubkey,
+    pub new_token: Pubkey,
+}

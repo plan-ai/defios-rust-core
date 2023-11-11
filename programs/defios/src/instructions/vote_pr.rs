@@ -1,6 +1,6 @@
+use crate::constants::VOTING_END;
 use crate::error::DefiOSError;
 use crate::event::PRVoted;
-use crate::constants::VOTING_END;
 use crate::state::{Issue, IssueStaker, PullRequest, Repository};
 use anchor_lang::prelude::*;
 
@@ -51,22 +51,27 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
                 DefiOSError::VotingPeriodEnded
             );
 
-    require!(
-        pull_request_metadata_account.accepted == false && issue_account.closed_at.is_none(),
-        DefiOSError::PullRequestVotingClosedAlready
-    );
-    pull_request_metadata_account.total_voted_amount += issue_staker_account.pr_voting_power;
-    emit!(PRVoted {
-        pull_request: pull_request_metadata_account.key(),
-        vote_amount: issue_staker_account.pr_voting_power,
-        voter: ctx.accounts.issue_staker.key()
-    });
+            require!(
+                pull_request_metadata_account.accepted == false
+                    && issue_account.closed_at.is_none(),
+                DefiOSError::PullRequestVotingClosedAlready
+            );
+            pull_request_metadata_account.total_voted_amount +=
+                issue_staker_account.pr_voting_power;
+            emit!(PRVoted {
+                pull_request: pull_request_metadata_account.key(),
+                vote_amount: issue_staker_account.pr_voting_power,
+                voter: ctx.accounts.issue_staker.key()
+            });
 
-    issue_account.total_voted_amount += issue_staker_account.pr_voting_power;
-    issue_staker_account.pr_voting_power = 0;
-    issue_staker_account.has_voted = true;
-    issue_staker_account.voted_on = Some(pull_request_metadata_account.key());
-        }, None =>{
-        require!(1==0,DefiOSError::NoPRFound)}};
+            issue_account.total_voted_amount += issue_staker_account.pr_voting_power;
+            issue_staker_account.pr_voting_power = 0;
+            issue_staker_account.has_voted = true;
+            issue_staker_account.voted_on = Some(pull_request_metadata_account.key());
+        }
+        None => {
+            require!(1 == 0, DefiOSError::NoPRFound)
+        }
+    };
     Ok(())
 }

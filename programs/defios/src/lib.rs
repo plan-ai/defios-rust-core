@@ -156,4 +156,10 @@ pub mod defios {
     pub fn vote_pr(ctx: Context<VotePRs>) -> Result<()> {
         vote_pr::handler(ctx)
     }
+
+    pub fn change_repo_token(ctx: Context<ChangeRepoToken>, token_name: Box<Option<String>>,
+        token_symbol: Box<Option<String>>,
+        token_metadata_uri: Box<Option<String>>) -> Result<()> {
+        change_repo_token::handler(ctx,token_name,token_symbol,token_metadata_uri)
+    }
 }

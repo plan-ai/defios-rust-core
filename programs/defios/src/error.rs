@@ -125,4 +125,8 @@ pub enum DefiOSError {
     //6030
     #[msg("Invalid parent enetered")]
     InvalidObjectiveParent,
+
+    //6031
+    #[msg("Not allowed to change repo token")]
+    RepoTokenChangeRejected,
 }
