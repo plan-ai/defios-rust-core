@@ -164,3 +164,17 @@ pub struct ObjectiveProposalCreated {
     pub proposed_time: u64,
     pub objective_proposal_url: String,
 }
+
+#[event]
+pub struct ObjectiveProposalVoted {
+    pub voter: Pubkey,
+    pub objective: Pubkey,
+    pub objective_proposal: Pubkey,
+    pub vote_amount: u64,
+}
+
+#[event]
+pub struct ObjectiveAccepted {
+    pub objective: Pubkey,
+    pub objective_proposal: Pubkey,
+}

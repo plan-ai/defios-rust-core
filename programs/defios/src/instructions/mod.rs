@@ -1,4 +1,5 @@
 pub mod accept_issue_vote;
+pub mod accept_objective;
 pub mod accept_pr;
 pub mod add_issue;
 pub mod add_objective_data;
@@ -18,9 +19,11 @@ pub mod sell_tokens;
 pub mod stake_issue;
 pub mod unlock_tokens;
 pub mod unstake_issue;
+pub mod vote_objective;
 pub mod vote_pr;
 
 pub use accept_issue_vote::*;
+pub use accept_objective::*;
 pub use accept_pr::*;
 pub use add_issue::*;
 pub use add_objective_data::*;
@@ -40,4 +43,5 @@ pub use sell_tokens::*;
 pub use stake_issue::*;
 pub use unlock_tokens::*;
 pub use unstake_issue::*;
+pub use vote_objective::*;
 pub use vote_pr::*;

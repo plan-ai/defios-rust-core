@@ -47,7 +47,7 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
     match issue_account.first_pr_time {
         Some(first_pr_time) => {
             require!(
-                current_time - first_pr_time <= VOTING_END,
+                current_time - first_pr_time <= VOTING_END.try_into().unwrap(),
                 DefiOSError::VotingPeriodEnded
             );
 

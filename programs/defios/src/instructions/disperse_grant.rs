@@ -92,6 +92,8 @@ pub fn handler(ctx: Context<DisperseGrant>, disperse_amount: u64) -> Result<()> 
         disperse_amount,
     )?;
 
+    objective.total_dispersed_grant += disperse_amount;
+    
     emit!(GrantDispersed {
         objective: objective.key(),
         issue: issue_account.key(),

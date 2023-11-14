@@ -171,4 +171,12 @@ pub mod defios {
     ) -> Result<()> {
         create_objective_proposal::handler(ctx, proposal_id, objective_proposal_url)
     }
+
+    pub fn vote_objective(ctx: Context<VoteObjective>, positive: bool) -> Result<()> {
+        vote_objective::handler(ctx, positive)
+    }
+
+    pub fn accept_objective(ctx:Context<AcceptObjective>) -> Result<()>{
+        accept_objective::handler(ctx)
+    }
 }

@@ -161,6 +161,7 @@ pub struct Objective {
     #[max_len(50)]
     pub objective_id: String,
     pub total_grant: u64,
+    pub total_dispersed_grant: u64,
     pub objective_repository: Pubkey,
     pub completed_at: Option<u64>,
 }
@@ -178,6 +179,7 @@ pub struct Grantee {
     pub grantee: Pubkey,
     pub objective: Pubkey,
     pub staked_amount: u64,
+    pub voted_amount: u64,
     #[max_len(100)]
     pub grant_metadata_uri: String,
 }

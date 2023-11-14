@@ -133,4 +133,8 @@ pub enum DefiOSError {
     //6032
     #[msg("Not enough votes on PR to merge")]
     NotEnoughVotesForIssueMerge,
+
+    //6033
+    #[msg("Voting period has not yet ended")]
+    VotingPeriodOnGoing
 }
