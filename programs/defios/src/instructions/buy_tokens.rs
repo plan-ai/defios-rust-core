@@ -1,4 +1,4 @@
-use crate::constants::{TOKEN_VEST_AMOUNT,VESTING_NUMBER,MAX_INT};
+use crate::constants::{MAX_INT, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_buy;
 use crate::state::{CommunalAccount, Repository};

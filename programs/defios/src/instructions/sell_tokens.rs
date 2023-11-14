@@ -1,4 +1,4 @@
-use crate::constants::{MAX_INT,VESTING_NUMBER,TOKEN_VEST_AMOUNT};
+use crate::constants::{MAX_INT, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_sell;
 use crate::state::{CommunalAccount, Repository};
@@ -79,7 +79,7 @@ pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64)
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
 
-    let total = VESTING_NUMBER * TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into());
+    let total = VESTING_NUMBER * TOKEN_VEST_AMOUNT * u64::pow(10, rewards_mint.decimals.into());
     let token_supply = rewards_mint.supply;
     let modified_token_supply: u64 =
         (token_supply - total) / (u64::pow(10, rewards_mint.decimals.into()));

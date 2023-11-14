@@ -53,7 +53,6 @@ pub fn handler(
     objective_id: String,
     objective_title: String,
     objective_start_unix: i64,
-    objective_end_unix: Option<i64>,
     objective_description_link: String,
     objective_deliverable: ObjectiveDeliverable,
 ) -> Result<()> {
@@ -70,20 +69,9 @@ pub fn handler(
         DefiOSError::CantEnterTimeBelowZero
     );
 
-    match objective_end_unix {
-        Some(x) => {
-            require!(
-                objective_creation_unix < x,
-                DefiOSError::RoadmapInvalidEndTime
-            );
-        }
-        None => {}
-    }
-
     metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
     metadata_account.objective_title = objective_title.clone();
     metadata_account.objective_start_unix = objective_start_unix;
-    metadata_account.objective_end_unix = objective_end_unix;
     metadata_account.objective_creation_unix = objective_creation_unix;
     metadata_account.objective_creator_id = objective_data_addr.key();
     metadata_account.next_obective_key = None;
@@ -92,6 +80,7 @@ pub fn handler(
     metadata_account.objective_deliverable = objective_deliverable;
     metadata_account.objective_id = objective_id;
     metadata_account.objective_repository = repository_account.key();
+    metadata_account.completed_at = None;
 
     let mut parent = metadata_account.key();
     match roadmap_metadata_account {
@@ -124,7 +113,6 @@ pub fn handler(
         objective_metadata_uri: objective_description_link,
         objective_start_unix: objective_start_unix,
         objective_creation_unix: objective_creation_unix,
-        objective_end_unix: objective_end_unix,
         objective_deliverable: objective_deliverable,
         objective_public_key: metadata_account.key(),
         objective_addr: objective_data_addr.key(),

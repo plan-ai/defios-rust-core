@@ -90,7 +90,6 @@ pub mod defios {
         objective_id: String,
         objective_title: String,
         objective_start_unix: i64,
-        objective_end_unix: Option<i64>,
         objective_description_link: String,
         objective_deliverable: ObjectiveDeliverable,
     ) -> Result<()> {
@@ -99,7 +98,6 @@ pub mod defios {
             objective_id,
             objective_title,
             objective_start_unix,
-            objective_end_unix,
             objective_description_link,
             objective_deliverable,
         )
@@ -160,5 +158,17 @@ pub mod defios {
 
     pub fn disperse_grant(ctx: Context<DisperseGrant>, disperse_amount: u64) -> Result<()> {
         disperse_grant::handler(ctx, disperse_amount)
+    }
+
+    pub fn accept_issue_vote(ctx: Context<AcceptIssueVote>) -> Result<()> {
+        accept_issue_vote::handler(ctx)
+    }
+
+    pub fn create_objective_proposal(
+        ctx: Context<CreateObjectiveProposal>,
+        proposal_id: String,
+        objective_proposal_url: String,
+    ) -> Result<()> {
+        create_objective_proposal::handler(ctx, proposal_id, objective_proposal_url)
     }
 }

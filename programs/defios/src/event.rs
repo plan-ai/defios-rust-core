@@ -20,7 +20,6 @@ pub struct AddObjectiveDataEvent {
     pub objective_metadata_uri: String,
     pub objective_start_unix: i64,
     pub objective_creation_unix: i64,
-    pub objective_end_unix: Option<i64>,
     pub objective_deliverable: ObjectiveDeliverable,
     pub objective_public_key: Pubkey,
     pub objective_addr: Pubkey,
@@ -150,4 +149,18 @@ pub struct GrantDispersed {
     pub objective: Pubkey,
     pub issue: Pubkey,
     pub grant_amount: u64,
+}
+
+#[event]
+pub struct IssueMergedByVote {
+    pub issue: Pubkey,
+    pub pr: Pubkey,
+}
+
+#[event]
+pub struct ObjectiveProposalCreated {
+    pub objective: Pubkey,
+    pub proposee: Pubkey,
+    pub proposed_time: u64,
+    pub objective_proposal_url: String,
 }

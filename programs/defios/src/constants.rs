@@ -12,6 +12,6 @@ pub const TRUSTED_NAME_ROUTERS: &[Pubkey] = &[AUTHORIZED_PUBLIC_KEY];
 #[constant]
 pub const VESTING_NUMBER: u64 = 4;
 #[constant]
-pub const TOKEN_VEST_AMOUNT:u64 = 2500;
+pub const TOKEN_VEST_AMOUNT: u64 = 2500;
 #[constant]
-pub const RELEASE_TIME: u64 = u64::pow(10,6);
+pub const RELEASE_TIME: u64 = u64::pow(10, 6);

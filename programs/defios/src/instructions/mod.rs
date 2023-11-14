@@ -1,3 +1,4 @@
+pub mod accept_issue_vote;
 pub mod accept_pr;
 pub mod add_issue;
 pub mod add_objective_data;
@@ -9,6 +10,7 @@ pub mod change_repo_token;
 pub mod claim_reward;
 pub mod create_communal_account;
 pub mod create_name_router;
+pub mod create_objective_proposal;
 pub mod create_repository;
 pub mod disperse_grant;
 pub mod grant_money;
@@ -18,6 +20,7 @@ pub mod unlock_tokens;
 pub mod unstake_issue;
 pub mod vote_pr;
 
+pub use accept_issue_vote::*;
 pub use accept_pr::*;
 pub use add_issue::*;
 pub use add_objective_data::*;
@@ -29,6 +32,7 @@ pub use change_repo_token::*;
 pub use claim_reward::*;
 pub use create_communal_account::*;
 pub use create_name_router::*;
+pub use create_objective_proposal::*;
 pub use create_repository::*;
 pub use disperse_grant::*;
 pub use grant_money::*;

@@ -64,7 +64,6 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
                 voter: ctx.accounts.issue_staker.key()
             });
 
-            issue_account.total_voted_amount += issue_staker_account.pr_voting_power;
             issue_staker_account.pr_voting_power = 0;
             issue_staker_account.has_voted = true;
             issue_staker_account.voted_on = Some(pull_request_metadata_account.key());

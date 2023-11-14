@@ -129,4 +129,8 @@ pub enum DefiOSError {
     //6031
     #[msg("Not allowed to change repo token")]
     RepoTokenChangeRejected,
+
+    //6032
+    #[msg("Not enough votes on PR to merge")]
+    NotEnoughVotesForIssueMerge,
 }

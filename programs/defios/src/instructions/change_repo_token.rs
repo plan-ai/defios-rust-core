@@ -1,7 +1,7 @@
+use crate::constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
 use crate::error::DefiOSError;
 use crate::event::RepoTokenChanged;
 use crate::state::{Repository, Schedule, VestingSchedule};
-use crate::constants::{VESTING_NUMBER,TOKEN_VEST_AMOUNT,RELEASE_TIME};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
@@ -200,7 +200,7 @@ pub fn handler(
                 },
                 signer_seeds,
             ),
-            VESTING_NUMBER*TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into()),
+            VESTING_NUMBER * TOKEN_VEST_AMOUNT * u64::pow(10, rewards_mint.decimals.into()),
         )?;
 
         // On-chain token metadata for the mint
@@ -241,7 +241,7 @@ pub fn handler(
         for _i in 0..VESTING_NUMBER {
             vesting_account.schedules.push(Schedule {
                 release_time,
-                amount: TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into()),
+                amount: TOKEN_VEST_AMOUNT * u64::pow(10, rewards_mint.decimals.into()),
             });
             release_time += RELEASE_TIME;
         }
