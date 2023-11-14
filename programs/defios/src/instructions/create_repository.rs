@@ -1,7 +1,8 @@
 use crate::{
     error::DefiOSError,
     event::RepositoryCreated,
-    state::{DefaultVestingSchedule, Repository, Schedule, VerifiedUser, VestingSchedule},
+    state::{Repository, Schedule, VerifiedUser, VestingSchedule},
+    constants::{VESTING_NUMBER,TOKEN_VEST_AMOUNT, RELEASE_TIME}
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -61,15 +62,6 @@ pub struct CreateRepository<'info> {
     #[account(mut)]
     ///CHECK: The account checks are done in function, unchecked as it might not exist and will be created in that case
     pub repository_creator_token_account: Option<UncheckedAccount<'info>>,
-    #[account(
-        seeds = [
-            b"isGodReal?",
-            b"DoULoveMe?",
-            b"SweetChick"
-        ],
-        bump = default_schedule.bump,
-    )]
-    pub default_schedule: Box<Account<'info, DefaultVestingSchedule>>,
     /// CHECK: We're about to create this with Metaplex
     #[account(mut)]
     pub metadata: Option<UncheckedAccount<'info>>,
@@ -111,7 +103,6 @@ pub fn handler(
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
     let repository_creator_token_account = &ctx.accounts.repository_creator_token_account;
-    let default_schedule = &ctx.accounts.default_schedule;
     let metadata = &mut ctx.accounts.metadata;
     let imported_mint = &ctx.accounts.imported_mint;
     let rent = &ctx.accounts.rent;
@@ -240,7 +231,7 @@ pub fn handler(
                 },
                 signer_seeds,
             ),
-            default_schedule.per_vesting_amount * (default_schedule.number_of_schedules as u64),
+            VESTING_NUMBER*TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into()),
         )?;
 
         // On-chain token metadata for the mint
@@ -278,12 +269,12 @@ pub fn handler(
 
         // Add schedules to vesting
         let mut release_time = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
-        for _i in 0..default_schedule.number_of_schedules {
+        for _i in 0..VESTING_NUMBER {
             vesting_account.schedules.push(Schedule {
                 release_time,
-                amount: default_schedule.per_vesting_amount,
+                amount: TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into()),
             });
-            release_time += default_schedule.unix_change;
+            release_time += RELEASE_TIME;
         }
     } else {
         if let Some(imported_mint) = imported_mint {

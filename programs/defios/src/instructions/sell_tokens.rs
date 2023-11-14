@@ -1,7 +1,7 @@
-use crate::constants::MAX_INT;
+use crate::constants::{MAX_INT,VESTING_NUMBER,TOKEN_VEST_AMOUNT};
 use crate::error::DefiOSError;
 use crate::helper::verify_calc_sell;
-use crate::state::{CommunalAccount, DefaultVestingSchedule, Repository};
+use crate::state::{CommunalAccount, Repository};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
@@ -62,15 +62,6 @@ pub struct SellToken<'info> {
     pub rewards_mint: Account<'info, Mint>,
     // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
-    #[account(
-        seeds = [
-            b"isGodReal?",
-            b"DoULoveMe?",
-            b"SweetChick"
-        ],
-        bump=default_schedule.bump,
-    )]
-    pub default_schedule: Box<Account<'info, DefaultVestingSchedule>>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
@@ -82,14 +73,13 @@ pub fn handler(ctx: Context<SellToken>, usdc_amount: u64, number_of_tokens: u64)
     let communal_token_account = &mut ctx.accounts.communal_token_account;
     let seller = &mut ctx.accounts.seller;
     let seller_token_account = &mut ctx.accounts.seller_token_account;
-    let default_schedule = &ctx.accounts.default_schedule;
     let seller_usdc_account = &mut ctx.accounts.seller_usdc_account;
     let usdc_mint = &ctx.accounts.usdc_mint;
     let communal_usdc_account = &mut ctx.accounts.communal_usdc_account;
     let system_program = &ctx.accounts.system_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
 
-    let total = (default_schedule.number_of_schedules as u64) * default_schedule.per_vesting_amount;
+    let total = VESTING_NUMBER * TOKEN_VEST_AMOUNT*u64::pow(10,rewards_mint.decimals.into());
     let token_supply = rewards_mint.supply;
     let modified_token_supply: u64 =
         (token_supply - total) / (u64::pow(10, rewards_mint.decimals.into()));

@@ -118,21 +118,6 @@ pub struct PullRequestAccepted {
 }
 
 #[event]
-pub struct VestingScheduleChanged {
-    pub repository_account: Pubkey,
-    pub repository_creator: Pubkey,
-    pub old_vesting_schedule: Vec<Schedule>,
-    pub new_vesting_schedule: Vec<Schedule>,
-}
-
-#[event]
-pub struct DefaultVestingScheduleChanged {
-    pub number_of_schedules: u32,
-    pub per_vesting_amount: u64,
-    pub unix_change: u64,
-}
-
-#[event]
 pub struct PRVoted {
     pub pull_request: Pubkey,
     pub vote_amount: u64,

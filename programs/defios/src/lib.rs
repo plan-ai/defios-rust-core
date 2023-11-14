@@ -117,13 +117,6 @@ pub mod defios {
         accept_pr::handler(ctx, repo_name)
     }
 
-    pub fn change_vesting_schedule(
-        ctx: Context<AdminVestingScheduleShift>,
-        new_vesting_schedule: Vec<Schedule>,
-    ) -> Result<()> {
-        change_vesting_schedule::handler(ctx, new_vesting_schedule)
-    }
-
     pub fn create_communal_account(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
         create_communal_account::handler(ctx)
     }
@@ -142,15 +135,6 @@ pub mod defios {
         number_of_tokens: u64,
     ) -> Result<()> {
         sell_tokens::handler(ctx, usdc_amount, number_of_tokens)
-    }
-
-    pub fn set_default_schedule(
-        ctx: Context<AdminDefaultVestingScheduleShift>,
-        number_of_schedules: u32,
-        per_vesting_amount: u64,
-        unix_change: u64,
-    ) -> Result<()> {
-        set_default_schedule::handler(ctx, number_of_schedules, per_vesting_amount, unix_change)
     }
 
     pub fn vote_pr(ctx: Context<VotePRs>) -> Result<()> {
