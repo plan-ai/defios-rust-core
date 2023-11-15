@@ -14,7 +14,7 @@ pub struct GrantMoney<'info> {
     #[account(mut)]
     pub grantee: Signer<'info>,
     #[account(
-        constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
+        // constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
         seeds = [
             grantee_verified_user.user_name.as_bytes(),
             grantee.key().as_ref(),
@@ -28,7 +28,7 @@ pub struct GrantMoney<'info> {
         constraint = objective.objective_repository == repository.key()
     )]
     pub objective: Account<'info, Objective>,
-    pub repository: Account<'info, Repository>,
+    pub repository: Box<Account<'info, Repository>>,
     #[account(constraint = token_mint.key() == repository.repo_token.unwrap())]
     pub token_mint: Account<'info, Mint>,
     #[account(
@@ -44,7 +44,8 @@ pub struct GrantMoney<'info> {
     )]
     pub grantee_account: Account<'info, Grantee>,
     ///CHECK: The account checks are done in function, unchecked as it might not exist and will be created in that case
-    pub objective_stake_account: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub objective_stake_account: AccountInfo<'info>,
     #[account(
         mut,
         constraint = grantee_stake_account.owner.eq(&grantee.key()),
@@ -64,7 +65,7 @@ pub fn handler(
 ) -> Result<()> {
     let grantee_account = &mut ctx.accounts.grantee_account;
     let grantee = &ctx.accounts.grantee;
-    let grantee_stake_account = &mut ctx.accounts.grantee_stake_account;
+    let grantee_stake_account = &ctx.accounts.grantee_stake_account;
     let objective = &mut ctx.accounts.objective;
     let objective_stake_account = &mut ctx.accounts.objective_stake_account;
     let associated_token_program = &ctx.accounts.associated_token_program;

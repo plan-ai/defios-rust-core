@@ -1,4 +1,4 @@
-use crate::state::{ObjectiveDeliverable, RoadmapOutlook, Schedule};
+use crate::state::{ObjectiveDeliverable, RoadmapOutlook};
 use anchor_lang::prelude::*;
 use instructions::*;
 

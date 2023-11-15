@@ -63,7 +63,7 @@ pub struct StakeIssue<'info> {
     )]
     pub issue_staker_account: Account<'info, IssueStaker>,
 
-    #[account(mut,constraint = rewards_mint.key()==issue_account.issue_token)]
+    #[account(constraint = rewards_mint.key()==issue_account.issue_token)]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
         seeds = [

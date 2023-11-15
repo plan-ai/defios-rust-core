@@ -7,7 +7,6 @@ use anchor_lang::prelude::*;
 pub struct CreateNameRouter<'info> {
     #[account(mut)]
     pub router_creator: Signer<'info>,
-
     #[account(
         init,
         payer = router_creator,
@@ -36,9 +35,11 @@ pub fn handler(
     name_router_account.signing_domain = signing_domain;
     name_router_account.signature_version = signature_version;
     name_router_account.total_verified_users = 0;
+
     emit!(NameRouterCreated {
         router_creator: router_creator.key(),
         name_router_account: name_router_account.key(),
     });
+    
     Ok(())
 }
