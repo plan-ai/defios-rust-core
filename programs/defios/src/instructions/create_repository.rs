@@ -1,6 +1,6 @@
 use crate::helper::find_metadata_account;
 use crate::{
-    constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER,DEFAULT_MINT_DECIMALS},
+    constants::{DEFAULT_MINT_DECIMALS, RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER},
     error::DefiOSError,
     event::RepositoryCreated,
     state::{Repository, Schedule, VerifiedUser, VestingSchedule},

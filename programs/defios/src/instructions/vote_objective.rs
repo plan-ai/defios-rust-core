@@ -43,7 +43,7 @@ pub struct VoteObjective<'info> {
         space = 8+ ObjectiveProposalVote::INIT_SPACE,
         bump
     )]
-    pub objective_proposal_vote: Account<'info,ObjectiveProposalVote>,
+    pub objective_proposal_vote: Account<'info, ObjectiveProposalVote>,
     pub system_program: Program<'info, System>,
 }
 
@@ -62,12 +62,12 @@ pub fn handler(ctx: Context<VoteObjective>, positive: bool) -> Result<()> {
 
     let capacity = grant_account.staked_amount - objective_proposal_vote.voted_amount;
     let mut vote_side = positive;
-    if objective_proposal_vote.voted_amount==0{
+    if objective_proposal_vote.voted_amount == 0 {
         objective_proposal_vote.state = positive;
-    }else{
+    } else {
         vote_side = objective_proposal_vote.state;
     };
-    
+
     if vote_side {
         proposal.vote_amount += capacity;
     } else {
@@ -75,7 +75,7 @@ pub fn handler(ctx: Context<VoteObjective>, positive: bool) -> Result<()> {
     };
 
     objective_proposal_vote.voted_amount += capacity;
-    
+
     emit!(ObjectiveProposalVoted {
         voter: voter.key(),
         objective: objective.key(),

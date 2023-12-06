@@ -1,4 +1,4 @@
-use crate::constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER,DEFAULT_MINT_DECIMALS};
+use crate::constants::{DEFAULT_MINT_DECIMALS, RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
 use crate::error::DefiOSError;
 use crate::event::RepoTokenChanged;
 use crate::helper::find_metadata_account;

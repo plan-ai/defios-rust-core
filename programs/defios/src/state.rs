@@ -200,7 +200,7 @@ pub struct ObjectiveProposal {
 
 #[account]
 #[derive(InitSpace)]
-pub struct ObjectiveProposalVote{
+pub struct ObjectiveProposalVote {
     pub voted_amount: u64,
-    pub state: bool   
+    pub state: bool,
 }
