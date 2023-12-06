@@ -14,7 +14,7 @@ pub struct GrantMoney<'info> {
     #[account(mut)]
     pub grantee: Signer<'info>,
     #[account(
-        // constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
+        constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
         seeds = [
             grantee_verified_user.user_name.as_bytes(),
             grantee.key().as_ref(),
@@ -29,7 +29,7 @@ pub struct GrantMoney<'info> {
     )]
     pub objective: Account<'info, Objective>,
     pub repository: Box<Account<'info, Repository>>,
-    #[account(constraint = token_mint.key() == repository.repo_token.unwrap())]
+    #[account(constraint = token_mint.key() == repository.repo_token)]
     pub token_mint: Account<'info, Mint>,
     #[account(
         init_if_needed,
@@ -73,7 +73,7 @@ pub fn handler(
     let system_program = &ctx.accounts.system_program;
     let token_mint = &ctx.accounts.token_mint;
 
-    grantee_account.bump = *ctx.bumps.get("grantee_account").unwrap();
+    grantee_account.bump = ctx.bumps.grantee_account;
     grantee_account.grantee = grantee.key();
     grantee_account.objective = objective.key();
     grantee_account.staked_amount += transfer_amount;

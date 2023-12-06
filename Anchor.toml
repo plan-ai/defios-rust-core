@@ -13,5 +13,5 @@ skill_validator = "CvGFAXiVhmxzHjxPAjKUf85sAQfrtFmP3Ei7kNqMNzrX"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "/home/ubuntu/.config/solana/id.json"

@@ -40,7 +40,7 @@ pub fn handler(ctx: Context<AddPullRequest>, metadata_uri: String) -> Result<()>
 
     require!(issue.closed_at.is_none(), DefiOSError::IssueClosedAlready);
 
-    pull_request_metadata_account.bump = *ctx.bumps.get("pull_request_metadata_account").unwrap();
+    pull_request_metadata_account.bump = ctx.bumps.pull_request_metadata_account;
     pull_request_metadata_account.sent_by = pull_request_addr.key();
     pull_request_metadata_account.metadata_uri = metadata_uri.clone();
     pull_request_metadata_account.accepted = false;

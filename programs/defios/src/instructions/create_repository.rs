@@ -1,3 +1,4 @@
+use crate::helper::find_metadata_account;
 use crate::{
     constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER},
     error::DefiOSError,
@@ -5,14 +6,13 @@ use crate::{
     state::{Repository, Schedule, VerifiedUser, VestingSchedule},
 };
 use anchor_lang::prelude::*;
+use anchor_spl::metadata::mpl_token_metadata::types::DataV2;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
     metadata::{create_metadata_accounts_v3, CreateMetadataAccountsV3, Metadata},
     token,
     token::{Mint, Token},
 };
-use mpl_token_metadata;
-use mpl_token_metadata::{pda::find_metadata_account, state::DataV2};
 
 #[derive(Accounts)]
 #[instruction(id: String)]
@@ -108,7 +108,7 @@ pub fn handler(
     let rent = &ctx.accounts.rent;
 
     //fills repository account data
-    repository_account.bump = *ctx.bumps.get("repository_account").unwrap();
+    repository_account.bump = ctx.bumps.repository_account;
     repository_account.repository_creator = repository_verified_user.user_pubkey.key();
     repository_account.id = id;
     repository_account.description = description;
@@ -213,7 +213,7 @@ pub fn handler(
             DefiOSError::TokenAccountMismatch
         );
 
-        let bump = *ctx.bumps.get("rewards_mint").unwrap();
+        let bump = ctx.bumps.rewards_mint;
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"Miners",
             b"MinerC",
@@ -262,7 +262,7 @@ pub fn handler(
         create_metadata_accounts_v3(cpi_ctx, data_v2, true, true, None)?;
 
         // Add data to token vesting account
-        vesting_account.bump = *ctx.bumps.get("vesting_account").unwrap();
+        vesting_account.bump = ctx.bumps.vesting_account;
         vesting_account.destination_address = repository_creator_token_account.key();
         vesting_account.mint_address = rewards_mint.key();
         vesting_account.schedules = vec![];
@@ -285,14 +285,7 @@ pub fn handler(
 
     //add vesting schedule and repository mint key to repository
     repository_account.vesting_schedule = vesting_schedule_key;
-    match rewards_mint_key {
-        Some(rewards_mint_key) => {
-            repository_account.repo_token = Some(rewards_mint_key);
-        }
-        None => {
-            require!(1 == 0, DefiOSError::NoRepoTokenSpecified)
-        }
-    }
+    repository_account.repo_token = rewards_mint_key.unwrap();
 
     repository_account.new_token = !token_imported;
     //emits event of repository created

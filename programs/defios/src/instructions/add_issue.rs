@@ -56,7 +56,7 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     let issue_creator = &ctx.accounts.issue_creator;
     let created_at = Clock::get()?.unix_timestamp;
 
-    issue_account.bump = *ctx.bumps.get("issue_account").unwrap();
+    issue_account.bump = ctx.bumps.issue_account;
     issue_account.index = repository_account.issue_index;
     issue_account.created_at = created_at as u64;
     issue_account.issue_creator = issue_creator.key();
@@ -64,15 +64,15 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     issue_account.repository = repository_account.key();
     issue_account.uri = uri;
     issue_account.closed_at = None;
-    issue_account.issue_token = repository_account.repo_token.unwrap();
-    repository_account.issue_index = repository_account.issue_index.saturating_add(1);
+    issue_account.issue_token = repository_account.repo_token;
+    repository_account.issue_index += 1;
     repository_account.num_open_issues += 1;
 
     emit!(IssueCreated {
         issue_creator: issue_creator.key(),
         issue_account: issue_account.key(),
         repository_account: repository_account.key(),
-        uri: issue_account.uri.clone(),
+        uri: issue_account.uri.clone()
     });
 
     Ok(())

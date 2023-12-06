@@ -45,6 +45,7 @@ pub struct UnlockTokens<'info> {
             b"vesting",
             repository_account.key().as_ref(),
         ],
+        constraint = vesting_account.mint_address == repository_account.repo_token,
         bump = vesting_account.bump
     )]
     pub vesting_account: Account<'info, VestingSchedule>,

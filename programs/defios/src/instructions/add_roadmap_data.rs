@@ -52,7 +52,7 @@ pub fn handler(
     let roadmap_data_adder = &mut ctx.accounts.roadmap_data_adder;
     let repository_account = &ctx.accounts.repository_account;
 
-    metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
+    metadata_account.bump = ctx.bumps.metadata_account;
     metadata_account.roadmap_title = roadmap_title.clone();
     metadata_account.roadmap_description_link = roadmap_description_link.clone();
     metadata_account.roadmap_creation_unix = roadmap_creation_unix;
@@ -61,6 +61,7 @@ pub fn handler(
     metadata_account.roadmap_outlook = roadmap_outlook;
     metadata_account.roadmap_image_url = roadmap_image_url.clone();
     metadata_account.roadmap_repository = repository_account.key().clone();
+
     emit!(AddRoadmapDataEvent {
         roadmap_title: roadmap_title,
         roadmap_description_link: roadmap_description_link,

@@ -4,7 +4,6 @@ use crate::{
     state::{Issue, IssueStaker, Repository},
 };
 use anchor_lang::prelude::*;
-use anchor_spl::mint::USDC;
 use anchor_spl::token::{
     close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer,
 };
@@ -89,7 +88,7 @@ pub fn handler(ctx: Context<UnstakeIssue>) -> Result<()> {
 
     require!(
         issue_staker_account.staked_amount != 0,
-        DefiOSError::InsufficientStakingFunds
+        DefiOSError::CantUnnstakeBeforeStaking
     );
 
     require!(

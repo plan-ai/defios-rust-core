@@ -154,7 +154,7 @@ pub struct GrantDispersed {
 #[event]
 pub struct IssueMergedByVote {
     pub issue: Pubkey,
-    pub pr: Pubkey,
+    pub pull_request_metadata_account: Pubkey,
 }
 
 #[event]

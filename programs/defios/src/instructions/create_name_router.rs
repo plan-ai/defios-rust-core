@@ -30,7 +30,7 @@ pub fn handler(
     let name_router_account = &mut ctx.accounts.name_router_account;
     let router_creator = &ctx.accounts.router_creator;
 
-    name_router_account.bump = *ctx.bumps.get("name_router_account").unwrap();
+    name_router_account.bump = ctx.bumps.name_router_account;
     name_router_account.router_creator = router_creator.key();
     name_router_account.signing_domain = signing_domain;
     name_router_account.signature_version = signature_version;
@@ -40,6 +40,6 @@ pub fn handler(
         router_creator: router_creator.key(),
         name_router_account: name_router_account.key(),
     });
-    
+
     Ok(())
 }

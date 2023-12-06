@@ -35,7 +35,7 @@ pub fn handler(
     let proposee = &ctx.accounts.proposee;
     let objective = &ctx.accounts.objective;
 
-    objective_proposal.bump = *ctx.bumps.get("objective_proposal").unwrap();
+    objective_proposal.bump = ctx.bumps.objective_proposal;
     objective_proposal.proposal_id = proposal_id;
     objective_proposal.proposee = proposee.key();
     objective_proposal.objective = objective.key();

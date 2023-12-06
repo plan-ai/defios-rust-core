@@ -1,16 +1,16 @@
 use crate::constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
 use crate::error::DefiOSError;
 use crate::event::RepoTokenChanged;
+use crate::helper::find_metadata_account;
 use crate::state::{Repository, Schedule, VestingSchedule};
 use anchor_lang::prelude::*;
+use anchor_spl::metadata::mpl_token_metadata::types::DataV2;
 use anchor_spl::{
     associated_token::{create, get_associated_token_address, AssociatedToken, Create},
     metadata::{create_metadata_accounts_v3, CreateMetadataAccountsV3, Metadata},
     token,
     token::{Mint, Token},
 };
-use mpl_token_metadata;
-use mpl_token_metadata::{pda::find_metadata_account, state::DataV2};
 
 #[derive(Accounts)]
 pub struct ChangeRepoToken<'info> {
@@ -49,6 +49,16 @@ pub struct ChangeRepoToken<'info> {
     /// CHECK: We're about to create this with Metaplex
     #[account(mut)]
     pub metadata: Option<UncheckedAccount<'info>>,
+    #[account(
+        init,
+        payer = repository_creator,
+        mint::authority = rewards_mint,
+        mint::decimals = 1,
+        seeds = [b"Miners",
+        b"MinerC",
+        repository_account.key().as_ref()],
+        bump
+    )]
     pub rewards_mint: Option<Account<'info, Mint>>,
     pub imported_mint: Option<Account<'info, Mint>>,
     pub system_program: Program<'info, System>,
@@ -80,7 +90,8 @@ pub fn handler(
     require!(
         repository_account.new_token == false
             && repository_account.num_open_issues == 0
-            && repository_account.num_changes == 0,
+            && repository_account.num_changes == 0
+            && repository_account.objectives_open == 0,
         DefiOSError::RepoTokenChangeRejected
     );
 
@@ -182,7 +193,7 @@ pub fn handler(
             DefiOSError::TokenAccountMismatch
         );
 
-        let bump = *ctx.bumps.get("rewards_mint").unwrap();
+        let bump = ctx.bumps.rewards_mint;
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"Miners",
             b"MinerC",
@@ -231,7 +242,7 @@ pub fn handler(
         create_metadata_accounts_v3(cpi_ctx, data_v2, true, true, None)?;
 
         // Add data to token vesting account
-        vesting_account.bump = *ctx.bumps.get("vesting_account").unwrap();
+        vesting_account.bump = ctx.bumps.vesting_account;
         vesting_account.destination_address = repository_creator_token_account.key();
         vesting_account.mint_address = rewards_mint.key();
         vesting_account.schedules = vec![];
@@ -253,7 +264,8 @@ pub fn handler(
     };
 
     repository_account.vesting_schedule = vesting_schedule_key;
-    repository_account.repo_token = Some(rewards_mint_key.unwrap());
+    repository_account.repo_token = rewards_mint_key.unwrap();
+
     emit!(RepoTokenChanged {
         repository: repository_account.key(),
         new_token: rewards_mint_key.unwrap()

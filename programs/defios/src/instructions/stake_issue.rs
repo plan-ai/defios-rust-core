@@ -4,7 +4,6 @@ use anchor_spl::{
         create as create_associated_token_account, get_associated_token_address, AssociatedToken,
         Create,
     },
-    mint::USDC,
     token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
@@ -138,7 +137,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
 
     issue_staker_account.staked_amount += transfer_amount;
     issue_staker_account.issue_staker_token_account = issue_staker_token_account.key();
-    issue_staker_account.bump = *ctx.bumps.get("issue_staker_account").unwrap();
+    issue_staker_account.bump = ctx.bumps.issue_staker_account;
     issue_staker_account.issue_staker = issue_staker.key();
     issue_staker_account.issue = issue_account.key();
     let voting_power = transfer_amount;
@@ -146,6 +145,7 @@ pub fn handler(ctx: Context<StakeIssue>, transfer_amount: u64) -> Result<()> {
     if issue_staker_account.has_voted == false {
         issue_staker_account.pr_voting_power += voting_power
     } else {
+        //auto updates vote amount if user has already voted on a pull request for this issue
         let voted_on: Option<Pubkey> = issue_staker_account.voted_on;
         if let (Some(pull_request_metadata_account), Some(voted_on)) =
             (pull_request_metadata_account, voted_on)

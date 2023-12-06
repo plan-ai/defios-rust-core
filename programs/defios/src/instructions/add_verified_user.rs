@@ -71,7 +71,7 @@ pub fn handler(
     name_router_account.total_verified_users =
         name_router_account.total_verified_users.saturating_add(1);
 
-    verified_user_account.bump = *ctx.bumps.get("verified_user_account").unwrap();
+    verified_user_account.bump = ctx.bumps.verified_user_account;
     verified_user_account.name_router = name_router_account.key();
     verified_user_account.user_name = user_name;
     verified_user_account.user_pubkey = user_pubkey;

@@ -136,5 +136,9 @@ pub enum DefiOSError {
 
     //6033
     #[msg("Voting period has not yet ended")]
-    VotingPeriodOnGoing
+    VotingPeriodOnGoing,
+
+    //6034
+    #[msg("Issue cant be unstaked if never staked on")]
+    CantUnnstakeBeforeStaking,
 }

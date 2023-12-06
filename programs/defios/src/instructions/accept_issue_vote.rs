@@ -26,36 +26,36 @@ pub struct AcceptIssueVote<'info> {
         seeds = [
             b"pullrequestadded",
             issue.key().as_ref(),
-            pr.sent_by.as_ref()
+            pull_request_metadata_account.sent_by.as_ref()
         ],
-        constraint = pr.accepted == false,
-        bump = pr.bump
+        constraint = pull_request_metadata_account.accepted == false,
+        bump = pull_request_metadata_account.bump
     )]
-    pub pr: Account<'info, PullRequest>,
+    pub pull_request_metadata_account: Account<'info, PullRequest>,
     pub system_program: Program<'info, System>,
 }
 
 pub fn handler(ctx: Context<AcceptIssueVote>) -> Result<()> {
-    let pr = &mut ctx.accounts.pr;
+    let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
     let issue = &mut ctx.accounts.issue;
     let repository = &mut ctx.accounts.repository_account;
 
     let majority_threshhold = issue.total_stake_amount / 2;
     require!(
-        pr.total_voted_amount > majority_threshhold,
+        pull_request_metadata_account.total_voted_amount > majority_threshhold,
         DefiOSError::NotEnoughVotesForIssueMerge
     );
 
     let timestamp = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
     issue.closed_at = Some(timestamp);
 
-    pr.accepted = true;
+    pull_request_metadata_account.accepted = true;
 
     repository.num_open_issues -= 1;
 
     emit!(IssueMergedByVote {
         issue: issue.key(),
-        pr: pr.key()
+        pull_request_metadata_account: pull_request_metadata_account.key()
     });
 
     Ok(())

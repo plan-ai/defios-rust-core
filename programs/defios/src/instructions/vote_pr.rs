@@ -43,34 +43,25 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
     let issue_account = &mut ctx.accounts.issue_account;
     let issue_staker_account = &mut ctx.accounts.issue_staker_account;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
+    let first_pr_time = issue_account.first_pr_time.unwrap();
+    require!(
+        current_time - first_pr_time <= VOTING_END.try_into().unwrap(),
+        DefiOSError::VotingPeriodEnded
+    );
 
-    match issue_account.first_pr_time {
-        Some(first_pr_time) => {
-            require!(
-                current_time - first_pr_time <= VOTING_END.try_into().unwrap(),
-                DefiOSError::VotingPeriodEnded
-            );
+    require!(
+        pull_request_metadata_account.accepted == false && issue_account.closed_at.is_none(),
+        DefiOSError::PullRequestVotingClosedAlready
+    );
+    pull_request_metadata_account.total_voted_amount += issue_staker_account.pr_voting_power;
+    emit!(PRVoted {
+        pull_request: pull_request_metadata_account.key(),
+        vote_amount: issue_staker_account.pr_voting_power,
+        voter: ctx.accounts.issue_staker.key()
+    });
 
-            require!(
-                pull_request_metadata_account.accepted == false
-                    && issue_account.closed_at.is_none(),
-                DefiOSError::PullRequestVotingClosedAlready
-            );
-            pull_request_metadata_account.total_voted_amount +=
-                issue_staker_account.pr_voting_power;
-            emit!(PRVoted {
-                pull_request: pull_request_metadata_account.key(),
-                vote_amount: issue_staker_account.pr_voting_power,
-                voter: ctx.accounts.issue_staker.key()
-            });
-
-            issue_staker_account.pr_voting_power = 0;
-            issue_staker_account.has_voted = true;
-            issue_staker_account.voted_on = Some(pull_request_metadata_account.key());
-        }
-        None => {
-            require!(1 == 0, DefiOSError::NoPRFound)
-        }
-    };
+    issue_staker_account.pr_voting_power = 0;
+    issue_staker_account.has_voted = true;
+    issue_staker_account.voted_on = Some(pull_request_metadata_account.key());
     Ok(())
 }

@@ -59,7 +59,7 @@ pub fn handler(
     let objective_creation_unix = Clock::get()?.unix_timestamp;
     let metadata_account = &mut ctx.accounts.metadata_account;
     let objective_data_addr = &mut ctx.accounts.objective_data_addr;
-    let repository_account = &ctx.accounts.repository_account;
+    let repository_account = &mut ctx.accounts.repository_account;
     let objective_state = ObjectiveState::InProgress;
     let roadmap_metadata_account = &mut ctx.accounts.roadmap_metadata_account;
     let parent_objective_account = &mut ctx.accounts.parent_objective_account;
@@ -69,7 +69,7 @@ pub fn handler(
         DefiOSError::CantEnterTimeBelowZero
     );
 
-    metadata_account.bump = *ctx.bumps.get("metadata_account").unwrap();
+    metadata_account.bump = ctx.bumps.metadata_account;
     metadata_account.objective_title = objective_title.clone();
     metadata_account.objective_start_unix = objective_start_unix;
     metadata_account.objective_creation_unix = objective_creation_unix;
@@ -82,7 +82,7 @@ pub fn handler(
     metadata_account.objective_repository = repository_account.key();
     metadata_account.completed_at = None;
 
-    let mut parent = metadata_account.key();
+    let parent;
     match roadmap_metadata_account {
         Some(roadmap_metadata_account) => {
             require!(
@@ -92,22 +92,19 @@ pub fn handler(
             parent = roadmap_metadata_account.key();
             roadmap_metadata_account.root_objective = Some(metadata_account.key())
         }
-        None => match parent_objective_account {
-            Some(parent_objective_account) => {
-                require!(
-                    parent_objective_account.next_obective_key == None,
-                    DefiOSError::InvalidObjectiveParent
-                );
-                parent = parent_objective_account.key();
-                parent_objective_account.next_obective_key = Some(metadata_account.key())
-            }
-            None => {
-                require!(1 == 0, DefiOSError::NoParentEntered)
-            }
-        },
+        None => {
+            let mut parent_objective_account = parent_objective_account.clone().unwrap();
+            require!(
+                parent_objective_account.next_obective_key == None,
+                DefiOSError::InvalidObjectiveParent
+            );
+            parent = parent_objective_account.key();
+            parent_objective_account.next_obective_key = Some(metadata_account.key())
+        }
     };
 
     metadata_account.parent_objective = parent;
+    repository_account.objectives_open += 1;
     emit!(AddObjectiveDataEvent {
         objective_title: objective_title,
         objective_metadata_uri: objective_description_link,

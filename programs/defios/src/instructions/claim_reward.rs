@@ -15,24 +15,25 @@ use anchor_spl::{
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
     #[account(
-        seeds = [
-            b"pullrequestadded",
-            issue_account.key().as_ref(),
-            pull_request_creator.key().as_ref()],
-    bump = pull_request.bump)]
-    pub pull_request: Account<'info, PullRequest>,
-    #[account(
         mut,
         constraint = pull_request_creator.key().eq(&pull_request.sent_by) @ DefiOSError::UnauthorizedUser,
     )]
     pub pull_request_creator: Signer<'info>,
-
+    #[account(
+        seeds = [
+            b"pullrequestadded",
+            issue_account.key().as_ref(),
+            pull_request_creator.key().as_ref()
+        ],
+        bump = pull_request.bump
+    )]
+    pub pull_request: Account<'info, PullRequest>,
     /// CHECK: PDA check is done at the handler function
     #[account(mut)]
     pub pull_request_creator_reward_account: UncheckedAccount<'info>,
     #[account(
-        constraint = rewards_mint.key()==issue_account.issue_token,
-        constraint = rewards_mint.key().eq(&issue_token_pool_account.mint)
+        constraint = rewards_mint.key() == issue_account.issue_token,
+        constraint = rewards_mint.key() == issue_token_pool_account.mint
     )]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
@@ -67,7 +68,10 @@ pub struct ClaimReward<'info> {
     )]
     pub issue_account: Box<Account<'info, Issue>>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = issue_token_pool_account.owner == issue_account.key()
+    )]
     pub issue_token_pool_account: Box<Account<'info, TokenAccount>>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -102,16 +106,11 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     }
 
     //checking if issue token account sent is same as expected
-    let expected_issue_token_pool_account =
-        get_associated_token_address(&issue_account.key(), &rewards_mint.key());
-
     let expected_pull_request_creator_reward_account =
         get_associated_token_address(&pull_request_creator.key(), &rewards_mint.key());
 
     require!(
-        expected_issue_token_pool_account.eq(&issue_token_pool_account.key())
-            && expected_pull_request_creator_reward_account
-                .eq(&pull_request_creator_reward_account.key()),
+        expected_pull_request_creator_reward_account.eq(&pull_request_creator_reward_account.key()),
         DefiOSError::TokenAccountMismatch
     );
 

@@ -60,7 +60,7 @@ pub struct BuyToken<'info> {
         bump
     )]
     pub rewards_mint: Account<'info, Mint>,
-    // #[account(address=USDC)]
+    #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -127,7 +127,7 @@ pub fn handler(ctx: Context<BuyToken>, usdc_amount: u64, number_of_tokens: u64) 
     )?;
 
     //mints required number of tokens
-    let bump = *ctx.bumps.get("rewards_mint").unwrap();
+    let bump = ctx.bumps.rewards_mint;
     let repository_account_key = repository_account.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
         b"Miners",

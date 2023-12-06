@@ -11,8 +11,7 @@ use anchor_spl::{
 #[derive(Accounts)]
 pub struct RegisterCommunalAccount<'info> {
     ///CHECK: Authority can only have specified public key
-    #[account(mut, signer)]
-    //constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
+    #[account(mut, signer,constraint=AUTHORIZED_PUBLIC_KEY.eq(&authority.key())@DefiOSError::UnauthorizedActionAttempted)]
     pub authority: AccountInfo<'info>,
     #[account(init_if_needed,
         payer = authority,
@@ -33,7 +32,7 @@ pub struct RegisterCommunalAccount<'info> {
     #[account(mut)]
     pub communal_usdc_account: UncheckedAccount<'info>,
     pub rewards_mint: Account<'info, Mint>,
-    // #[account(address=USDC)]
+    #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -50,7 +49,7 @@ pub fn handler(ctx: Context<RegisterCommunalAccount>) -> Result<()> {
     let rewards_mint = &ctx.accounts.rewards_mint;
     let communal_usdc_account = &ctx.accounts.communal_usdc_account;
     let usdc_mint = &ctx.accounts.usdc_mint;
-    communal_deposit.bump = *ctx.bumps.get("communal_deposit").unwrap();
+    communal_deposit.bump = ctx.bumps.communal_deposit;
     //creates communal token account for new spl token
     if communal_token_account.data_is_empty() {
         create(CpiContext::new(

@@ -62,10 +62,11 @@ pub struct Repository {
     #[max_len(100)]
     pub uri: String,
     pub vesting_schedule: Option<Pubkey>,
-    pub repo_token: Option<Pubkey>,
+    pub repo_token: Pubkey,
     pub new_token: bool,
     pub num_changes: u8,
     pub num_open_issues: u32,
+    pub objectives_open: u32,
 }
 
 #[account]

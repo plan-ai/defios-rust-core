@@ -1,7 +1,7 @@
-use crate::event::ObjectiveProposalVoted;
-use crate::state::{Grantee, Objective, ObjectiveProposal};
 use crate::constants::VOTING_END;
 use crate::error::DefiOSError;
+use crate::event::ObjectiveProposalVoted;
+use crate::state::{Grantee, Objective, ObjectiveProposal};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]

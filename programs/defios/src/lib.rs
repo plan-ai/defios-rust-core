@@ -176,7 +176,7 @@ pub mod defios {
         vote_objective::handler(ctx, positive)
     }
 
-    pub fn accept_objective(ctx:Context<AcceptObjective>) -> Result<()>{
+    pub fn accept_objective(ctx: Context<AcceptObjective>) -> Result<()> {
         accept_objective::handler(ctx)
     }
 }
