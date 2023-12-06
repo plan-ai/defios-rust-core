@@ -45,8 +45,7 @@ pub fn handler(ctx: Context<AcceptPullRequest>, repo_name: String) -> Result<()>
     let repository_creator = &ctx.accounts.repository_creator;
     let pull_request_metadata_account = &mut ctx.accounts.pull_request_metadata_account;
     pull_request_metadata_account.accepted = true;
-    let timestamp = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
-    issue.closed_at = Some(timestamp);
+    issue.closed_at = Some(Clock::get()?.unix_timestamp);
 
     repository.num_open_issues -= 1;
 

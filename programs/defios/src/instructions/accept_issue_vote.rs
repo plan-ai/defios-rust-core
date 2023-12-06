@@ -46,8 +46,7 @@ pub fn handler(ctx: Context<AcceptIssueVote>) -> Result<()> {
         DefiOSError::NotEnoughVotesForIssueMerge
     );
 
-    let timestamp = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
-    issue.closed_at = Some(timestamp);
+    issue.closed_at = Some(Clock::get()?.unix_timestamp);
 
     pull_request_metadata_account.accepted = true;
 

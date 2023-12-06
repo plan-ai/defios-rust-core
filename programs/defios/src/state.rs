@@ -76,9 +76,8 @@ pub struct Issue {
     pub index: u64,
     pub issue_creator: Pubkey,
     pub repository: Pubkey,
-    pub commit_index: u64,
-    pub created_at: u64,
-    pub closed_at: Option<u64>,
+    pub created_at: i64,
+    pub closed_at: Option<i64>,
     #[max_len(100)]
     pub uri: String,
     pub first_pr_time: Option<i64>,
@@ -164,7 +163,7 @@ pub struct Objective {
     pub total_grant: u64,
     pub total_dispersed_grant: u64,
     pub objective_repository: Pubkey,
-    pub completed_at: Option<u64>,
+    pub completed_at: Option<i64>,
 }
 
 #[account]
@@ -180,7 +179,6 @@ pub struct Grantee {
     pub grantee: Pubkey,
     pub objective: Pubkey,
     pub staked_amount: u64,
-    pub voted_amount: u64,
     #[max_len(100)]
     pub grant_metadata_uri: String,
 }
@@ -195,7 +193,14 @@ pub struct ObjectiveProposal {
     pub objective: Pubkey,
     #[max_len(100)]
     pub proposal_metadata_uri: String,
-    pub proposed_at: u64,
+    pub proposed_at: i64,
     pub vote_amount: u64,
     pub deny_amount: u64,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ObjectiveProposalVote{
+    pub voted_amount: u64,
+    pub state: bool   
 }

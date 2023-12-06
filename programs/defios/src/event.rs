@@ -161,7 +161,7 @@ pub struct IssueMergedByVote {
 pub struct ObjectiveProposalCreated {
     pub objective: Pubkey,
     pub proposee: Pubkey,
-    pub proposed_time: u64,
+    pub proposed_time: i64,
     pub objective_proposal_url: String,
 }
 

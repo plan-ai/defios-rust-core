@@ -54,13 +54,11 @@ pub fn handler(ctx: Context<AddIssue>, uri: String) -> Result<()> {
     let repository_account = &mut ctx.accounts.repository_account;
     let issue_account = &mut ctx.accounts.issue_account;
     let issue_creator = &ctx.accounts.issue_creator;
-    let created_at = Clock::get()?.unix_timestamp;
 
     issue_account.bump = ctx.bumps.issue_account;
     issue_account.index = repository_account.issue_index;
-    issue_account.created_at = created_at as u64;
+    issue_account.created_at = Clock::get()?.unix_timestamp;
     issue_account.issue_creator = issue_creator.key();
-    issue_account.commit_index = 0;
     issue_account.repository = repository_account.key();
     issue_account.uri = uri;
     issue_account.closed_at = None;

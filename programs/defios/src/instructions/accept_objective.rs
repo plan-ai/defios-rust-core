@@ -42,7 +42,7 @@ pub fn handler(ctx: Context<AcceptObjective>) -> Result<()> {
     let objective = &mut ctx.accounts.objective;
     let repository_account = &mut ctx.accounts.repository_account;
 
-    let current_time = u64::from_ne_bytes(Clock::get()?.unix_timestamp.to_ne_bytes());
+    let current_time = Clock::get()?.unix_timestamp;
     require!(
         current_time - objective_proposal.proposed_at > VOTING_END,
         DefiOSError::VotingPeriodOnGoing

@@ -1,4 +1,4 @@
-use crate::constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER};
+use crate::constants::{RELEASE_TIME, TOKEN_VEST_AMOUNT, VESTING_NUMBER,DEFAULT_MINT_DECIMALS};
 use crate::error::DefiOSError;
 use crate::event::RepoTokenChanged;
 use crate::helper::find_metadata_account;
@@ -53,7 +53,7 @@ pub struct ChangeRepoToken<'info> {
         init,
         payer = repository_creator,
         mint::authority = rewards_mint,
-        mint::decimals = 1,
+        mint::decimals = DEFAULT_MINT_DECIMALS,
         seeds = [b"Miners",
         b"MinerC",
         repository_account.key().as_ref()],

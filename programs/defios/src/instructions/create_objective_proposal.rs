@@ -40,7 +40,7 @@ pub fn handler(
     objective_proposal.proposee = proposee.key();
     objective_proposal.objective = objective.key();
     objective_proposal.proposal_metadata_uri = objective_proposal_url.clone();
-    objective_proposal.proposed_at = Clock::get()?.unix_timestamp as u64;
+    objective_proposal.proposed_at = Clock::get()?.unix_timestamp;
     objective_proposal.vote_amount = 0;
     objective_proposal.deny_amount = 0;
 
