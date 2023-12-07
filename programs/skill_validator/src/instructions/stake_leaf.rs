@@ -105,7 +105,7 @@ pub fn handler(
         ))?;
     }
 
-    stake_account.bump = *ctx.bumps.get("stake_account").unwrap();
+    stake_account.bump = ctx.bumps.stake_account;
     stake_account.root = root;
     stake_account.leaf = leaf;
     stake_account.index = index;

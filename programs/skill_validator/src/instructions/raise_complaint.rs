@@ -35,7 +35,7 @@ pub fn handler(ctx: Context<RaiseComplaint>, complaint_text: String) -> Result<(
     let complaint = &mut ctx.accounts.complaint;
     let job = &ctx.accounts.job;
 
-    complaint.bump = *ctx.bumps.get("complaint").unwrap();
+    complaint.bump = ctx.bumps.complaint;
     complaint.job = job.key();
     complaint.complaint = complaint_text.clone();
     complaint.accepted = false;

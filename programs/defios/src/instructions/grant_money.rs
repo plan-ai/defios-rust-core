@@ -14,7 +14,7 @@ pub struct GrantMoney<'info> {
     #[account(mut)]
     pub grantee: Signer<'info>,
     #[account(
-        constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
+        // constraint = TRUSTED_NAME_ROUTERS.contains(&grantee_verified_user.name_router),
         seeds = [
             grantee_verified_user.user_name.as_bytes(),
             grantee.key().as_ref(),

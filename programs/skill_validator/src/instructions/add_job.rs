@@ -31,7 +31,7 @@ pub fn handler(
     let job = &mut ctx.accounts.job;
     let job_addr = &ctx.accounts.job_addr;
 
-    job.bump = *ctx.bumps.get("job").unwrap();
+    job.bump = ctx.bumps.job;
     job.job_length = job_length;
     job.job_name = job_name.clone();
     job.job_desc = job_desc.clone();

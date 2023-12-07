@@ -37,7 +37,7 @@ pub fn handler(
     let skill = &mut ctx.accounts.skill;
     let freelancer = &ctx.accounts.freelancer;
 
-    skill.bump = *ctx.bumps.get("skill").unwrap();
+    skill.bump = ctx.bumps.skill;
     skill.indexes.extend(*indexes.clone());
     skill.merkle_trees.extend(*merkle_trees.clone());
     skill.freelancer = freelancer.key();

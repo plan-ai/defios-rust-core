@@ -1,20 +1,25 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { Defios } from "../../target/types/defios";
-
-import * as ed from "@noble/ed25519";
-import { PublicKey } from "@saberhq/solana-contrib";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
   TOKEN_PROGRAM_ID,
   createMint,
   transfer,
+  getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
-import sha256 from "sha256";
 import { rpcConfig } from "../test_config";
-import { NonceAccount } from "@solana/web3.js";
+import * as constant from "../constants";
+import {
+  create_keypair,
+  create_name_router,
+  create_spl_token,
+  create_verified_user,
+  get_metadata_account,
+  get_pda_from_seeds,
+} from "./helper";
 
 describe("defios", () => {
   // Configure the client to use the local cluster.
@@ -27,227 +32,46 @@ describe("defios", () => {
   } = program;
   const { web3 } = anchor;
   const metaplex = Metaplex.make(connection);
-  //global variables for tests
-  const signatureVersion = 1;
-  const signingName = "defios.com";
-  const userName: string = "sunguru98";
-  const userPubkey = new PublicKey(
-    "81sWMLg1EgYps3nMwyeSW1JfjKgFqkGYPP85vTnkFzRn"
-  );
-  const repositoryId = "12";
-  const roadmapTitle = "Test Roadmap";
-  const roadmapImageUrl = "https://github.com/defi-os/Issues";
-  const roadmapDescription = "https://github.com/defi-os/Issues";
-  const roadmapOutlook = { next2: {} };
-  const objectiveDeliverable = { tooling: {} };
-  const objectiveTitle = "Test Objective";
-  const objectiveDescription = "https://github.com/defi-os/Issues";
-  const objectiveEndUnix = new anchor.BN(1735603200);
-  const objectiveStartUnix = new anchor.BN(1704067200);
-  const pull_request_metadata_uri = "https://github.com/defi-os/Issues";
-  const new_schedule = [
-    {
-      releaseTime: new anchor.BN(1),
-      amount: new anchor.BN(1),
-    },
-    {
-      releaseTime: new anchor.BN(1),
-      amount: new anchor.BN(1),
-    },
-  ];
-  const tokenName = "Hi!";
-  const tokenimage = "BRR";
-  const tokenMetadata =
-    "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
-  const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-  );
-  async function create_keypair() {
-    const keypair = web3.Keypair.generate();
-    await connection.confirmTransaction(
-      {
-        signature: await connection.requestAirdrop(
-          keypair.publicKey,
-          web3.LAMPORTS_PER_SOL
-        ),
-        ...(await connection.getLatestBlockhash()),
-      },
-      "confirmed"
-    );
-    return keypair;
-  }
 
-  async function get_pda_from_seeds(seeds) {
-    return await web3.PublicKey.findProgramAddressSync(
-      seeds,
-      program.programId
-    );
-  }
-
-  async function get_metadata_account(mintKeypair) {
-    return (
-      await anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("metadata"),
-          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-          mintKeypair.toBuffer(),
-        ],
-        TOKEN_METADATA_PROGRAM_ID
-      )
-    )[0];
-  }
-  //main testsuite code
-  async function create_name_router() {
-    //generating keypair and airdropping solana to it
-    const routerCreatorKeypair = await create_keypair();
-
-    //get public key of pda ideally generated using seeds
-    const [nameRouterAccount] = await get_pda_from_seeds([
-      Buffer.from(signingName),
-      Buffer.from(signatureVersion.toString()),
-      routerCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    //call create name router function
-    await program.methods
-      .createNameRouter(signingName, signatureVersion)
-      .accounts({
-        nameRouterAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .rpc(rpcConfig);
-    return [routerCreatorKeypair, nameRouterAccount];
-  }
-
-  async function create_verified_user(
-    routerCreatorKeypair,
-    nameRouterAccount,
-    pubKey
-  ) {
-    // Signature test
-    //Create byte array of message
-    const message = Uint8Array.from(
-      Buffer.from(`DefiOS(${userName}, ${userPubkey.toString()})`)
-    );
-
-    //create signature from message and secret key
-    const signature = await ed.sign(
-      message,
-      routerCreatorKeypair.secretKey.slice(0, 32)
-    );
-
-    //create instruction from message, public key, and signature of account
-    const createED25519Ix = web3.Ed25519Program.createInstructionWithPublicKey({
-      message: message,
-      publicKey: routerCreatorKeypair.publicKey.toBytes(),
-      signature,
-    });
-
-    //gets public key from seeds
-    const [verifiedUserAccount] = await get_pda_from_seeds([
-      Buffer.from(userName),
-      pubKey.toBuffer(),
-      nameRouterAccount.toBuffer(),
-    ]);
-
-    //calls add verified user method
-    await program.methods
-      .addVerifiedUser(
-        userName,
-        pubKey,
-        Buffer.from(message),
-        Buffer.from(signature)
-      )
-      .accounts({
-        nameRouterAccount,
-        verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([routerCreatorKeypair])
-      .preInstructions([createED25519Ix])
-      .rpc(rpcConfig);
-    return [verifiedUserAccount];
-  }
-
-  async function create_spl_token(repositoryCreator) {
-    // Creating repository
-    const [repositoryAccount] = await get_pda_from_seeds([
-      Buffer.from("repository"),
-      Buffer.from(repositoryId),
-      repositoryCreator.publicKey.toBuffer(),
-    ]);
-
-    // Creating rewards mint
-    const [mint] = await get_pda_from_seeds([
-      Buffer.from("Miners"),
-      Buffer.from("MinerC"),
-      repositoryAccount.toBuffer(),
-    ]);
-
-    const [vestingAccount] = await get_pda_from_seeds([
-      Buffer.from("vesting"),
-      repositoryAccount.toBuffer(),
-    ]);
-
-    const vestingTokenAccount = await getAssociatedTokenAddress(
-      mint,
-      vestingAccount,
-      true
-    );
-
-    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
-      mint,
-      repositoryCreator.publicKey
-    );
-
-    return [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mint,
-      vestingAccount,
-    ];
-  }
   //main testsuite
   //creating a name router
+  let global = {};
   it("Creates a name router!", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
+    let [routerCreatorKeypair, nameRouterAccount] = await create_name_router();
     //get data related to name router pda
     const {
       routerCreator,
-      signatureVersion: fSignatureVersion,
+      signatureVersion: SignatureVersion,
       signingDomain,
       bump,
       totalVerifiedUsers,
     } = await program.account.nameRouter.fetch(nameRouterAccount);
+    global.nameRouterAccount = nameRouterAccount;
+    global.routerCreatorKeypair = routerCreatorKeypair;
   });
 
   it("Adds a verified user", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-
     const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      userPubkey
+      global.routerCreatorKeypair,
+      global.nameRouterAccount,
+      constant.userPubkey
     );
+    global.verifiedUserAccount = verifiedUserAccount;
   });
 
   it("Creates a repository with new spl token", async () => {
     //generates key pairs and airdrops solana to them
+    let [nameRouterAccount, routerCreatorKeypair] = [
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+    ];
     const repositoryCreator = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
+    const [repositoryCreatorVerifiedAccount] = await create_verified_user(
       routerCreatorKeypair,
       nameRouterAccount,
       repositoryCreator.publicKey
     );
+
     const [
       repositoryAccount,
       repositoryCreatorTokenAccount,
@@ -260,51 +84,60 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
+        constant.repositoryId,
+        constant.repositoryTitle,
+        constant.repositoryUri,
+        constant.tokenName,
+        constant.tokenimage,
+        constant.tokenMetadata
       )
       .accounts({
         nameRouterAccount,
         repositoryAccount,
         repositoryCreatorTokenAccount,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
+        repositoryVerifiedUser: repositoryCreatorVerifiedAccount,
         rewardsMint: mintKeypair,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: vestingAccount,
         vestingTokenAccount: vestingTokenAccount,
         metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        tokenMetadataProgram: constant.TOKEN_METADATA_PROGRAM_ID,
         importedMint: null,
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
+    global.repositoryCreator = repositoryCreator;
+    global.repositoryCreatorVerifiedAccount = repositoryCreatorVerifiedAccount;
+    global.repositoryAccount = repositoryAccount;
+    global.mintKeypair = mintKeypair;
+    global.vestingAccount = vestingAccount;
   });
 
   it("Creates a repository with imported spl token", async () => {
     //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
     const mintAuthority = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
+    let [
       nameRouterAccount,
-      repositoryCreator.publicKey
-    );
+      routerCreatorKeypair,
+      repositoryCreator,
+      repositoryCreatorVerifiedAccount,
+    ] = [
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.repositoryCreator,
+      global.repositoryCreatorVerifiedAccount,
+    ];
+    let secondId = constant.repositoryId + "2";
     const [
       repositoryAccount,
       repositoryCreatorTokenAccount,
       vestingTokenAccount,
       mintKeypair,
       vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
+    ] = await create_spl_token(repositoryCreator, secondId);
 
     const mintAddress = await createMint(
       connection,
@@ -316,9 +149,9 @@ describe("defios", () => {
 
     await program.methods
       .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
+        secondId,
+        constant.repositoryTitle,
+        constant.repositoryUri,
         null,
         null,
         null
@@ -328,13 +161,13 @@ describe("defios", () => {
         repositoryAccount,
         repositoryCreatorTokenAccount: null,
         repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
+        repositoryVerifiedUser: repositoryCreatorVerifiedAccount,
         rewardsMint: null,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
         vestingAccount: null,
         vestingTokenAccount: null,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+        tokenMetadataProgram: constant.TOKEN_METADATA_PROGRAM_ID,
         metadata: null,
         importedMint: mintAddress,
         rent: web3.SYSVAR_RENT_PUBKEY,
@@ -344,52 +177,17 @@ describe("defios", () => {
   });
 
   it("Creates a issue", async () => {
-    const repositoryCreator = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [repositoryVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
+    let [
       nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-
-    const [
+      routerCreatorKeypair,
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
+    ] = [
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.repositoryCreator,
+      global.repositoryAccount,
+    ];
 
     const issueCreatorKeypair = await create_keypair();
 
@@ -405,19 +203,14 @@ describe("defios", () => {
       issueCreatorKeypair.publicKey
     );
     // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
+    const issueURI = `https://github.com/${constant.userName}/${constant.repositoryId}/issues/${issueIndex}`;
+
     const [issueAccount] = await get_pda_from_seeds([
       Buffer.from("issue"),
       Buffer.from(issueIndex.toString()),
       repositoryAccount.toBuffer(),
       issueCreatorKeypair.publicKey.toBuffer(),
     ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
 
     await program.methods
       .addIssue(issueURI)
@@ -434,105 +227,41 @@ describe("defios", () => {
       })
       .signers([issueCreatorKeypair])
       .rpc(rpcConfig);
+    global.issueCreator = issueCreatorKeypair;
+    global.issueVerifiedUser = issueVerifiedUser;
+    global.issueAccount = issueAccount;
   });
 
   it("Stakes on a issue", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const repositoryCreator = await create_keypair();
-    const issueCreatorKeypair = await create_keypair();
-    const [repositoryVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-
-    // Creating repository
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
       mintKeypair,
+      issueAccount,
       vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.mintKeypair,
+      global.issueAccount,
+      global.vestingAccount,
+    ];
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair,
       issueAccount,
       true
     );
 
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      repositoryCreator.publicKey
+    );
 
-    await program.account.issue.fetch(issueAccount);
-
+    const vestingTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      vestingAccount,
+      true
+    );
     // Staking tokens on a issue
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
@@ -574,141 +303,28 @@ describe("defios", () => {
   });
 
   it("Unstakes on a issue", async () => {
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const repositoryCreator = await create_keypair();
-    const issueCreatorKeypair = await create_keypair();
-
-    // Adding repository creator user
-    const [repositoryVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-
-    // Creating rewards mint
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-
-    // Creating repository
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: repositoryVerifiedUser,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
+    let [repositoryCreator, repositoryAccount, mintKeypair, issueAccount] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.mintKeypair,
+      global.issueAccount,
+    ];
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair,
       issueAccount,
       true
     );
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      repositoryCreator.publicKey
+    );
 
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    await program.account.issue.fetch(issueAccount);
-
-    // Staking tokens on a issue
     const [issueStakerAccount] = await get_pda_from_seeds([
       Buffer.from("issuestaker"),
       issueAccount.toBuffer(),
       repositoryCreator.publicKey.toBuffer(),
     ]);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount,
-        issueTokenPoolAccount,
-        issueStaker: repositoryCreator.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        pullRequestMetadataAccount: null,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
 
     await program.methods
       .unstakeIssue()
@@ -726,511 +342,184 @@ describe("defios", () => {
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
+
+    //want to have some stake on issue for future tests
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
+      .accounts({
+        issueAccount,
+        repositoryAccount,
+        issueTokenPoolAccount,
+        issueStaker: repositoryCreator.publicKey,
+        issueStakerAccount,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
+      })
+      .signers([repositoryCreator])
+      .rpc(rpcConfig);
   });
 
   it("Creates a roadmap!", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
+      nameRouterAccount,
+      repositoryCreatorVerifiedAccount,
+      routerCreatorKeypair,
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.nameRouterAccount,
+      global.repositoryCreatorVerifiedAccount,
+      global.routerCreatorKeypair,
+    ];
 
-    const metadataAddress = await get_metadata_account(mintKeypair);
     const [metadataAccount] = await get_pda_from_seeds([
       Buffer.from("roadmapmetadataadd"),
       repositoryAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
     ]);
 
     await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
       .addRoadmapData(
-        roadmapTitle,
-        roadmapDescription,
-        roadmapImageUrl,
-        roadmapOutlook
+        constant.roadmapTitle,
+        constant.roadmapDescription,
+        constant.roadmapImageUrl,
+        constant.roadmapOutlook
       )
       .accounts({
         nameRouterAccount,
         metadataAccount,
-        roadmapDataAdder: roadmapDataAdder.publicKey,
-        roadmapVerifiedUser: verifiedUserAccount,
+        roadmapDataAdder: repositoryCreator.publicKey,
+        roadmapVerifiedUser: repositoryCreatorVerifiedAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([roadmapDataAdder])
+      .signers([repositoryCreator])
       .rpc(rpcConfig);
+    global.roadmapMetadataAccount = metadataAccount;
   });
   it("Add an objective to a roadmap!", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
       nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [metadataAccount] = await get_pda_from_seeds([
-      Buffer.from("roadmapmetadataadd"),
-      repositoryAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-    await program.methods
-      .addRoadmapData(
-        roadmapTitle,
-        roadmapDescription,
-        roadmapImageUrl,
-        roadmapOutlook
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount,
-        roadmapDataAdder: roadmapDataAdder.publicKey,
-        roadmapVerifiedUser: verifiedUserAccount,
-        repositoryAccount: repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
+      routerCreatorKeypair,
+      repositoryCreatorVerifiedAccount,
+      roadmapMetadataAccount,
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.repositoryCreatorVerifiedAccount,
+      global.roadmapMetadataAccount,
+    ];
 
     const [objectiveAccount] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
-      roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from("1"),
+      repositoryCreator.publicKey.toBuffer(),
+      Buffer.from(constant.objectiveId),
     ]);
 
     await program.methods
       .addObjectiveData(
-        "1",
-        objectiveTitle,
-        objectiveStartUnix,
-        objectiveDescription,
-        objectiveDeliverable
+        constant.objectiveId,
+        constant.objectiveTitle,
+        constant.objectiveStartUnix,
+        constant.objectiveDescription,
+        constant.objectiveDeliverable
       )
       .accounts({
         nameRouterAccount,
         metadataAccount: objectiveAccount,
-        roadmapMetadataAccount: metadataAccount,
+        roadmapMetadataAccount: roadmapMetadataAccount,
         parentObjectiveAccount: null,
-        objectiveDataAddr: roadmapDataAdder.publicKey,
-        objectiveVerifiedUser: verifiedUserAccount,
+        objectiveDataAddr: repositoryCreator.publicKey,
+        objectiveVerifiedUser: repositoryCreatorVerifiedAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         repositoryAccount: repositoryAccount,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([roadmapDataAdder])
+      .signers([repositoryCreator])
       .rpc(rpcConfig);
+    global.rootObjectiveAccount = objectiveAccount;
   });
   it("Add a child objective to an objective", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
       nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [metadataAccount] = await get_pda_from_seeds([
-      Buffer.from("roadmapmetadataadd"),
-      repositoryAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-    await program.methods
-      .addRoadmapData(
-        roadmapTitle,
-        roadmapDescription,
-        roadmapImageUrl,
-        roadmapOutlook
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount,
-        roadmapDataAdder: roadmapDataAdder.publicKey,
-        roadmapVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryAccount: repositoryAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [objectiveAccount] = await get_pda_from_seeds([
-      Buffer.from("objectivedataadd"),
-      roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from("1"),
-    ]);
-    await program.methods
-      .addObjectiveData(
-        "1",
-        objectiveTitle,
-        objectiveStartUnix,
-        objectiveDescription,
-        objectiveDeliverable
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount: objectiveAccount,
-        roadmapMetadataAccount: metadataAccount,
-        parentObjectiveAccount: null,
-        objectiveDataAddr: roadmapDataAdder.publicKey,
-        objectiveVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryAccount: repositoryAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
+      routerCreatorKeypair,
+      repositoryCreatorVerifiedAccount,
+      objectiveAccount,
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.repositoryCreatorVerifiedAccount,
+      global.rootObjectiveAccount,
+    ];
 
     const [objectiveAccount2] = await get_pda_from_seeds([
       Buffer.from("objectivedataadd"),
-      roadmapDataAdder.publicKey.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
       Buffer.from("2"),
     ]);
     await program.methods
       .addObjectiveData(
         "2",
-        objectiveTitle,
-        objectiveStartUnix,
-        objectiveDescription,
-        objectiveDeliverable
+        constant.objectiveTitle,
+        constant.objectiveStartUnix,
+        constant.objectiveDescription,
+        constant.objectiveDeliverable
       )
       .accounts({
         nameRouterAccount,
         metadataAccount: objectiveAccount2,
-        objectiveDataAddr: roadmapDataAdder.publicKey,
+        objectiveDataAddr: repositoryCreator.publicKey,
         roadmapMetadataAccount: null,
         parentObjectiveAccount: objectiveAccount,
-        objectiveVerifiedUser: verifiedUserAccount,
+        objectiveVerifiedUser: repositoryCreatorVerifiedAccount,
         repositoryAccount: repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([roadmapDataAdder])
+      .signers([repositoryCreator])
       .rpc(rpcConfig);
   });
   it("Adds a PR to an issue", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair,
       issueAccount,
-      true
+      routerCreatorKeypair,
+      nameRouterAccount,
+    ] = [
+      global.repositoryAccount,
+      global.mintKeypair,
+      global.issueAccount,
+      global.routerCreatorKeypair,
+      global.nameRouterAccount,
+    ];
+
+    const pullRequestCreator = await create_keypair();
+    const [pullRequestCreatorVerifiedAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      pullRequestCreator.publicKey
     );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    // Adding a commit
-    const treeHash = sha256("Tree hash 1").slice(0, 8);
-    const commitHash = sha256("Commit hash 1").slice(0, 8);
-    const metadataURI =
-      "https://arweave.net/jB7pLq6IReTCeJRHhXiYrfhdEFBeZEDppMc8fkxvJj0";
 
     const [pullRequestMetadataAccount] = await get_pda_from_seeds([
       Buffer.from("pullrequestadded"),
       issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
+      pullRequestCreator.publicKey.toBuffer(),
     ]);
 
     const pullRequestTokenAccount = await getAssociatedTokenAddress(
@@ -1240,14 +529,14 @@ describe("defios", () => {
     );
 
     await program.methods
-      .addPr(pull_request_metadata_uri)
+      .addPr(constant.pullRequestMetadataUri)
       .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
+        pullRequestVerifiedUser: pullRequestCreatorVerifiedAccount,
         issue: issueAccount,
         pullRequestMetadataAccount: pullRequestMetadataAccount,
         nameRouterAccount,
         pullRequestTokenAccount,
-        pullRequestAddr: roadmapDataAdder.publicKey,
+        pullRequestAddr: pullRequestCreator.publicKey,
         repositoryAccount,
         routerCreator: routerCreatorKeypair.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -1255,663 +544,97 @@ describe("defios", () => {
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .signers([roadmapDataAdder])
+      .signers([pullRequestCreator])
       .rpc(rpcConfig);
+    global.pullRequestCreator = pullRequestCreator;
+    global.pullRequestCreatorVerifiedAccount =
+      pullRequestCreatorVerifiedAccount;
+    global.pullRequestMetadataAccount = pullRequestMetadataAccount;
   });
   it("Accepts a PR", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryCreatorTokenAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
-      Buffer.from("pullrequestadded"),
-      issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
       pullRequestMetadataAccount,
-      true
-    );
+      pullRequestCreator,
+      issueAccount,
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.pullRequestMetadataAccount,
+      global.pullRequestCreator,
+      global.issueAccount,
+    ];
 
     await program.methods
-      .addPr(pull_request_metadata_uri)
+      .acceptPr(constant.repositoryId)
       .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .acceptPr(repositoryId)
-      .accounts({
-        pullRequestAddr: roadmapDataAdder.publicKey,
+        pullRequestAddr: pullRequestCreator.publicKey,
         pullRequestMetadataAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
         repositoryAccount,
         issue: issueAccount,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-  });
-
-  it("Creates a Repository and claims first vesting amount", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryCreatorTokenAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([roadmapDataAdder])
+      .signers([repositoryCreator])
       .rpc(rpcConfig);
   });
 
   it("Getting a PR accepted and getting rewarded for it", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
+      repositoryCreator,
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
+      pullRequestMetadataAccount,
+      pullRequestCreator,
+      issueAccount,
       mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-    const metadataAddress = await get_metadata_account(mintKeypair);
+      issueCreator,
+    ] = [
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.pullRequestMetadataAccount,
+      global.pullRequestCreator,
+      global.issueAccount,
+      global.mintKeypair,
+      global.issueCreator,
+    ];
 
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryCreatorTokenAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
+    const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      pullRequestCreator.publicKey
     );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
 
     const issueTokenPoolAccount = await getAssociatedTokenAddress(
       mintKeypair,
       issueAccount,
       true
     );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
-      Buffer.from("pullrequestadded"),
-      issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      pullRequestMetadataAccount,
-      true
-    );
-
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        rewardsMint: mintKeypair,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      roadmapDataAdder.publicKey
-    );
-
-    const [issueStakerAccount] = await get_pda_from_seeds([
-      Buffer.from("issuestaker"),
-      issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount,
-        issueTokenPoolAccount,
-        issueStaker: roadmapDataAdder.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        pullRequestMetadataAccount: null,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .acceptPr(repositoryId)
-      .accounts({
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        pullRequestMetadataAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        issue: issueAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
 
     await program.methods
       .claimReward()
       .accounts({
-        pullRequestCreator: roadmapDataAdder.publicKey,
+        pullRequestCreator: pullRequestCreator.publicKey,
         pullRequest: pullRequestMetadataAccount,
         pullRequestCreatorRewardAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
         rewardsMint: mintKeypair,
         repositoryAccount,
         issueAccount: issueAccount,
         issueTokenPoolAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
+        issueCreator: issueCreator.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-  });
-
-  it("Voting on a PR", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryCreatorTokenAccount,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
-      Buffer.from("pullrequestadded"),
-      issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      pullRequestMetadataAccount,
-      true
-    );
-
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount,
-        issue: issueAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        rewardsMint: mintKeypair,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestAddr: roadmapDataAdder.publicKey,
-        repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [issueStakerAccount] = await get_pda_from_seeds([
-      Buffer.from("issuestaker"),
-      issueAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount,
-        issueTokenPoolAccount,
-        issueStaker: roadmapDataAdder.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        pullRequestMetadataAccount: null,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .votePr()
-      .accounts({
-        issueStaker: roadmapDataAdder.publicKey,
-        repository: repositoryAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        issueAccount: issueAccount,
-        issueStakerAccount: issueStakerAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount,
-        issueTokenPoolAccount,
-        issueStaker: roadmapDataAdder.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-      })
-      .signers([roadmapDataAdder])
+      .signers([pullRequestCreator])
       .rpc(rpcConfig);
   });
 
   it("Create communal account to store tokens", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
+    let [repositoryCreator, mintKeypair] = [
+      global.repositoryCreator,
+      global.mintKeypair,
+    ];
 
     const [communal_account] = await get_pda_from_seeds([
       Buffer.from("are_we_conscious"),
@@ -1941,103 +664,33 @@ describe("defios", () => {
       })
       .signers([repositoryCreator])
       .rpc(rpcConfig);
+    global.communalAccount = communal_account;
   });
 
   it("Sends a buy transaction", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    const [communal_account] = await get_pda_from_seeds([
-      Buffer.from("are_we_conscious"),
-      Buffer.from("is love life ?  "),
-      Buffer.from("arewemadorinlove"),
-      mintKeypair.toBuffer(),
-    ]);
+    let [repositoryCreator, mintKeypair, communalAccount, repositoryAccount] = [
+      global.repositoryCreator,
+      global.mintKeypair,
+      global.communalAccount,
+      global.repositoryAccount,
+    ];
 
     const communalTokenAccount = await getAssociatedTokenAddress(
       mintKeypair,
-      communal_account,
+      communalAccount,
       true
     );
 
-    await program.methods
-      .createCommunalAccount()
-      .accounts({
-        authority: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
-        communalTokenAccount: communalTokenAccount,
-        systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        usdcMint: mintKeypair,
-        communalUsdcAccount: communalTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      repositoryCreator.publicKey
+    );
 
     await program.methods
       .buyTokens(new anchor.BN(1), new anchor.BN(1))
       .accounts({
         buyer: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
+        communalDeposit: communalAccount,
         communalTokenAccount: communalTokenAccount,
         rewardsMint: mintKeypair,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -2054,100 +707,29 @@ describe("defios", () => {
   });
 
   it("Sends a sell transaction", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator.publicKey
-    );
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    const [communal_account] = await get_pda_from_seeds([
-      Buffer.from("are_we_conscious"),
-      Buffer.from("is love life ?  "),
-      Buffer.from("arewemadorinlove"),
-      mintKeypair.toBuffer(),
-    ]);
+    let [repositoryCreator, mintKeypair, communalAccount, repositoryAccount] = [
+      global.repositoryCreator,
+      global.mintKeypair,
+      global.communalAccount,
+      global.repositoryAccount,
+    ];
 
     const communalTokenAccount = await getAssociatedTokenAddress(
       mintKeypair,
-      communal_account,
+      communalAccount,
       true
     );
 
-    await program.methods
-      .createCommunalAccount()
-      .accounts({
-        authority: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
-        communalTokenAccount: communalTokenAccount,
-        systemProgram: web3.SystemProgram.programId,
-        rewardsMint: mintKeypair,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        usdcMint: mintKeypair,
-        communalUsdcAccount: communalTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      repositoryCreator.publicKey
+    );
 
     await program.methods
       .sellTokens(new anchor.BN(0), new anchor.BN(1))
       .accounts({
         seller: repositoryCreator.publicKey,
-        communalDeposit: communal_account,
+        communalDeposit: communalAccount,
         communalTokenAccount: communalTokenAccount,
         rewardsMint: mintKeypair,
         repositoryAccount: repositoryAccount,
@@ -2163,654 +745,105 @@ describe("defios", () => {
       .rpc(rpcConfig);
   });
 
-  it("Custom SPL Token integration test", async () => {
-    //generates key pairs and airdrops solana to them
-    const repositoryCreator = await create_keypair();
-    const repositoryCreator2 = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
+  it("Grant money to objective", async () => {
+    let [mintKeypair, repositoryAccount, objectiveAccount, repositoryCreator] =
+      [
+        global.mintKeypair,
+        global.repositoryAccount,
+        global.rootObjectiveAccount,
+        global.repositoryCreator,
+      ];
+
+    const grantee = await create_keypair();
     const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.nameRouterAccount,
+      grantee.publicKey
+    );
+
+    const [granteeAccount] = await get_pda_from_seeds([
+      grantee.publicKey.toBuffer(),
+      repositoryAccount.toBuffer(),
+      objectiveAccount.toBuffer(),
+    ]);
+
+    const objectiveStakeAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      objectiveAccount,
+      true
+    );
+
+    const granteeStakeAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      grantee,
+      mintKeypair,
+      grantee.publicKey,
+      false
+    );
+
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
       repositoryCreator.publicKey
     );
 
-    const [verifiedUserAccount2] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      repositoryCreator2.publicKey
-    );
-
-    const [
-      repositoryAccount,
+    await transfer(
+      connection,
+      repositoryCreator,
       repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(repositoryCreator);
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: metadataAddress,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    const [
-      repositoryAccount2,
-      repositoryCreatorTokenAccount2,
-      vestingTokenAccount2,
-      mintKeypair2,
-      vestingAccount2,
-    ] = await create_spl_token(repositoryCreator2);
-
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        null,
-        null,
-        null
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount2,
-        repositoryCreatorTokenAccount: null,
-        repositoryCreator: repositoryCreator2.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount2,
-        rewardsMint: null,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: null,
-        vestingTokenAccount: null,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        metadata: null,
-        importedMint: mintKeypair,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([repositoryCreator2])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount2
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount2.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
+      granteeStakeAccount.address,
+      repositoryCreator,
+      10
     );
 
     await program.methods
-      .addIssue(issueURI)
+      .grantMoney(new anchor.BN(10), constant.roadmapImageUrl)
       .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount: repositoryAccount2,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: repositoryCreator2.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
-      Buffer.from("pullrequestadded"),
-      issueAccount.toBuffer(),
-      repositoryCreator2.publicKey.toBuffer(),
-    ]);
-
-    const pullRequestTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      pullRequestMetadataAccount,
-      true
-    );
-
-    await program.methods
-      .addPr(pull_request_metadata_uri)
-      .accounts({
-        pullRequestVerifiedUser: verifiedUserAccount2,
-        issue: issueAccount,
-        pullRequestMetadataAccount: pullRequestMetadataAccount,
-        nameRouterAccount,
-        pullRequestTokenAccount,
-        rewardsMint: mintKeypair,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        pullRequestAddr: repositoryCreator2.publicKey,
-        repositoryAccount: repositoryAccount2,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([repositoryCreator2])
-      .rpc(rpcConfig);
-
-    const pullRequestCreatorRewardAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      repositoryCreator2.publicKey
-    );
-
-    // Staking tokens on a issue
-    const issueStakerKeypair = await create_keypair();
-    const issueStakerTokenAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueStakerKeypair.publicKey
-    );
-
-    const [issueStakerAccount] = await get_pda_from_seeds([
-      Buffer.from("issuestaker"),
-      issueAccount.toBuffer(),
-      repositoryCreator.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: repositoryCreator.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .stakeIssue(new anchor.BN(10))
-      .accounts({
-        issueAccount,
-        repositoryAccount: repositoryAccount2,
-        issueTokenPoolAccount,
-        issueStaker: repositoryCreator.publicKey,
-        issueStakerAccount,
-        issueStakerTokenAccount: repositoryCreatorTokenAccount,
-        rewardsMint: mintKeypair,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        pullRequestMetadataAccount: null,
-      })
-      .signers([repositoryCreator])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .acceptPr(repositoryId)
-      .accounts({
-        pullRequestAddr: repositoryCreator2.publicKey,
-        pullRequestMetadataAccount,
-        repositoryCreator: repositoryCreator2.publicKey,
-        repositoryAccount: repositoryAccount2,
-        issue: issueAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([repositoryCreator2])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .claimReward()
-      .accounts({
-        nameRouterAccount,
-        repositoryVerifiedUser: verifiedUserAccount2,
-        pullRequestCreator: repositoryCreator2.publicKey,
-        pullRequestVerifiedUser: verifiedUserAccount2,
-        pullRequest: pullRequestMetadataAccount,
-        pullRequestCreatorRewardAccount,
-        repositoryCreator: repositoryCreator2.publicKey,
-        rewardsMint: mintKeypair,
-        repositoryAccount: repositoryAccount2,
-        issueAccount: issueAccount,
-        issueTokenPoolAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        routerCreator: routerCreatorKeypair.publicKey,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([repositoryCreator2])
-      .rpc(rpcConfig);
-  });
-  it("Grant money to objective", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
-      repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [metadataAccount] = await get_pda_from_seeds([
-      Buffer.from("roadmapmetadataadd"),
-      repositoryAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .addRoadmapData(
-        roadmapTitle,
-        roadmapDescription,
-        roadmapImageUrl,
-        roadmapOutlook
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount,
-        roadmapDataAdder: roadmapDataAdder.publicKey,
-        roadmapVerifiedUser: verifiedUserAccount,
-        repositoryAccount: repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [objectiveAccount] = await get_pda_from_seeds([
-      Buffer.from("objectivedataadd"),
-      roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from("1"),
-    ]);
-
-    await program.methods
-      .addObjectiveData(
-        "1",
-        objectiveTitle,
-        objectiveStartUnix,
-        objectiveDescription,
-        objectiveDeliverable
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount: objectiveAccount,
-        roadmapMetadataAccount: metadataAccount,
-        parentObjectiveAccount: null,
-        objectiveDataAddr: roadmapDataAdder.publicKey,
-        objectiveVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryAccount: repositoryAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [granteeAccount] = await get_pda_from_seeds([
-      roadmapDataAdder.publicKey.toBuffer(),
-      repositoryAccount.toBuffer(),
-      objectiveAccount.toBuffer(),
-    ]);
-
-    const objectiveStakeAccount = await getAssociatedTokenAddress(
-      mintKeypair,
-      objectiveAccount,
-      true
-    );
-
-    await program.methods
-      .grantMoney(new anchor.BN(10), roadmapImageUrl)
-      .accounts({
-        grantee: roadmapDataAdder.publicKey,
+        grantee: grantee.publicKey,
         granteeVerifiedUser: verifiedUserAccount,
         objective: objectiveAccount,
         repository: repositoryAccount,
         tokenMint: mintKeypair,
         granteeAccount: granteeAccount,
         objectiveStakeAccount: objectiveStakeAccount,
-        granteeStakeAccount: repositoryCreatorTokenAccount,
+        granteeStakeAccount: granteeStakeAccount.address,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
-      .signers([roadmapDataAdder])
+      .signers([grantee])
       .rpc(rpcConfig);
+    global.grantee = grantee;
+    global.granteeAccount = granteeAccount;
   });
   it("Disperse grant money", async () => {
-    //generates key pairs and airdrops solana to them
-    const roadmapDataAdder = await create_keypair();
-    const [routerCreatorKeypair, nameRouterAccount] =
-      await create_name_router();
-    const [verifiedUserAccount] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      roadmapDataAdder.publicKey
-    );
-
-    //adds logs to keypair
-
-    const [
+    let [
       repositoryAccount,
-      repositoryCreatorTokenAccount,
-      vestingTokenAccount,
-      mintKeypair,
-      vestingAccount,
-    ] = await create_spl_token(roadmapDataAdder);
-
-    const metadataAddress = await get_metadata_account(mintKeypair);
-    await program.methods
-      .createRepository(
-        repositoryId,
-        "Open source revolution",
-        "https://github.com/sunguru98/defios",
-        tokenName,
-        tokenimage,
-        tokenMetadata
-      )
-      .accounts({
-        nameRouterAccount,
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        repositoryVerifiedUser: verifiedUserAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        vestingAccount: vestingAccount,
-        vestingTokenAccount: vestingTokenAccount,
-        metadata: metadataAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        importedMint: null,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const issueCreatorKeypair = await create_keypair();
-
-    const { issueIndex } = await program.account.repository.fetch(
-      repositoryAccount
-    );
-
-    // Adding issue creator user
-
-    const [issueVerifiedUser] = await create_verified_user(
-      routerCreatorKeypair,
-      nameRouterAccount,
-      issueCreatorKeypair.publicKey
-    );
-    // Creating issue
-    const issueURI = `https://github.com/${userName}/${repositoryId}/issues/${issueIndex}`;
-    const [issueAccount] = await get_pda_from_seeds([
-      Buffer.from("issue"),
-      Buffer.from(issueIndex.toString()),
-      repositoryAccount.toBuffer(),
-      issueCreatorKeypair.publicKey.toBuffer(),
-    ]);
-
-    const issueTokenPoolAccount = await getAssociatedTokenAddress(
-      mintKeypair,
+      objectiveAccount,
+      repositoryCreator,
       issueAccount,
-      true
-    );
-
-    await program.methods
-      .addIssue(issueURI)
-      .accounts({
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        issueAccount,
-        issueCreator: issueCreatorKeypair.publicKey,
-        issueTokenPoolAccount,
-        issueVerifiedUser,
-        nameRouterAccount,
-        repositoryAccount,
-        rewardsMint: mintKeypair,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([issueCreatorKeypair])
-      .rpc(rpcConfig);
-
-    const [metadataAccount] = await get_pda_from_seeds([
-      Buffer.from("roadmapmetadataadd"),
-      repositoryAccount.toBuffer(),
-      roadmapDataAdder.publicKey.toBuffer(),
-    ]);
-
-    await program.methods
-      .addRoadmapData(
-        roadmapTitle,
-        roadmapDescription,
-        roadmapImageUrl,
-        roadmapOutlook
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount,
-        roadmapDataAdder: roadmapDataAdder.publicKey,
-        roadmapVerifiedUser: verifiedUserAccount,
-        repositoryAccount: repositoryAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [objectiveAccount] = await get_pda_from_seeds([
-      Buffer.from("objectivedataadd"),
-      roadmapDataAdder.publicKey.toBuffer(),
-      Buffer.from("1"),
-    ]);
-
-    await program.methods
-      .addObjectiveData(
-        "1",
-        objectiveTitle,
-        objectiveStartUnix,
-        objectiveDescription,
-        objectiveDeliverable
-      )
-      .accounts({
-        nameRouterAccount,
-        metadataAccount: objectiveAccount,
-        roadmapMetadataAccount: metadataAccount,
-        parentObjectiveAccount: null,
-        objectiveDataAddr: roadmapDataAdder.publicKey,
-        objectiveVerifiedUser: verifiedUserAccount,
-        routerCreator: routerCreatorKeypair.publicKey,
-        repositoryAccount: repositoryAccount,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    await program.methods
-      .unlockTokens()
-      .accounts({
-        repositoryAccount,
-        repositoryCreatorTokenAccount,
-        repositoryCreator: roadmapDataAdder.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        vestingAccount: vestingAccount,
-        tokenMint: mintKeypair,
-        vestingTokenAccount: vestingTokenAccount,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
-    const [granteeAccount] = await get_pda_from_seeds([
-      roadmapDataAdder.publicKey.toBuffer(),
-      repositoryAccount.toBuffer(),
-      objectiveAccount.toBuffer(),
-    ]);
+      mintKeypair,
+    ] = [
+      global.repositoryAccount,
+      global.rootObjectiveAccount,
+      global.repositoryCreator,
+      global.issueAccount,
+      global.mintKeypair,
+    ];
 
     const objectiveStakeAccount = await getAssociatedTokenAddress(
       mintKeypair,
       objectiveAccount,
       true
     );
-
-    await program.methods
-      .grantMoney(new anchor.BN(10), roadmapImageUrl)
-      .accounts({
-        grantee: roadmapDataAdder.publicKey,
-        granteeVerifiedUser: verifiedUserAccount,
-        objective: objectiveAccount,
-        repository: repositoryAccount,
-        tokenMint: mintKeypair,
-        granteeAccount: granteeAccount,
-        objectiveStakeAccount: objectiveStakeAccount,
-        granteeStakeAccount: repositoryCreatorTokenAccount,
-        systemProgram: web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .signers([roadmapDataAdder])
-      .rpc(rpcConfig);
-
+    const issueTokenPoolAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      issueAccount,
+      true
+    );
     await program.methods
       .disperseGrant(new anchor.BN(10))
       .accounts({
-        repositoryCreator: roadmapDataAdder.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
         objective: objectiveAccount,
         objectiveStakeAccount: objectiveStakeAccount,
         repository: repositoryAccount,
@@ -2821,7 +854,7 @@ describe("defios", () => {
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
-      .signers([roadmapDataAdder])
+      .signers([repositoryCreator])
       .rpc(rpcConfig);
   });
 });

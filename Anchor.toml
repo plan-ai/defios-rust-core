@@ -2,16 +2,16 @@
 seeds = true
 skip-lint = false
 [programs.devnet]
-defios = "7DjMy7URNwjKa7xEsCxqrxdk7BkfTyvDjeZTJJHs9dpF"
-skill_validator = "CvGFAXiVhmxzHjxPAjKUf85sAQfrtFmP3Ei7kNqMNzrX"
+defios = "A4ka2TchTkFPcdtVctj7imhAtKvwapvihcR456aAW663"
+skill_validator = "2tC6A5rXAwTVEp1Sptuz2jZpLL9GhmDiTPaQ97ZJKjcv"
 
 [programs.localnet]
-defios = "7DjMy7URNwjKa7xEsCxqrxdk7BkfTyvDjeZTJJHs9dpF"
-skill_validator = "CvGFAXiVhmxzHjxPAjKUf85sAQfrtFmP3Ei7kNqMNzrX"
+defios = "A4ka2TchTkFPcdtVctj7imhAtKvwapvihcR456aAW663"
+skill_validator = "2tC6A5rXAwTVEp1Sptuz2jZpLL9GhmDiTPaQ97ZJKjcv"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "Localnet"
 wallet = "/home/ubuntu/.config/solana/id.json"

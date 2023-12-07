@@ -37,7 +37,7 @@ pub fn handler(ctx: Context<ValidateFit>) -> Result<()> {
     let validator = &ctx.accounts.validator;
     let job = &ctx.accounts.job;
 
-    validated_data.bump = *ctx.bumps.get("validated_data").unwrap();
+    validated_data.bump = ctx.bumps.validated_data;
     validated_data.validator = validator.key();
     validated_data.job = job.key();
 

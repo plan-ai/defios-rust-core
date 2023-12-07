@@ -60,7 +60,7 @@ pub struct BuyToken<'info> {
         bump
     )]
     pub rewards_mint: Account<'info, Mint>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
