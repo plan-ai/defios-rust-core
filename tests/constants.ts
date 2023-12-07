@@ -16,7 +16,7 @@ const objectiveDeliverable = { tooling: {} };
 const objectiveTitle = "Test Objective";
 const objectiveDescription = "https://github.com/defi-os/Issues";
 const objectiveStartUnix = new BN(1704067200);
-const pullRequestMetadataUri = "https://github.com/defi-os/Issues";
+const pullRequestMetadataUri = "https://github.com";
 const tokenName = "Hi!";
 const tokenimage = "BRR";
 const tokenMetadata =
@@ -27,6 +27,8 @@ const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
 const repositoryTitle = "Open source revolution";
 const repositoryUri = "https://github.com/sunguru98/defios";
 const objectiveId = "1";
+const proposalId = "1";
+const proposalUri = "https://github.com/sunguru98/defios";
 
 export {
   signatureVersion,
@@ -50,4 +52,6 @@ export {
   repositoryTitle,
   repositoryUri,
   objectiveId,
+  proposalId,
+  proposalUri,
 };

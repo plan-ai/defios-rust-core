@@ -20,6 +20,7 @@ pub struct ClaimReward<'info> {
     )]
     pub pull_request_creator: Signer<'info>,
     #[account(
+        mut,
         seeds = [
             b"pullrequestadded",
             issue_account.key().as_ref(),

@@ -8,6 +8,7 @@ use anchor_lang::prelude::*;
 pub struct AcceptObjective<'info> {
     pub initiator: Signer<'info>,
     #[account(
+        mut,
         constraint = objective.completed_at == None,
         constraint = objective.total_dispersed_grant == objective.total_grant,
         constraint = objective.objective_repository == repository_account.key()

@@ -41,6 +41,7 @@ pub fn handler(ctx: Context<AcceptIssueVote>) -> Result<()> {
     let repository = &mut ctx.accounts.repository_account;
 
     let majority_threshhold = issue.total_stake_amount / 2;
+
     require!(
         pull_request_metadata_account.total_voted_amount > majority_threshhold,
         DefiOSError::NotEnoughVotesForIssueMerge

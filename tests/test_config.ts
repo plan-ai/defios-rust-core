@@ -1,7 +1,7 @@
 const rpcConfig: object = {
   skipPreflight: true,
   maxRetries: 5,
-  confirmation: "confirmed",
+  commitment: "confirmed",
 };
 
 export { rpcConfig };

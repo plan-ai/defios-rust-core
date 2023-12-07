@@ -61,8 +61,5 @@ pub fn verify_swap(
 pub const PREFIX: &str = "metadata";
 
 pub fn find_metadata_account(mint: &Pubkey) -> (Pubkey, u8) {
-    Pubkey::find_program_address(
-        &[PREFIX.as_bytes(), ID.as_ref(), mint.as_ref()],
-        &ID,
-    )
+    Pubkey::find_program_address(&[PREFIX.as_bytes(), ID.as_ref(), mint.as_ref()], &ID)
 }

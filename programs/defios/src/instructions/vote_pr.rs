@@ -10,6 +10,7 @@ pub struct VotePRs<'info> {
     #[account(mut)]
     pub repository: Account<'info, Repository>,
     #[account(
+        mut,
         seeds = [
             b"pullrequestadded",
             issue_account.key().as_ref(),
@@ -54,6 +55,7 @@ pub fn handler(ctx: Context<VotePRs>) -> Result<()> {
         DefiOSError::PullRequestVotingClosedAlready
     );
     pull_request_metadata_account.total_voted_amount += issue_staker_account.pr_voting_power;
+
     emit!(PRVoted {
         pull_request: pull_request_metadata_account.key(),
         vote_amount: issue_staker_account.pr_voting_power,

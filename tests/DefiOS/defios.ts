@@ -19,6 +19,7 @@ import {
   create_verified_user,
   get_metadata_account,
   get_pda_from_seeds,
+  delay,
 } from "./helper";
 
 describe("defios", () => {
@@ -855,6 +856,305 @@ describe("defios", () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([repositoryCreator])
+      .rpc(rpcConfig);
+  });
+  it("Create an objective proposal", async () => {
+    let objectiveAccount = global.rootObjectiveAccount;
+
+    const proposee = await create_keypair();
+    const [objectiveProposal] = await get_pda_from_seeds([
+      Buffer.from("objective_proposal"),
+      objectiveAccount.toBuffer(),
+      Buffer.from(constant.proposalId),
+    ]);
+    await program.methods
+      .createObjectiveProposal(constant.proposalId, constant.proposalUri)
+      .accounts({
+        proposee: proposee.publicKey,
+        objective: objectiveAccount,
+        systemProgram: web3.SystemProgram.programId,
+        objectiveProposal: objectiveProposal,
+      })
+      .signers([proposee])
+      .rpc(rpcConfig);
+    global.objectiveProposal = objectiveProposal;
+  });
+  it("Vote on objective proposal", async () => {
+    let [objectiveAccount, objectiveProposal, granteeAccount, grantee] = [
+      global.rootObjectiveAccount,
+      global.objectiveProposal,
+      global.granteeAccount,
+      global.grantee,
+    ];
+
+    const [objectiveProposalVote] = await get_pda_from_seeds([
+      objectiveProposal.toBuffer(),
+      objectiveAccount.toBuffer(),
+      grantee.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
+      .voteObjective(true)
+      .accounts({
+        voter: grantee.publicKey,
+        objective: objectiveAccount,
+        grantAccount: granteeAccount,
+        proposal: objectiveProposal,
+        objectiveProposalVote: objectiveProposalVote,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([grantee])
+      .rpc(rpcConfig);
+  });
+  it("Change repo token", async () => {
+    let [
+      repositoryCreator,
+      nameRouterAccount,
+      repositoryCreatorVerifiedAccount,
+      routerCreatorKeypair,
+    ] = [
+      global.repositoryCreator,
+      global.nameRouterAccount,
+      global.repositoryCreatorVerifiedAccount,
+      global.routerCreatorKeypair,
+    ];
+
+    const thirdId = constant.repositoryId + "3";
+    const importedMint = await createMint(
+      connection,
+      repositoryCreator,
+      repositoryCreator.publicKey,
+      repositoryCreator.publicKey,
+      3
+    );
+
+    const [repositoryAccount] = await get_pda_from_seeds([
+      Buffer.from("repository"),
+      Buffer.from(thirdId),
+      repositoryCreator.publicKey.toBuffer(),
+    ]);
+
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      importedMint,
+      repositoryCreator.publicKey
+    );
+
+    //creating a new repo as cant change repo token of repo with existing issues
+    await program.methods
+      .createRepository(
+        thirdId,
+        constant.repositoryTitle,
+        constant.repositoryUri,
+        constant.tokenName,
+        constant.tokenimage,
+        constant.tokenMetadata
+      )
+      .accounts({
+        nameRouterAccount,
+        repositoryAccount,
+        repositoryCreatorTokenAccount,
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryVerifiedUser: repositoryCreatorVerifiedAccount,
+        rewardsMint: null,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        vestingAccount: null,
+        vestingTokenAccount: null,
+        metadata: null,
+        tokenMetadataProgram: constant.TOKEN_METADATA_PROGRAM_ID,
+        importedMint: importedMint,
+        rent: web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([repositoryCreator])
+      .rpc(rpcConfig);
+
+    const secondMintAddress = await createMint(
+      connection,
+      repositoryCreator,
+      repositoryCreator.publicKey,
+      repositoryCreator.publicKey,
+      6
+    );
+
+    await program.methods
+      .changeRepoToken(
+        constant.tokenName,
+        constant.tokenMetadata,
+        constant.tokenimage
+      )
+      .accounts({
+        repositoryCreator: repositoryCreator.publicKey,
+        repositoryCreatorTokenAccount: repositoryCreatorTokenAccount,
+        vestingAccount: null,
+        vestingTokenAccount: null,
+        rewardsMint: null,
+        importedMint: secondMintAddress,
+        repositoryAccount: repositoryAccount,
+        metadata: null,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenMetadataProgram: constant.TOKEN_METADATA_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([repositoryCreator])
+      .rpc(rpcConfig);
+  });
+
+  it("Vote and close issue", async () => {
+    //creating a new issue as initial one is already closed
+    let [
+      nameRouterAccount,
+      routerCreatorKeypair,
+      repositoryCreator,
+      repositoryAccount,
+      mintKeypair,
+    ] = [
+      global.nameRouterAccount,
+      global.routerCreatorKeypair,
+      global.repositoryCreator,
+      global.repositoryAccount,
+      global.mintKeypair,
+    ];
+
+    const issueCreatorKeypair = await create_keypair();
+
+    const { issueIndex } = await program.account.repository.fetch(
+      repositoryAccount
+    );
+
+    // Adding issue creator user
+
+    const [issueVerifiedUser] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      issueCreatorKeypair.publicKey
+    );
+    // Creating issue
+    const issueURI = `https://github.com/${constant.userName}/${constant.repositoryId}/issues/${issueIndex}`;
+
+    const [issueAccount] = await get_pda_from_seeds([
+      Buffer.from("issue"),
+      Buffer.from(issueIndex.toString()),
+      repositoryAccount.toBuffer(),
+      issueCreatorKeypair.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
+      .addIssue(issueURI)
+      .accounts({
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        issueAccount,
+        issueCreator: issueCreatorKeypair.publicKey,
+        issueVerifiedUser,
+        nameRouterAccount,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        repositoryCreator: repositoryCreator.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([issueCreatorKeypair])
+      .rpc(rpcConfig);
+
+    const issueTokenPoolAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      issueAccount,
+      true
+    );
+
+    const repositoryCreatorTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      repositoryCreator.publicKey
+    );
+
+    // Staking tokens on a issue
+    const [issueStakerAccount] = await get_pda_from_seeds([
+      Buffer.from("issuestaker"),
+      issueAccount.toBuffer(),
+      repositoryCreator.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
+      .stakeIssue(new anchor.BN(10))
+      .accounts({
+        issueAccount,
+        repositoryAccount,
+        issueTokenPoolAccount,
+        issueStaker: repositoryCreator.publicKey,
+        issueStakerAccount,
+        issueStakerTokenAccount: repositoryCreatorTokenAccount,
+        rewardsMint: mintKeypair,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        pullRequestMetadataAccount: null,
+      })
+      .signers([repositoryCreator])
+      .rpc(rpcConfig);
+
+    const pullRequestCreator = await create_keypair();
+    const [pullRequestCreatorVerifiedAccount] = await create_verified_user(
+      routerCreatorKeypair,
+      nameRouterAccount,
+      pullRequestCreator.publicKey
+    );
+
+    const [pullRequestMetadataAccount] = await get_pda_from_seeds([
+      Buffer.from("pullrequestadded"),
+      issueAccount.toBuffer(),
+      pullRequestCreator.publicKey.toBuffer(),
+    ]);
+
+    const pullRequestTokenAccount = await getAssociatedTokenAddress(
+      mintKeypair,
+      pullRequestMetadataAccount,
+      true
+    );
+
+    await program.methods
+      .addPr(constant.pullRequestMetadataUri)
+      .accounts({
+        pullRequestVerifiedUser: pullRequestCreatorVerifiedAccount,
+        issue: issueAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        nameRouterAccount,
+        pullRequestTokenAccount,
+        pullRequestAddr: pullRequestCreator.publicKey,
+        repositoryAccount,
+        routerCreator: routerCreatorKeypair.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        rewardsMint: mintKeypair,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([pullRequestCreator])
+      .rpc(rpcConfig);
+
+    await program.methods
+      .votePr()
+      .accounts({
+        issueAccount: issueAccount,
+        issueStaker: repositoryCreator.publicKey,
+        issueStakerAccount: issueStakerAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        repository: repositoryAccount,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([repositoryCreator])
+      .rpc(rpcConfig);
+
+    const initiator = await create_keypair();
+
+    await program.methods
+      .acceptIssueVote()
+      .accounts({
+        initiator: initiator.publicKey,
+        repositoryAccount: repositoryAccount,
+        issue: issueAccount,
+        pullRequestMetadataAccount: pullRequestMetadataAccount,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([initiator])
       .rpc(rpcConfig);
   });
 });

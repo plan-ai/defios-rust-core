@@ -65,6 +65,7 @@ pub struct StakeIssue<'info> {
     #[account(constraint = rewards_mint.key()==issue_account.issue_token)]
     pub rewards_mint: Account<'info, Mint>,
     #[account(
+        mut,
         seeds = [
             b"pullrequestadded",
             issue_account.key().as_ref(),
