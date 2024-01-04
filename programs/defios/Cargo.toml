@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Main github on-chain integrations by DefiOS"
 authors = ["Tanmay Munjal <tanmaymunjal64@gmail.com>"]
 repository = "https://github.com/defi-os/defios-rust-core"
+license = "MIT"
 edition = "2021"
 
 [lib]
